@@ -1,18 +1,18 @@
 ## ASIRE Brainstorming
 
 
-**Définition, wikipedia**
-[https://fr.wikipedia.org/wiki/Robotique_en_essaim](https://fr.wikipedia.org/wiki/Robotique_en_essaim)
+**Définition, wikipedia**  
+[Robotique_en_essaim](https://fr.wikipedia.org/wiki/Robotique_en_essaim)
 
 &ensp;
 
-**Débat « Robotique et société » #FutuRobot du 08/12/2021 à Sorbonne Université**
-[https://www.youtube.com/watch?v=Ue_AVBVQXig&feature=emb_logo](https://www.youtube.com/watch?v=Ue_AVBVQXig&feature=emb_logo)
+**Débat « Robotique et société » #FutuRobot du 08/12/2021 à Sorbonne Université**  
+[Débat « Robotique et société » #FutuRobot](https://www.youtube.com/watch?v=Ue_AVBVQXig&feature=emb_logo)
 
 &ensp;
 
-**Podcast « Robotique en essaim : tous pour un ! »** (franceculture.fr)
-[https://t.co/g8HxXwbHUf](https://t.co/g8HxXwbHUf)
+**Podcast « Robotique en essaim : tous pour un ! »** (franceculture.fr)  
+[« Robotique en essaim : tous pour un ! »](https://t.co/g8HxXwbHUf)
 
 La robotique en essaim est une forme de robotique collective qui désigne l’ensemble de petit robots en miniature ayant des capacités de calcul individuelles faibles qui travaillent de façon coordonnée pour accomplir des taches complexes. Propriétés :
 
@@ -67,3 +67,36 @@ La robotique en essaim est une forme de robotique collective qui désigne l’en
 - S’intéresser à l’imitation du monde végétal, qui est très efficace pour la collecte et l’utilisation de ressources. En effet une plante peut être vue comme un essaim, où chaque component gère indépendamment les fonctions utiles au système globale.
 
 - Utilisation des nano-robots pour le soin de l’être humaine (thromboses, tumeurs, ...).
+
+
+
+&ensp;
+
+**Articles**
+
+> [*Collective Construction with Multiple Robots. Jens Wawerla, Gaurav S. Sukhatme Maja, J. Mataric*](https://www.researchgate.net/profile/Jens-Wawerla/publication/3972179_Collective_construction_with_multiple_robots/links/0deec52efbb60436c5000000/Collective-construction-with-multiple-robots.pdf)
+
+
+
+&ensp;
+
+**Ouvrages**
+
+> *Poulpe fiction. Quand l'animal inspire l'innovation*  
+  Agnès Guillot, Jean-Arcady Meyer  
+  Parution : mars 2014  
+  Collection : Quai des Sciences, Dunod  
+
+
+> *L'or vert. Quand les plantes inspirent l'innovation*  
+  Agnès Guillot, Jean-Arcady Meyer  
+  Parution : février 2020  
+  CNRS Editions  
+  
+  
+  
+&ensp;
+
+**Idées algorithmes**
+
+- Algorithme de colonies de fourmis : https://fr.wikipedia.org/wiki/Algorithme_de_colonies_de_fourmis
