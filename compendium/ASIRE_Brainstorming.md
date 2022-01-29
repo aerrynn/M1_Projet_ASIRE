@@ -34,7 +34,7 @@ La robotique en essaim est une forme de robotique collective qui désigne l’en
 
 - utiliser l’apprentissage ou l’optimisation pour atteindre des objectifs de groupe fixés, en suite itérer plusieurs fois le procédé pour déterminer quel programme mettre dans chaque robot (ex : algorithmes génétiques).
 
-NB. Pour arriver à bien isoler un comportement individuel il faudrait une simulation d’ampleur non réalisable (l’espace de recherche est très grand), parcourant les millions d’années d’histoire évolutionniste qui ont amené aux comportements animaux que l’on observe aujourd’hui.
+> NB. Pour arriver à bien isoler un comportement individuel il faudrait une simulation d’ampleur non réalisable (l’espace de recherche est très grand), parcourant les millions d’années d’histoire évolutionniste qui ont amené aux comportements animaux que l’on observe aujourd’hui.
 
 &ensp;
 
