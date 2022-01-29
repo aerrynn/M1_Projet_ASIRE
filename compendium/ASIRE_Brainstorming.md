@@ -8,6 +8,7 @@
 
 **Débat « Robotique et société » #FutuRobot du 08/12/2021 à Sorbonne Université**
 [https://www.youtube.com/watch?v=Ue_AVBVQXig&feature=emb_logo](https://www.youtube.com/watch?v=Ue_AVBVQXig&feature=emb_logo)
+
 &ensp;
 
 **Podcast « Robotique en essaim : tous pour un ! »** (franceculture.fr)
