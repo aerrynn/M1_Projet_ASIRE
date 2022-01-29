@@ -13,6 +13,7 @@
 
 **Podcast « Robotique en essaim : tous pour un ! »** (franceculture.fr)
 [https://t.co/g8HxXwbHUf](https://t.co/g8HxXwbHUf)
+
 La robotique en essaim est une forme de robotique collective qui désigne l’ensemble de petit robots en miniature ayant des capacités de calcul individuelles faibles qui travaillent de façon coordonnée pour accomplir des taches complexes. Propriétés :
 
 - *Prise de décision distribuée, comportements simples et locaux.* Chaque robot peut interagir de manière indépendante avec l’environnement et les robots proches, mais il ne peut pas avoir une connaissance globale de l’essaim. L’interaction entre individus est locale et n’a pas besoin de coordination globale centralisée.
