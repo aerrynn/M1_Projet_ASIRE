@@ -3,7 +3,8 @@
 
 **Définition, wikipedia**
 [https://fr.wikipedia.org/wiki/Robotique_en_essaim](https://fr.wikipedia.org/wiki/Robotique_en_essaim)
-&ensp;
+
+&nbsp;
 
 **Débat « Robotique et société » #FutuRobot du 08/12/2021 à Sorbonne Université**
 [https://www.youtube.com/watch?v=Ue_AVBVQXig&feature=emb_logo](https://www.youtube.com/watch?v=Ue_AVBVQXig&feature=emb_logo)
