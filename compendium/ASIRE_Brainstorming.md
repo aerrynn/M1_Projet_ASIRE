@@ -48,7 +48,7 @@ La robotique en essaim est une forme de robotique collective qui désigne l’en
 
 &thinsp; 
 
-*Exemples pratiques :*
+*Exemples pratiques*
 
 - Dans l’agriculture, des drones ou des robots à roues enlèvent les mauvaises herbes, éliminent les insectes, fertiliser...
 
