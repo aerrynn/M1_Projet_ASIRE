@@ -1,17 +1,4 @@
-## ASIRE Brainstorming
-
-
-**Définition, wikipedia**
-[https://fr.wikipedia.org/wiki/Robotique_en_essaim](https://fr.wikipedia.org/wiki/Robotique_en_essaim)
-
-&ensp;
-
-**Débat « Robotique et société » #FutuRobot du 08/12/2021 à Sorbonne Université**
-[https://www.youtube.com/watch?v=Ue_AVBVQXig&feature=emb_logo](https://www.youtube.com/watch?v=Ue_AVBVQXig&feature=emb_logo)
-
-&ensp;
-
-**Podcast « Robotique en essaim : tous pour un ! »** (franceculture.fr)
+## **Podcast « Robotique en essaim : tous pour un ! »** (franceculture.fr)
 [https://t.co/g8HxXwbHUf](https://t.co/g8HxXwbHUf)
 
 La robotique en essaim est une forme de robotique collective qui désigne l’ensemble de petit robots en miniature ayant des capacités de calcul individuelles faibles qui travaillent de façon coordonnée pour accomplir des taches complexes. Propriétés :
