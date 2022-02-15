@@ -4,7 +4,8 @@ import numpy as np
 '''
     Questions :
     - Un agent peut il recevoir un message durant sa phase de maturation ? 
-    - How to: broadcast ? (<= Comment marchent les signaux sur Roborobo ?)
+    - Confirmer la manière dont marchent les signaux sur Roborobo
+    - Devrait-on stocker plus d'un message ?
 '''
 
 ################################ CONSTS ################################
@@ -55,14 +56,16 @@ class Agent(Controller):
         self.set_rotation(action_vector[1])
 
     def broadcast(self, theta, idx, score):
-        # TODO: Find how signals between robots work, via unique_meet_example ?
+        # TODO: Confirm the way signals work
         '''
         broadcast sends a message containing theta, idx and score to nearby agents
             :param theta: The sender policy                             #TODO: Seems redudant...
             :param idx: The indexes of theta to teach
             :param score: The fitness to send
         '''
-        pass
+        for i in range(self.nb_sensors):
+            rob = self.get_robot_id_at(i)
+            rob.message = (theta, idx, score)
 
     def hit_algorithm(self):
         '''
@@ -90,14 +93,14 @@ class Agent(Controller):
             idx = np.random.choice(zero_to_m, random_pick, False)
             # self.broadcast(self.theta[idx], idx, G)               ## paper version
             self.broadcast(self.theta, idx, G)
-            if self.new_message:                                    # The agent received a message
+            if self.message:                                    # The agent received a message
                 self.theta = transfer_function(                     # Learning from the message
-                    self.theta, idx, G, self.new_message)
+                    self.theta, idx, G, self.message)
                 self.theta = gaussian_mutation(
                     self.theta)                                     # Mutation of the agent
                 # After a mutation, the agent reset its evaluation
                 t = 0
-                self.new_message = None
+                self.message = None
         t += 1
 
 
@@ -110,7 +113,7 @@ def policy_function(observations, theta):
         :param theta: the policy
         :return a: an action vector
     '''
-    # TODO: Change, this is a simple copy of wander_evolution
+    # HACK: Change, this is a simple copy of wander_evolution
     out = np.concatenate([[1], observations])
     for elem in theta[:-1]:
         out = np.tanh(out @ elem)
@@ -118,17 +121,19 @@ def policy_function(observations, theta):
     return np.clip(out, -1, 1)
 
 
-def transfer_function(theta, G, s_theta, s_idx, s_G):
+def transfer_function(theta, G, message):
     '''
     transfer_function : If the sender of the message has a higher fitness score
     replace the theta[idx] of the receiver by the theta[idx] of the sender
         :param theta: The receiver agent policy
         :param G: The fitness score of the receiver
-        :param s_theta: the sender's policy
-        :param s_idx: the id of the policy to learn from
-        :param s_G: the sender's fitness score
+        :param message: the message to learn from
+        s_theta: the sender's policy
+        s_idx: the id of the policy to learn from
+        s_G: the sender's fitness score
         :return theta: The new policy
     '''
+    s_G, s_idx, s_theta = message
     if G <= s_G:                                                # If the sender has a lower fitness
         return                                                  # score don't do anything
     for i in s_idx:
