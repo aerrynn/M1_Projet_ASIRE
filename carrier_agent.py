@@ -1,11 +1,18 @@
 from hit_ee import Agent
 import numpy as np
 
+################################ CONSTS ################################
 MAX_CAPACITY = 1
+########################################################################
+
 
 class CarrierAgent(Agent):
     '''
-    def
+    CarrierAgent
+        TODO: Fill Description 
+        What ?
+        Why ?
+        How ?
     '''
     def __init__(self, wm) -> None:
         super().__init__(wm)
