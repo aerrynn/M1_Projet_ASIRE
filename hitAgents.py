@@ -6,15 +6,17 @@ import numpy as np
     - Un agent peut il recevoir un message durant sa phase de maturation ? 
     - Confirmer la manière dont marchent les signaux sur Roborobo
     - Devrait-on stocker plus d'un message ?
+    - Confirmer / Réfuter l'implémentation de la fonction de stratégie
+    - Quel était cet objet de roborobo qui permettait à tous les robots de connaitre sa position
 '''
 
-################################ CONSTS ################################
+######################################## CONSTS ########################################
 NB_HIDDENS = 10
 EVALUATION_TIME = 1000
 ALPHA = 0.5
 policy_size = 10  # To set up
 zero_to_m = list(range(policy_size))
-########################################################################
+########################################################################################
 
 
 class Agent(Controller):
@@ -28,7 +30,7 @@ class Agent(Controller):
         self.theta = [np.random.normal(0, 1, (self.nb_sensors + 1, self.nb_hiddens)),
                       np.random.normal(0, 1, (self.nb_hiddens, 2))]
         self.res = [0 for _ in range(EVALUATION_TIME)]
-        # Stores the last received message
+        # Stores the last received message, empties when read
         self.message = None
 
     def reset(self):
@@ -44,8 +46,15 @@ class Agent(Controller):
             :return fitness: the agent's score
         '''
         data = self.get_all_distances()
-        fitness = 0  # TODO: Create a function to compute this...
+        fitness = self.fitness(data)  # TODO: Create a function to compute this...
         return data, fitness
+
+    def fitness(self, sensors_data):
+        '''
+        fitness : Function to be overwritten
+            :param sensors_data:
+        '''
+        return 0
 
     def act(self, action_vector):
         '''
@@ -55,32 +64,30 @@ class Agent(Controller):
         self.set_translation(action_vector[0])
         self.set_rotation(action_vector[1])
 
-    def broadcast(self, theta, idx, score):
+    def broadcast(self, idx, score):
         # TODO: Confirm the way signals work
         '''
         broadcast sends a message containing theta, idx and score to nearby agents
-            :param theta: The sender policy                             #TODO: Seems redudant...
             :param idx: The indexes of theta to teach
             :param score: The fitness to send
         '''
         for i in range(self.nb_sensors):
             rob = self.get_robot_id_at(i)
-            rob.message = (theta, idx, score)
+            rob.message = (self.theta, idx, score)
 
     def hit_algorithm(self):
         '''
         hit_algorithm : applies the hit learning algorithm to the current agent
-            :param alpha: transfert rate [0,1]
-            :param evaluation_time: amount of steps evaluated (T in the paper)
-            :param policy_function: policy followed by the agent (π in the paper)
-        ---
-        self.theta = agent initialisation of policy
-        policy_size = |self.theta|
-        o = observation vector
-        r = reward scalar
-        self.res = reward buffer of size T 
-        a = action vector
-        G = personal evaluation (sum of r on the whole evaluation time)
+            alpha: transfert rate [0,1]
+            evaluation_time: amount of steps evaluated (T in the paper)
+            param policy_function: policy followed by the agent (π in the paper)
+            self.theta = agent initialisation of policy
+            policy_size = |self.theta|
+            o = observation vector
+            r = reward scalar
+            self.res = reward buffer of size T 
+            a = action vector
+            G = personal evaluation (sum of r on the whole evaluation time)
         '''
         o, r = self.sense()
         self.res[self.time % EVALUATION_TIME] = r
@@ -91,20 +98,20 @@ class Agent(Controller):
             G = np.sum(self.res)
             random_pick = int(ALPHA * np.random.randint(0, policy_size))
             idx = np.random.choice(zero_to_m, random_pick, False)
-            # self.broadcast(self.theta[idx], idx, G)               ## paper version
+            # self.broadcast(self.theta[idx], idx, G)           ## paper version
             self.broadcast(self.theta, idx, G)
             if self.message:                                    # The agent received a message
-                self.theta = transfer_function(                     # Learning from the message
+                self.theta = transfer_function(                 # Learning from the message
                     self.theta, idx, G, self.message)
                 self.theta = gaussian_mutation(
-                    self.theta)                                     # Mutation of the agent
+                    self.theta)                                 # Mutation of the agent
                 # After a mutation, the agent reset its evaluation
                 t = 0
                 self.message = None
         t += 1
 
 
-########################################################################
+########################################################################################
 
 def policy_function(observations, theta):
     '''
@@ -151,21 +158,3 @@ def gaussian_mutation(theta):
     for i in range(len(theta)):
         theta[i] += np.random.normal()
     return theta
-
-
-########################################################################
-################################  Main  ################################
-########################################################################
-
-def main():
-    nbgen = 10000
-    nbiterpergen = 400
-    rob: Pyroborobo = Pyroborobo.create(
-        "config/pywander_pyobj.properties",
-        controller_class=Agent,
-    )
-
-    rob.start()
-
-if __name__ == "__main__":
-    main()
