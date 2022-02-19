@@ -5,16 +5,12 @@ import numpy as np
 ######################################## CONSTS ########################################
 MAX_CAPACITY = 1
 
-
 ''' Interactible_related '''
 REGROWTH_TIME = 10
 MAX_RESSOURCE_LEVEL = 1
 
-
-
 NB_ITER = 10000
 ########################################################################################
-
 
 
 ########################################################################################
@@ -26,9 +22,10 @@ class CarrierAgent(Agent):
         Why ?
         How ?
     '''
+
     def __init__(self, wm) -> None:
         super().__init__(wm)
-        ## This Agent can carry ressources
+        # This Agent can carry ressources
         self.max_capacity = MAX_CAPACITY
         self.current_capacity = 0
         # keeps in memory if he stored some ressource
@@ -51,7 +48,6 @@ class CarrierAgent(Agent):
         return f'{self.id} : {self.ressource_level}'
 
 
-
 class ExpertAgent(CarrierAgent):
     '''
     ExpertAgent
@@ -60,9 +56,10 @@ class ExpertAgent(CarrierAgent):
         Why ?
         How ?
     '''
+
     def __init__(self, wm) -> None:
         super().__init__(wm)
-        #TODO: How to set the expert neural network ?
+        # TODO: How to set the expert neural network ?
 
 
 ########################################################################################
@@ -83,8 +80,7 @@ class StorageNode(CircleObject):
     def is_walked(self, rob_id):
         # If the agent can store the ressource, increase it
         if self.rob.controllers[rob_id].current_ressource > 0:
-            self.rob.controllers[rob_id].has_stored += self.rob.controllers[rob_id].current_ressource * STORAGE_BOON_DURATION
-            # print(f"{rob_id} deposited {self.rob.controllers[rob_id].current_ressource} ressources")
+            print(f"{rob_id} deposited {self.rob.controllers[rob_id].current_ressource} ressources")
             self.rob.controllers[rob_id].current_ressource = 0
         return super.is_walked(self, rob_id)
 
@@ -94,6 +90,8 @@ class StorageNode(CircleObject):
 ########################################################################################
 
 # FIXME: Can't override the class functions, especially "walk_in"
+
+
 class BushNode(CircleObject):
     '''
     RessourceNode :
@@ -102,6 +100,7 @@ class BushNode(CircleObject):
         Why ?
         How ?
     '''
+
     def __init__(self, id_, data):
         CircleObject.__init__(self, id_)
 
@@ -132,7 +131,7 @@ class BushNode(CircleObject):
                 self.ressource_level = self.max_ressource_level
                 self.regrowing = False          # Regrowth ended
 
-    def walk_in(self, rob_id):
+    def is_walked(self, rob_id):
         # If the agent can store the ressource, increase it
         print("HERE")
         if self.rob.controllers[rob_id].max_capacity - self.rob.controllers[rob_id].current_capacity > 0:
@@ -149,15 +148,59 @@ class BushNode(CircleObject):
         return f"Ressource_Node_{self.id}\n \
         Size={self.ressource_level}"
 
+###
+
+
+class SimpleNode(CircleObject):
+    def __init__(self, id_, data):
+        CircleObject.__init__(self, id_)
+
+        # After depleting, the node takes regrowth_time steps to regrow
+        self.regrowth_time = REGROWTH_TIME
+        # While regrow > 0, the node is depleted, and not interactible
+        self.cur_regrow = 0
+        # Max amount of ressources
+        # Boolean (faster to check than cur_regrow > 0)
+        self.regrowing = False
+        self.rob = Pyroborobo.get()
+
+    def reset(self):
+        self.show()
+        self.register()
+        self.regrowing = False
+        self.cur_regrow = 0
+
+    def step(self):
+        if self.regrowing:
+            self.cur_regrow -= 1		        # Reduce the left regrowth time
+            if self.cur_regrow <= 0: 	        # The node has finished regrowing
+                self.show()				        # Displaying the node
+                self.register()
+
+    def is_walked(self, rob_id):
+        # If the agent can store the ressource, increase it
+        print("HERE")
+        # FIXME: Doesn't work
+        self.rob.controllers[rob_id].current_capacity += 1
+        self.regrowing = True
+        self.cur_regrow = self.regrowth_time
+        self.hide()
+        self.unregister()
+        return super().walk_in(self, rob_id)
+
+    def inspect(self, prefix):
+        return "SimpleNode"
+
+
 ########################################################################################
 ########################################  Main  ########################################
 ########################################################################################
 
 def main():
     rob = Pyroborobo.create(
-        "test.properties",
+        "config/test.properties",
         controller_class=CarrierAgent,
-        object_class_dict = {
+        object_class_dict={
             "bush": BushNode
         }
     )
@@ -165,6 +208,7 @@ def main():
     rob.start()
     rob.update(NB_ITER)
     Pyroborobo.close()
+
 
 if __name__ == "__main__":
     main()

@@ -3,11 +3,7 @@ import numpy as np
 
 '''
     Questions :
-    - Un agent peut il recevoir un message durant sa phase de maturation ? 
     - Confirmer la manière dont marchent les signaux sur Roborobo
-    - Devrait-on stocker plus d'un message ?
-    - Confirmer / Réfuter l'implémentation de la fonction de stratégie
-    - Quel était cet objet de roborobo qui permettait à tous les robots de connaitre sa position
 '''
 
 ######################################## CONSTS ########################################
