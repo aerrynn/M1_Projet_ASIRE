@@ -86,13 +86,14 @@ class StorageNode(CircleObject):
             self.rob.controllers[rob_id].has_stored += self.rob.controllers[rob_id].current_ressource * STORAGE_BOON_DURATION
             # print(f"{rob_id} deposited {self.rob.controllers[rob_id].current_ressource} ressources")
             self.rob.controllers[rob_id].current_ressource = 0
+        return super.is_walked(self, rob_id)
 
     def inspect(self, prefix=""):
-        return f"Storage_Node_{self.id}\n \
-        Size={self.ressource_level}"
+        return f"[INFO] I'm the object #{self.id}"
 
 ########################################################################################
 
+# FIXME: Can't override the class functions, especially "walk_in"
 class BushNode(CircleObject):
     '''
     RessourceNode :
@@ -131,7 +132,7 @@ class BushNode(CircleObject):
                 self.ressource_level = self.max_ressource_level
                 self.regrowing = False          # Regrowth ended
 
-    def is_walked(self, rob_id):
+    def walk_in(self, rob_id):
         # If the agent can store the ressource, increase it
         print("HERE")
         if self.rob.controllers[rob_id].max_capacity - self.rob.controllers[rob_id].current_capacity > 0:
@@ -155,8 +156,10 @@ class BushNode(CircleObject):
 def main():
     rob = Pyroborobo.create(
         "test.properties",
-        controller_class=Agent,
-        object_class_dict = {'bush': BushNode}
+        controller_class=CarrierAgent,
+        object_class_dict = {
+            "bush": BushNode
+        }
     )
 
     rob.start()
