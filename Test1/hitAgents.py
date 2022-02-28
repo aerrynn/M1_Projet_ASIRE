@@ -2,17 +2,20 @@ from pyroborobo import Pyroborobo, Controller, AgentObserver
 import numpy as np
 
 '''
-    Questions :
-    - Confirmer la manière dont marchent les signaux sur Roborobo
+TODO: Increase convergence rate, but how ?!
 '''
 
 ######################################## CONSTS ########################################
 NB_HIDDENS = 10
 EVALUATION_TIME = 100
 ALPHA = 0.5
-policy_size = 10  # To set up
+policy_size = 3*8 + 1 + NB_HIDDENS  # To set up
 zero_to_m = list(range(policy_size))
 ########################################################################################
+
+# Tracking tool
+best_picker = 0
+
 
 
 class Agent(Controller):
@@ -23,7 +26,7 @@ class Agent(Controller):
     def __init__(self, wm) -> None:
         Controller.__init__(self, wm)
         self.nb_hiddens = NB_HIDDENS
-        self.theta = [np.random.normal(0, 1, (2*self.nb_sensors + 1, self.nb_hiddens)),
+        self.theta = [np.random.normal(0, 1, (3*self.nb_sensors + 1, self.nb_hiddens)),
                       np.random.normal(0, 1, (self.nb_hiddens, 2))]
         self.res = [0 for _ in range(EVALUATION_TIME)]
         # Stores the last received message, empties when read
@@ -32,7 +35,7 @@ class Agent(Controller):
         self.time = 0
 
     def reset(self):
-        pass 
+        pass
 
     def step(self):
         self.hit_algorithm()
@@ -40,16 +43,22 @@ class Agent(Controller):
     def sense(self):
         '''
         sense : get the data from the sensors of the agent
-            :return data: the data retrieved
+            :return data: the data retrieved, for each sensorn creates 3 inputs:
+                - distance of a detected obstacle
+                - distance of a detected robot
+                - distance of a detected wall
             :return fitness: the agent's score
         '''
         data = self.get_all_distances()
         data_plus = []
-        for i,v in enumerate(data):
-            data_plus.append(v)
-            if self.get_robot_id_at(i) :
+        for i, v in enumerate(data):
+            data_plus.append(v)                     # Add the pos of the closest obstacle
+            if self.get_robot_id_at(i) != -1:       # Add the pos of the closest robot
                 data_plus.append(v)
-            else :
+            else : data_plus.append(1)
+            if self.get_wall_at(i):                 # Add the pos of the closest wall
+                data_plus.append(v)
+            else:
                 data_plus.append(1)
         data_plus = np.array(data_plus)
         fitness = self.fitness(data)
@@ -71,7 +80,6 @@ class Agent(Controller):
         self.set_rotation(action_vector[1])
 
     def broadcast(self, idx, score):
-        # TODO: Confirm the way signals work
         '''
         broadcast sends a message containing theta, idx and score to nearby agents
             :param idx: The indexes of theta to teach
@@ -97,6 +105,7 @@ class Agent(Controller):
             a = action vector
             G = personal evaluation (sum of r on the whole evaluation time)
         '''
+        global best_picker
         o, r = self.sense()
         self.res[self.time % EVALUATION_TIME] = r
         a = policy_function(o, self.theta)
@@ -104,15 +113,20 @@ class Agent(Controller):
         # While agent time <= evaluation time, he is maturing
         if self.time > EVALUATION_TIME:
             G = np.sum(self.res)
-            random_pick = int(ALPHA * np.random.randint(0, policy_size))
+            if G > best_picker :
+                best_picker = G
+                print(self.id, G)
+            # random_pick = int(ALPHA * np.random.randint(0, policy_size))
+            random_pick = int(ALPHA * policy_size)
             idx = np.random.choice(zero_to_m, random_pick, False)
             # self.broadcast(self.theta[idx], idx, G)           ## paper version
             self.broadcast(idx, G)
             for m in self.message:                              # The agent received at least a message
                 self.theta = transfer_function(                 # Learning from the message
                     self.theta, G, m)
+                # Enable / Disable Mutation of the agent
                 # self.theta = gaussian_mutation(
-                #     self.theta)                                 # Mutation of the agent
+                #     self.theta)                                 
                 # After a mutation, the agent reset its evaluation
                 self.time = 0
                 self.message = []
@@ -128,7 +142,7 @@ def policy_function(observations, theta):
         :param theta: the policy
         :return a: an action vector
     '''
-    # HACK: Change, this is a simple copy of wander_evolution
+    # HACK: Change ? Or at least understand ... , this is a simple copy of wander_evolution
     # print((observations.shape))
     out = np.concatenate([[1], observations])
     for elem in theta[:-1]:
@@ -149,13 +163,17 @@ def transfer_function(theta, G, message):
         s_G: the sender's fitness score
         :return theta: The new policy
     '''
+    # print(message)
     s_theta, s_idx, s_G = message
-    if (s_G + G > 0 ):
-        print(f"EVOLUTION! {G} vs {s_G}")
+    # print(s_idx)
     if G <= s_G:                                                # If the sender has a lower fitness
         return theta                                            # score don't do anything
+    # print(f"EVOLUTION! {s_G}")
+    m = len(theta[0])
     for i in s_idx:
-        theta[i] = s_theta[i]
+        i1 = i//m
+        i2 = i%m
+        theta[i1][i2] = s_theta[i1][i2]
     return theta
 
 
@@ -164,8 +182,9 @@ def gaussian_mutation(theta):
     gaussian_mutation : Randomly mutates the agent, following a gaussian distribution
         :param theta: the agent policy
         :return theta: the mutated policy
-    TODO: Check that the += doesn't creates bugs
+    TODO: Check that the += doesn't creates bugs albeit it reduces memory usage
     '''
-    for i in range(len(theta)):
-        theta[i] += np.random.normal()
+    for layer in range(len(theta)):
+        for i in range(len(theta[layer])):
+            theta[layer][i] += np.random.normal()
     return theta
