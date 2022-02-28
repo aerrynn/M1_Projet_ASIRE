@@ -15,7 +15,7 @@ from pyroborobo import Controller           # in MAIN and OVERRIDE C++ CONTROLLE
 ################################################################################################################
 
 fileConfig = "config/prova.properties"      # configuration file
-nbSteps = 1                                 # number of steps. NB. 1 step = 400 iterations
+nbSteps = 50                                # number of steps
 
 
 
@@ -34,12 +34,10 @@ class PythonController(Controller):         # override of C++ class Controller t
     
     def __init__(self, world_model):        # world_model is a PyWorldModel, this class allows to access et manipulate the robor behaviour
         Controller.__init__(self, world_model) # link Python - C++ : call this super constructor BEFORE any other operation !
-        self.rob = Pyroborobo.get()
         print("I'm a Python controller\n")  # gInitialNumberOfRobots (config) affichages, un par robot
         self.cptSteps = 0
 
     def reset(self):                        # initialisation of the PythonController
-        # super().reset()
         print("I'm initialized\n")
 
     def step(self):                         # step méthod is called at each time step for every robot :
@@ -58,17 +56,11 @@ class PythonController(Controller):         # override of C++ class Controller t
         # Robot manipulation, world_model méthods (PyWorldModel C++ class)
         # get_distance_at returns the distance to the object seen or "None" if any
         
-
         if self.get_distance_at(1) < 1 or self.get_distance_at(2) < 1 : # if we see something on our left or in front of us
             self.set_rotation(0.5)          # turn right
         elif self.get_distance_at(3) < 1 :  # if we see something on our right
             self.set_rotation(-0.5)         # turn left
 
-        #-------------------------------------------------------------------------------------------------------
-
-
-    #def inspect(self, prefix=""):
-    #    return f"[INFO] I'm the robot #{self.id}"
 
 
 
