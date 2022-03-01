@@ -73,29 +73,29 @@ nbSteps = 50
 
 class Kale_A_Object(CircleObject):
 
-    def __init__(self, id_):
+    def __init__(self, id):
         CircleObject.__init__(self, id)
-        str = "[Kale_A_Object] : "
+        self.str = "[Kale_A_Object] : "
 
     def reset(self):
-        print(str + "initialized")
+        print(self.str + "initialized")
         #super().reset()
 
     def step(self):
-        print(str + "step")
+        print(self.str + "step")
         #super().step()
 
-    def is_pushed(self, id, speed):
-        print(str + "is_pushed")
-        #super().is_pushed(id_, speed)
+    # def is_pushed(self, id, speed):
+    #     print(self.str + "is_pushed")
+    #     #super().is_pushed(id_, speed)
 
-    def is_touched(self, id):
-        print(str + "is_touched")
-        #super().is_touched(id_)
+    # def is_touched(self, id):
+    #     print(self.str + "is_touched")
+    #     #super().is_touched(id_)
 
-    def is_walked(self, id):
-        print(str + "is_walked")
-        #return super().is_walked(id_)
+    # def is_walked(self, id):
+    #     print(self.str + "is_walked")
+    #     #return super().is_walked(id_)
 
     def inspect(self, prefix=""):
         return f"[INFO] I'm the object #{self.id}\n"
@@ -217,12 +217,11 @@ class PythonController(Controller):
         #-------------------------------------------------------------------------------------------------------
 
         # Robot manipulation, world_model méthods (PyWorldModel C++ class)
-        # get_distance_at returns the distance to the object seen or "None" if any
         
-        if self.get_distance_at(1) < 1 or self.get_distance_at(2) < 1 : # if we see something on our left or in front of us
-            self.set_rotation(0.5)          # turn right
-        elif self.get_distance_at(3) < 1 :  # if we see something on our right
-            self.set_rotation(-0.5)         # turn left
+        if self.get_distance_at(1) < 1 or self.get_distance_at(2) < 1 :
+            self.set_rotation(0.5)
+        elif self.get_distance_at(3) < 1 :
+            self.set_rotation(-0.5)
 
         #-------------------------------------------------------------------------------------------------------
 
@@ -237,10 +236,7 @@ class PythonController(Controller):
 # MAIN
 ################################################################################################################
 
-rob = Pyroborobo.create(fileConfig,                         \
-            controller_class = PythonController,            \
-            object_class_dict = {                           \
-                        'xxx': Kale_A_Object})
+rob = Pyroborobo.create(fileConfig, controller_class = PythonController, object_class_dict = {'xxx': Kale_A_Object})
 #                        'yyy': Kale_B_Object,              \
 #                        'zzz': Kale_C_Object,              \
 #                        '_default': Kale_D_Object})        \
