@@ -74,23 +74,26 @@ nbSteps = 50
 class Kale_A_Object(CircleObject):
 
     def __init__(self, id_):
-        CircleObject.__init__(self, id_)
+        CircleObject.__init__(self, id)
         str = "[Kale_A_Object] : "
+
+    def reset(self):
         print(str + "initialized")
+        #super().reset()
 
     def step(self):
         print(str + "step")
         #super().step()
 
-    def is_pushed(self, id_, speed):
+    def is_pushed(self, id, speed):
         print(str + "is_pushed")
         #super().is_pushed(id_, speed)
 
-    def is_touched(self, id_):
+    def is_touched(self, id):
         print(str + "is_touched")
         #super().is_touched(id_)
 
-    def is_walked(self, id_):
+    def is_walked(self, id):
         print(str + "is_walked")
         #return super().is_walked(id_)
 
