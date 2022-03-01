@@ -6,51 +6,210 @@
 # IMPORTS
 ################################################################################################################
 
-from pyroborobo import Pyroborobo           # in MAIN : Creation d'un pyroborobo simulator (singleton object)
-from pyroborobo import Controller           # in MAIN and OVERRIDE C++ CONTROLLER : override of C++ Controller to create a Python controller
+from pyroborobo import Pyroborobo
+from pyroborobo import Controller
+from pyroborobo import SquareObject, CircleObject, MovableObject       # in OVERRIDE C++ OBJECTS
 
 
 ################################################################################################################
 # PARAMETERS
 ################################################################################################################
 
-fileConfig = "config/prova.properties"      # configuration file
-nbSteps = 50                                # number of steps. NB. 1 step = 400 iterations
+fileConfig = "config/prova2.properties" 
+nbSteps = 50
 
 
+
+
+###############################################################################################################
+# C++ classes (Python constructors)
+################################################################################################################
+
+# Il existe plusieurs C++ classes : Controllers, WorldModels, WorldObserver, PhysicalObjects, AgentObservers
+
+# Controller        : allows to code the agent behaviour.
+#                     From the Controller, we can access the world and the robots world models.
+
+# WorldModels       : objet where the world model is stored.
+
+# Les observers are useful for monitoring, logging, computing fitness updates, ...
+# Methods : reset and step. These classes are run before the actual agent behavioural update
+#   - WorldObserver : used for accessing state of the world (with all agents)
+#   - AgentObservers : used for accessing state of agent. 
+
+
+# To override the C++ classes by Python classes, create a class that encodes the new behaviour and 
+# provide it to the Pyroborobo.create method. The new class will inherit from the corresponding C++ class.
+
+# Templates : roborobo4/docs/api/_______.rst
+
+
+
+
+################################################################################################################
+# OVERRIDE C++ OBJECTS (reset and step methods are mandatory to implement)
+################################################################################################################
+
+# We can extend C++ classes CircleObject, SqureObject and MovableObject
+# The constructor receives a data dictionary containing the configuration file's information
+# An object must implement the reset and step function
+# To use movable objects, do not forget to set "gMovableObjects = true" in your properties file
+
+# In the configuration file, for each object, we tell that we want to use the objects that we defined.
+# Tell that we want to use an object with the id 'xxx' : physicalObjects[0].pytype = xxx 
+# Define other features aboout the object 'xxx' : physicalObjects[0].sendMessageTo = 0
+
+# In the main, pass as parameter to Pyroborobo a dictionary mapping the pytype key to our object classes
+# object_class_dict = {'xxx' : Kale_A_Object, 'yyy' : Kale_B_Object, 'zzz' : Kale_C_Object}
+
+
+# NB. We can create a default object that doesn't need to declare their pytype. Procedure :
+#   - in the configuration file, set existing gPhysicalObjectDefaultType to 1
+#     gPhysicalObjectDefaultType = -1
+#   - in the main, add the default object to the object_class_dict
+#     object_class_dict = {'_default': Kale_D_Object}
+
+
+
+class Kale_A_Object(CircleObject):
+
+    def __init__(self, id_):
+        CircleObject.__init__(self, id_)
+        str = "[Kale_A_Object] : "
+        print(str + "initialized")
+
+    def step(self):
+        print(str + "step")
+        #super().step()
+
+    def is_pushed(self, id_, speed):
+        print(str + "is_pushed")
+        #super().is_pushed(id_, speed)
+
+    def is_touched(self, id_):
+        print(str + "is_touched")
+        #super().is_touched(id_)
+
+    def is_walked(self, id_):
+        print(str + "is_walked")
+        #return super().is_walked(id_)
+
+    def inspect(self, prefix=""):
+        return f"[INFO] I'm the object #{self.id}\n"
+
+
+#---------------------------------------------------------------------------------------------------------------
+
+""" class Kale_B_Object(SquareObject):
+
+    def __init__(self):
+        SquareObject.__init__(self)
+        str = "[Kale_B_Object] : "
+        print(str + "initialized")
+
+    def step(self):
+        print(str + "step")
+        #super().step()
+
+    def is_pushed(self, id_, speed):
+        print(str + "is_pushed")
+        #super().is_pushed(id_, speed)
+
+    def is_touched(self, id_):
+        print(str + "is_touched")
+        #super().is_touched(id_)
+
+    def is_walked(self, id_):
+        print(str + "is_walked")
+        #return super().is_walked(id_)
+
+    def inspect(self, prefix=""):
+        return f"[INFO] I'm the object #{self.id}\n" """
+
+
+#---------------------------------------------------------------------------------------------------------------
+
+""" class Kale_C_Object(MovableObject):
+
+    def __init__(self):
+        MovableObject.__init__(self)
+        str = "[Kale_C_Object] : "
+        print(str + "step")
+
+    def step(self):
+        print(str + "step")
+        #super().step()
+
+    def is_pushed(self, id_, speed):
+        print(str + "is_pushed")
+        #super().is_pushed(id_, speed)
+
+    def is_touched(self, id_):
+        print(str + "is_touched")
+        #super().is_touched(id_)
+
+    def is_walked(self, id_):
+        print(str + "is_walked")
+        #return super().is_walked(id_)
+
+    def inspect(self, prefix=""):
+        return f"[INFO] I'm the object #{self.id}\n" """
+
+
+#---------------------------------------------------------------------------------------------------------------
+
+""" class Kale_D_Object(CircleObject):
+
+    def __init__(self):
+        CircleObject.__init__(self)
+        str = "[Kale_D_Object] : "
+        print(str + "initialized")
+
+    def step(self):
+        print(str + "step")
+        #super().step()
+
+    def is_pushed(self, id_, speed):
+        print(str + "is_pushed")
+        #super().is_pushed(id_, speed)
+
+    def is_touched(self, id_):
+        print(str + "is_touched")
+        #super().is_touched(id_)
+
+    def is_walked(self, id_):
+        print(str + "is_walked")
+        #return super().is_walked(id_)
+
+    def inspect(self, prefix=""):
+        return f"[INFO] I'm the object #{self.id}\n" """
 
 
 ################################################################################################################
 # OVERRIDE C++ CONTROLLER
 ################################################################################################################
 
-# Il existe plusieurs C++ classes : Controllers, WorldModels, WorldObserver, PhysicalObjects, AgentObservers
-# To override the C++ classes by Python classes, create a class that encodes the new behaviour and 
-# provide it to the Pyroborobo.create method. The new class will inherit from the corresponding C++ class.
-
-# Templates : roborobo4/docs/api/_______.rst
-
-class PythonController(Controller):         # override of C++ class Controller to create a new Python controller
+class PythonController(Controller):
     
-    def __init__(self, world_model):        # world_model is a PyWorldModel, this class allows to access et manipulate the robor behaviour
-        Controller.__init__(self, world_model) # link Python - C++ : call this super constructor BEFORE any other operation !
+    def __init__(self, world_model):
+        Controller.__init__(self, world_model)
         #self.rob = Pyroborobo.get()
-        print("I'm a Python controller\n")  # gInitialNumberOfRobots (config) affichages, un par robot
+        print("I'm a Python controller\n")
         self.cptSteps = 0
 
-    def reset(self):                        # initialisation of the PythonController
+    def reset(self):
         print("I'm initialized\n")
 
-    def step(self):                         # step méthod is called at each time step for every robot :
-        self.cptSteps += 1                       # ce compteur s'incrémente de nbSteps fois 
-        print("I'm robot n." + str(self.id) + ", cptSteps = " + str(self.cptSteps) ) # nbSteps * gInitialNumberOfRobots (config) affichages
+    def step(self):
+        self.cptSteps += 1
+        print("I'm robot n." + str(self.id) + ", cptSteps = " + str(self.cptSteps) )
 
         #-------------------------------------------------------------------------------------------------------
 
         # Simple default definition of translation and rotation
 
-        self.set_translation(1)             # go straight
-        self.set_rotation(0)                # don't turn
+        self.set_translation(1)
+        self.set_rotation(0)
 
         #-------------------------------------------------------------------------------------------------------
 
@@ -65,8 +224,8 @@ class PythonController(Controller):         # override of C++ class Controller t
         #-------------------------------------------------------------------------------------------------------
 
 
-    #def inspect(self, prefix=""):
-    #    return f"[INFO] I'm the robot #{self.id}"
+    def inspect(self, prefix=""):
+        return f"[INFO] I'm the robot #{self.id}\n"
 
 
 
@@ -75,14 +234,13 @@ class PythonController(Controller):         # override of C++ class Controller t
 # MAIN
 ################################################################################################################
 
-# Creation d'un pyroborobo simulator (singleton object). Parameters :
-#   - configuration file
-#   - overrided C++ classes by Python classes
-#       - controller_class                  <------ we tell roborobo to use the Python controller
-
-rob = Pyroborobo.create(fileConfig, controller_class = PythonController)
-
-#---------------------------------------------------------------------------------------------------------------
+rob = Pyroborobo.create(fileConfig,                         \
+            controller_class = PythonController,            \
+            object_class_dict = {                           \
+                        'xxx': Kale_A_Object})
+#                        'yyy': Kale_B_Object,              \
+#                        'zzz': Kale_C_Object,              \
+#                        '_default': Kale_D_Object})        \
 
 rob.start()                                 # activation of pyroborobo simulator 
 rob.update(nbSteps)                         # activation of nbUpdates steps
