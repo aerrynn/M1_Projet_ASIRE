@@ -66,7 +66,7 @@ nbSteps = 200
 
 
 # NB. We can create default objects that don't need to declare their pytype. Procedure :
-#   - in the configuration file, set existing gPhysicalObjectDefaultType to 1
+#   - in the configuration file, set existing gPhysicalObjectDefaultType to -1
 #     gPhysicalObjectDefaultType = -1
 #   - in the main, add the default object to the object_class_dict
 #     object_class_dict = {'_default': Kale_D_Object}

@@ -40,8 +40,8 @@ class PythonController(Controller):         # override of C++ class Controller t
     def reset(self):                        # initialisation of the PythonController
         print("I'm initialized\n")
 
-    def step(self):                         # step méthod is called at each time step for every robot :
-        self.cptSteps += 1                       # ce compteur s'incrémente de nbSteps fois 
+    def step(self):                         # step méthod is called at each time step for every robot
+        self.cptSteps += 1                  # ce compteur s'incrémente de nbSteps fois 
         print("I'm robot n." + str(self.id) + ", cptSteps = " + str(self.cptSteps) ) # nbSteps * gInitialNumberOfRobots (config) affichages
 
         #-------------------------------------------------------------------------------------------------------
