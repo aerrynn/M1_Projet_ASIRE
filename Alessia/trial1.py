@@ -1,6 +1,5 @@
 
-#                                               ROBOROBO TUTORIAL 3
-#                                       see the prova3.properties file too
+#                                           TRIAL 1 : FORAGING TASK
 
 
 ################################################################################################################
@@ -11,6 +10,8 @@ from pyroborobo import Pyroborobo
 from pyroborobo import Controller
 from pyroborobo import CircleObject
 
+import numpy as np
+
 
 
 ################################################################################################################
@@ -18,50 +19,51 @@ from pyroborobo import CircleObject
 ################################################################################################################
 
 fileConfig = "config/trial1.properties" 
-nbRobots = 20 # check this value in the properties file
+nbRobots = 20                               # get this value in the trial1.properties file
+
 nbSteps = 2000
+cptSteps = 0                                # global, used to know the passed number of steps
 
-currentAgent = None                         # variable globale
+currentAgent = None                         # global, used to know wich agent hits one object
+tabSumFood = [0] * nbRobots                 # global, used to store the fitness function
 
-tabSumFood = [0] * nbRobots 
+verbose = True                              # set true if you want to see execution details on terminal
+
 
 
 
 ################################################################################################################
-# OVERRIDE C++ OBJECTS (reset and step methods are mandatory to implement)
+# OBJECT DEFINITION
 ################################################################################################################
 
-
-# Rappel : set "gMovableObjects = true" in your configuration file to use MovableObjects
 
 class Food_Object(CircleObject):
 
     def __init__(self, id, data):           # put "data" even if it is not used
         CircleObject.__init__(self, id)
         self.str = "[Food_Object " + str(id) + "] : "
-        self.cptSteps = 0
         # self.rob = Pyroborobo.get()       # get pyroborobo singleton ?
 
     def reset(self):
         pass
 
     def step(self):
-        self.cptSteps += 1
-        print(self.str + "I'm object n." + str(self.id) + ", cptSteps = " + str(self.cptSteps) )
+        global cptSteps
+        cptSteps += 1
 
-    def is_pushed(self, id, speed):
-        print(self.str + "is_pushed by robot n." + str(currentAgent) ) # reads value of currentAgent, don't need declaration of global var
+        if verbose : 
+            print(self.str + "I'm object n." + str(self.id) + ", cptSteps = " + str(cptSteps) )
 
     def is_touched(self, id):
         self.hide()
         self.unregister()
 
         global tabSumFood
-        tabSumFood[currentAgent] += 1
-        print(self.str + "is_touched by robot n." + str(currentAgent) )
+        tabSumFood[currentAgent] += 1       # foraging task
 
-    def is_walked(self, id):
-        print(self.str + "is_walked by robot n." + str(currentAgent) )
+        if verbose :
+            print(self.str + "is_touched by robot n." + str(currentAgent) )
+
 
     def inspect(self, prefix=""):
         return "\n" + self.str + f"[INSPECT] I'm the object #{self.id}\n\n"
@@ -79,6 +81,10 @@ class RobotsController(Controller):
     
     def __init__(self, world_model):
         Controller.__init__(self, world_model)
+        self.genome = [0] * self.nb_sensors
+        self.sensors = [0] * self.nb_sensors
+        self.halfSizeGenome = int(np.ceil(len(self.genome)/2))
+        self.halfSizeSensors = int(np.ceil(len(self.sensors)/2))
 
     def reset(self):
         pass
@@ -87,38 +93,66 @@ class RobotsController(Controller):
 
         global currentAgent                 # sets value of currentAgent, mandatory declaration of global var
         currentAgent = self.id              # used to tell which robot hits the object
+        
+        if verbose :
+            print("Robot n." + str(self.id) + " au passage actuellement")  
+            if cptSteps % nbRobots == 0 :
+                print("tabSumFood : ", tabSumFood)  # fitness values
+       
+        # Set sensors vector
+        for i in range(self.nb_sensors):
+            self.sensors[i] = self.get_distance_at(i)
+        print("sensors", self.sensors)
 
-        print("Robot n." + str(self.id) + " au passage actuellement")
-
-        if self.id == 0 :                   # Le robot 0 joue le role de expert
+        # Expert behaviour : le robot n.0 plays the role of the expert
+        if self.id == 0 :
             t, r = self.expertBehaviour()
             self.set_translation(t)
             self.set_rotation(r)
             return
 
-        # Simple default definition of translation and rotation
-        self.set_translation(1)
-        self.set_rotation(0)
+        # Swarm behaviour
+        t, r = self.swarmBehaviour()
+        self.set_translation(t)
+        self.set_rotation(r)
 
-        #-------------------------------------------------------------------------------------------------------
 
-        # Robot manipulation
+    def expertBehaviour(self):
+        t = 1
+        r = 0
         if self.get_distance_at(1) < 1 or self.get_distance_at(2) < 1 :
-            self.set_rotation(0.5)
+            r = 0.5
         elif self.get_distance_at(3) < 1 :
-            self.set_rotation(-0.5)
+            r = -0.5
+
+        if verbose :
+            print ("Hello I'm " + str(self.id) + " and I'm super cool 'cause I'm expert")    
+
+        return self.testControllersValidRange(t, r)
+
+
+    def swarmBehaviour(self):
+        t = 0
+        r = 0
+        # Neural network 1 : linear combination of sensory imputs and genome weights
+        if len(self.genome) == len(self.sensors):    
+            t = 1 + np.dot(self.genome[0:self.halfSizeGenome], self.sensors[0:self.halfSizeSensors])
+            r = np.random.choice([-1, 1]) * 0.5 + np.dot(self.genome[self.halfSizeGenome:len(self.genome)], self.sensors[self.halfSizeSensors:len(self.sensors)])
+        
+        return self.testControllersValidRange(t, r)
+
+
+    def testControllersValidRange(self, t, r):
+        # Limits the values of transition and rotation from -1 to +1
+        t = max(-1, min(t, 1))
+        r = max(-1, min(r, 1))
+        return t, r
 
 
     def inspect(self, prefix=""):
         return f"\n[INSPECT] I'm the robot #{self.id}\n\n"
 
 
-    def expertBehaviour(self):
-        print ("Hello I'm " + str(self.id) + " and I'm super cool")
-        print("tabSumFood : ", tabSumFood)
-        t = 1
-        r = 0
-        return t, r 
 
 
 ################################################################################################################

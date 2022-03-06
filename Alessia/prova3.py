@@ -11,7 +11,7 @@ from pyroborobo import Pyroborobo
 from pyroborobo import Controller
 from pyroborobo import CircleObject, MovableObject
 
-
+import copy
 
 ################################################################################################################
 # PARAMETERS
@@ -34,6 +34,15 @@ class Kale_A_Object(CircleObject):
         self.str = "[Kale_A_Object] : "
         self.cptSteps = 0
         # self.rob = Pyroborobo.get()       # get pyroborobo singleton ?
+       
+        #-------------------------------------------------------------------------------------------------------
+
+        self.data = data
+        self.default_x = copy.copy(data["x"])
+        self.default_y = copy.copy(data["y"])
+
+        #-------------------------------------------------------------------------------------------------------
+
 
     def reset(self):
         pass
@@ -41,6 +50,16 @@ class Kale_A_Object(CircleObject):
     def step(self):
         self.cptSteps += 1
         print(self.str + "I'm object n." + str(self.id) + ", cptSteps = " + str(self.cptSteps) )
+
+        #-------------------------------------------------------------------------------------------------------
+
+        x, y = self.position
+        new_x, new_y = x+20, y
+        self.set_coordinates(new_x, new_y)
+        self.set_coordinates(self.default_x, self.default_y)
+
+        #-------------------------------------------------------------------------------------------------------
+
 
     def is_pushed(self, id, speed):
         print(self.str + "is_pushed")
@@ -105,18 +124,29 @@ class PythonController(Controller):
     def step(self):
 
         # Simple default definition of translation and rotation
-
         self.set_translation(1)
         self.set_rotation(0)
 
         #-------------------------------------------------------------------------------------------------------
 
         # Robot manipulation, world_model méthods (PyWorldModel C++ class)
-        
         if self.get_distance_at(1) < 1 or self.get_distance_at(2) < 1 :
             self.set_rotation(0.5)
         elif self.get_distance_at(3) < 1 :
             self.set_rotation(-0.5)
+
+        #-------------------------------------------------------------------------------------------------------
+
+        # self.nb_sensors
+        # dist: {self.get_distance_at(i)}
+        # id: {self.world_model.camera_objects_ids[i]}
+        # nbobjs: {len(self.rob.objects)}
+        # is_object: {self.get_object_at(i)}
+        # is_robot: {self.get_robot_id_at(i)}
+        # is_wall: {self.get_wall_at(i)}
+
+        #-------------------------------------------------------------------------------------------------------
+
 
 
     def inspect(self, prefix=""):
