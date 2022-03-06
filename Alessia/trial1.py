@@ -18,7 +18,12 @@ from pyroborobo import CircleObject
 ################################################################################################################
 
 fileConfig = "config/trial1.properties" 
-nbSteps = 200
+nbRobots = 20 # check this value in the properties file
+nbSteps = 2000
+
+currentAgent = None                         # variable globale
+
+tabSumFood = [0] * nbRobots 
 
 
 
@@ -48,6 +53,11 @@ class Food_Object(CircleObject):
         print(self.str + "is_pushed by robot n." + str(currentAgent) ) # reads value of currentAgent, don't need declaration of global var
 
     def is_touched(self, id):
+        self.hide()
+        self.unregister()
+
+        global tabSumFood
+        tabSumFood[currentAgent] += 1
         print(self.str + "is_touched by robot n." + str(currentAgent) )
 
     def is_walked(self, id):
@@ -64,7 +74,6 @@ class Food_Object(CircleObject):
 # ROBOTS BEHAVIOURS
 ################################################################################################################
 
-currentAgent = None
 
 class RobotsController(Controller):
     
@@ -76,8 +85,16 @@ class RobotsController(Controller):
 
     def step(self):
 
-        if self.id == 0 :
-            self.expertbehaviour()
+        global currentAgent                 # sets value of currentAgent, mandatory declaration of global var
+        currentAgent = self.id              # used to tell which robot hits the object
+
+        print("Robot n." + str(self.id) + " au passage actuellement")
+
+        if self.id == 0 :                   # Le robot 0 joue le role de expert
+            t, r = self.expertBehaviour()
+            self.set_translation(t)
+            self.set_rotation(r)
+            return
 
         # Simple default definition of translation and rotation
         self.set_translation(1)
@@ -85,8 +102,7 @@ class RobotsController(Controller):
 
         #-------------------------------------------------------------------------------------------------------
 
-        # Robot manipulation, world_model méthods (PyWorldModel C++ class)
-        
+        # Robot manipulation
         if self.get_distance_at(1) < 1 or self.get_distance_at(2) < 1 :
             self.set_rotation(0.5)
         elif self.get_distance_at(3) < 1 :
@@ -97,11 +113,12 @@ class RobotsController(Controller):
         return f"\n[INSPECT] I'm the robot #{self.id}\n\n"
 
 
-    def expertbehaviour(self):
-        global currentAgent     # sets value of currentAgent, mandatory declaration of global var
-        currentAgent = self.id
+    def expertBehaviour(self):
         print ("Hello I'm " + str(self.id) + " and I'm super cool")
-
+        print("tabSumFood : ", tabSumFood)
+        t = 1
+        r = 0
+        return t, r 
 
 
 ################################################################################################################
