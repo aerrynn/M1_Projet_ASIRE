@@ -187,7 +187,7 @@ class MyWorldObserver(WorldObserver):
 
 def main():
     rob = Pyroborobo.create(
-        "config/pywander_pyobj.properties",
+        "config/test.properties",
         controller_class=CarrierAgent,
         world_observer_class=MyWorldObserver,
         object_class_dict={

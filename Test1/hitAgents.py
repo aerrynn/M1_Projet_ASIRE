@@ -158,9 +158,9 @@ def transfer_function(theta, G, message):
         :param theta: The receiver agent policy
         :param G: The fitness score of the receiver
         :param message: the message to learn from
-        s_theta: the sender's policy
-        s_idx: the id of the policy to learn from
-        s_G: the sender's fitness score
+            s_theta: the sender's policy
+            s_idx: the id of the policy to learn from
+            s_G: the sender's fitness score
         :return theta: The new policy
     '''
     # print(message)
