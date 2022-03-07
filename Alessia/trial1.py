@@ -19,17 +19,17 @@ import numpy as np
 ################################################################################################################
 
 fileConfig = "config/trial1.properties" 
-nbRobots = 20                               # get this value in the trial1.properties file
+nbRobots = 40                               # get this value in the trial1.properties file
 
-nbSteps = 2000
-cptSteps = 0                                # global, used to know the passed number of steps
+nbSteps = 5000
+cptStepsG = 0                               # global, used to know the passed number of steps
 
 currentAgent = None                         # global, used to know wich agent hits one object
 tabSumFood = [0] * nbRobots                 # global, used to store the fitness function
 
 mutationRate = 0                            # global, used by HIT-EE algorithm
 transferRate = 0.5  # 0.9                   # global, used by HIT-EE algorithm
-maturationDelay = 100                       # global, used by HIT-EE algorithm
+maturationDelay = 400                       # global, used by HIT-EE algorithm
 
 verbose = True                              # set true if you want to see execution details on terminal
 
@@ -46,17 +46,21 @@ class Food_Object(CircleObject):
     def __init__(self, id, data):           # put "data" even if it is not used
         CircleObject.__init__(self, id)
         self.str = "[Food_Object " + str(id) + "] : "
+        self.cptSteps = 0
         # self.rob = Pyroborobo.get()       # get pyroborobo singleton ?
 
     def reset(self):
         pass
 
     def step(self):
-        global cptSteps
-        cptSteps += 1
+        self.cptSteps += 1
+
+        global cptStepsG
+        cptStepsG = self.cptSteps           # value used in RobotsController too
 
         if verbose : 
-            print(self.str + "I'm object n." + str(self.id) + ", cptSteps = " + str(cptSteps) )
+            print(self.str + "I'm object n." + str(self.id) + ", cptSteps = " + str(self.cptSteps) )
+
 
     def is_touched(self, id):
         self.hide()
@@ -86,14 +90,16 @@ class RobotsController(Controller):
     def __init__(self, world_model):
         Controller.__init__(self, world_model)
 
+        self.rob = Pyroborobo.get()
         self.age = 0
 
-        self.genome = self.genome = [self.randNotZero() for _ in range(self.nb_sensors)]
+        self.genome = [self.randNotZero()/2 for _ in range(self.nb_sensors)]
+        self.expertGenome = [0] * self.nb_sensors                   # initialisation and definitive vector
         self.sensors = [0] * self.nb_sensors
         self.halfSizeGenome = int(np.ceil(len(self.genome)/2))
         self.halfSizeSensors = int(np.ceil(len(self.sensors)/2))
 
-        self.message = []
+        self.messages = []
         
 
     def reset(self):
@@ -106,20 +112,21 @@ class RobotsController(Controller):
         currentAgent = self.id              # used to tell which robot hits the object
         
         if verbose :
-            print("Robot n." + str(self.id) + " au passage actuellement")  
-            if cptSteps % nbRobots == 0 :
-                print("tabSumFood : ", tabSumFood)  # fitness values
+            print("\nRobot n." + str(self.id) + " au passage actuellement")
+            print("\tgenome =", self.genome)
+            if cptStepsG % nbRobots == 0 :
+                print("tabSumFood :", tabSumFood)  # fitness values
        
         # Set sensors vector
         for i in range(self.nb_sensors):
             self.sensors[i] = self.get_distance_at(i)
-        print("sensors", self.sensors)
+        print("sensors :", self.sensors)
 
         # Robots' behaviours exchange (communication)
-        self.hit_ee(mutationRate, transferRate, maturationDelay)
+        self.hit_ee()       # uses global mutationRate, transferRate, maturationDelay
 
         # Expert behaviour : le robot n.0 plays the role of the expert
-        if self.id == 0 :
+        if self.id == 0 or self.id == 1:
             t, r = self.expertBehaviour()
             self.set_translation(t)
             self.set_rotation(r)
@@ -131,7 +138,7 @@ class RobotsController(Controller):
         self.set_rotation(r)
 
 
-    def randNotZero():
+    def randNotZero(self):
         aleaFloat = 0
         while aleaFloat == 0:
             aleaFloat = np.random.random()
@@ -141,6 +148,7 @@ class RobotsController(Controller):
     def expertBehaviour(self):
         t = 1
         r = 0
+
         if self.get_distance_at(1) < 1 or self.get_distance_at(2) < 1 :
             r = 0.5
         elif self.get_distance_at(3) < 1 :
@@ -155,7 +163,8 @@ class RobotsController(Controller):
     def swarmBehaviour(self):
         t = 0
         r = 0
-        # Neural network 1 : linear combination of sensory imputs and genome weights
+
+        # Neural network 1 : linear combination of sensory imputs and genome vector (weights)
         if len(self.genome) == len(self.sensors):    
             t = 1 + np.dot(self.genome[0:self.halfSizeGenome], self.sensors[0:self.halfSizeSensors])
             r = np.random.choice([-1, 1]) * 0.5 + np.dot(self.genome[self.halfSizeGenome:len(self.genome)], self.sensors[self.halfSizeSensors:len(self.sensors)])
@@ -171,17 +180,50 @@ class RobotsController(Controller):
 
 
     def hit_ee(self):
+        newGenome = False
         if self.age >= maturationDelay:     # The robot is ready to learn or teach
             
-            # Teaching knowledge to 
+            # Teaching knowledge to every robot in the neighborhood
             self.broadcast(self.genome, transferRate, tabSumFood[self.id])
 
             # Learning knowledge from received packets
-            for p in self.incomingPackets:
-                if p.fitness >= self.fitness:
-                    newGenome = self.transferGenome(p)
+            for m in self.messages:
+                if m[3] >= tabSumFood[self.id]:     # m[3] = fitnessRS
+                    newGenome = self.transferGenome(m)
+                    newGenome = True
+
+                if newGenome:
+                    newGenome = False
+                    self.age = 0
+                    #self.fitness = 0         # line code in the HIT-EE algorithm, not used in this trial
+                    
+        self.age += 1
 
 
+    def broadcast(self, genome, transferRate, fitness):
+        for i in range (self.nb_sensors):
+            robotDestId = self.get_robot_id_at(i)
+            if robotDestId == -1:
+                continue
+            nbElemToReplace = int(len(genome) * transferRate)
+            elemToReplace = np.random.choice(range(0, len(self.genome)), nbElemToReplace, False)
+            self.rob.controllers[robotDestId].messages += [(self.id, genome, elemToReplace, fitness)]
+
+            if verbose :
+                print("[SENT MSG] I'm the robot n." + str(self.id) + " and I've sent a msg to robot n." + str(robotDestId))  
+
+
+    def transferGenome(self, message):
+        robotSourceId, genomeRS, elemToReplaceRS, fitnessRS = message
+        if fitnessRS >= tabSumFood[self.id]:
+            oldGenome = self.genome
+            for index in elemToReplaceRS:
+                self.genome[index] = genomeRS[index] * (1-mutationRate)
+        
+            if verbose :
+                print("\n[RECEIVED MSG] I'm the robot n." + str(self.id) + " and I've received a good msg from robot n." + str(robotSourceId))  
+                print("\tI've changed my genome :\n\tfrom oldGenome =", oldGenome, ", \n\tto newGenome =", self.genome, ", \n\tlearned by genomeRS =", genomeRS)
+                print("\tbecause fitness robot n.", robotSourceId," (" , fitnessRS , ") is > than our fitness, (", tabSumFood[self.id], ")\n")
 
 
     def inspect(self, prefix=""):
