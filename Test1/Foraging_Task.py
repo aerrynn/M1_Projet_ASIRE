@@ -1,19 +1,12 @@
 from pyroborobo import CircleObject, Pyroborobo, WorldObserver
-from hitAgents import Agent
+from Hit_Agents import Agent
 import numpy as np
 import random
-
-######################################## CONSTS ########################################
-MAX_CAPACITY = 1
-
-''' Interactible_related '''
-REGROWTH_TIME = 150
-MAX_RESSOURCE_LEVEL = 1
-
-NB_ITER = 10000
-########################################################################################
+import Const as c
 
 ########################################################################################
+
+
 class CarrierAgent(Agent):
     '''
     CarrierAgent
@@ -26,7 +19,7 @@ class CarrierAgent(Agent):
     def __init__(self, wm) -> None:
         super().__init__(wm)
         # This Agent can carry ressources
-        self.max_capacity = MAX_CAPACITY
+        self.max_capacity = c.MAX_CAPACITY
         self.current_capacity = 0
         # keeps in memory if he stored some ressource
         self.has_stored = 0
@@ -67,7 +60,40 @@ class ExpertAgent(CarrierAgent):
 
     def __init__(self, wm) -> None:
         super().__init__(wm)
-        # TODO: How to set the expert neural network ?
+
+    def step():
+        super().step()
+
+    def fitness(self, sensors_data):
+        '''
+        @Overwrite
+        fitness : 
+            :param sensors_data:
+        '''
+        global best_picker
+        s = self.current_capacity
+        self.current_capacity = 0
+        return s
+
+    def apply_policy(self, observation):
+        '''
+            :return translation, rotation:
+        '''
+
+        # We only look at the 3 frontal sensors :
+        if observation[0] == 1 or observation[1] == c.FOOD_ID:  # Go straight for the object
+            return 1, 0
+        else:
+            if observation[3] == c.FOOD_ID:
+                return 1, 0.25  # TODO: Check that it's the right angle
+            if observation[-1] == c.FOOD_ID:
+                return 1, -0.25
+            if observation[2] < 1 and observation[-2] < 1:      # Go backward
+                return -1, 0
+            if observation[2] < 1:                              # Avoid to the left
+                return 1, - 0.25
+            return 1, 0.25                                      # Avoid to the right
+        pass
 
 
 ########################################################################################
@@ -112,7 +138,7 @@ class BushNode(CircleObject):
         CircleObject.__init__(self, id_)
 
         # After depleting, the node takes regrowth_time steps to regrow
-        self.regrowth_time = REGROWTH_TIME
+        self.regrowth_time = c.REGROWTH_TIME
         # While regrow > 0, the node is depleted, and not interactible
         self.cur_regrow = 0
         # Boolean (faster to check than cur_regrow > 0)
@@ -162,8 +188,9 @@ class MyWorldObserver(WorldObserver):
             bush = BushNode(i, {})
             self.rob.add_object(bush)
 
-        x, y = 5, 5
-        delta_X, delta_Y = 20, 20 # To organize the robots initialisation
+        ## To organize the robots initialisation
+        # x, y = 5, 5
+        # delta_X, delta_Y = 20, 20  
         # for robot in self.rob.controllers:
         #     robot.set_absolute_orientation(random.randint(-180,180))
         #     robot.set_position(x, y)
@@ -197,7 +224,7 @@ def main():
     )
 
     rob.start()
-    rob.update(NB_ITER)
+    rob.update(c.NB_ITER)
     Pyroborobo.close()
 
 

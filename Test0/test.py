@@ -52,24 +52,6 @@ class Agent(Controller):
         self.A_to_B = True
 
     def move(self, t):
-        # 0 left sens des aiguilles d'une montre
-
-        # translation = self.get_distance_at(4)
-        # rotation = (1-self.get_distance_at(4) - self.get_distance_at(2) + self.get_distance_at(6))
-        s = abs(self.last_pos[0] - self.absolute_position[0]) \
-        + abs(self.last_pos[1] - self.absolute_position[1])
-        # if s < EPSILON :
-        #     # print(f"{self.id} is stuck {s}")
-        #     self.subsumption = TIME_SUBSUMPTION
-        
-        # if self.subsumption > 0:
-        #     self.subsumption -= 1
-        #     self.set_translation (-1)
-        #     # self.set_translation(np.random.randint(-1,2)*0.25)
-        #     self.last_pos = self.absolute_position
-        #     return 
-        # if(t % 10 == 0):
-        #     self.last_pos = self.absolute_position
         translation = 1
         rotation = 1
         if self.A_to_B:
@@ -121,7 +103,11 @@ class Agent(Controller):
         # print("reset")
 
     def update_fitness(self):
-        return self.fitness
+        if to_A or not A_to_B :
+            return abs(POSITION_A_X - self.absolute_position[0]) \
+            + abs(POSITION_A_Y - self.absolute_position[1])
+        return abs(POSITION_A_X - self.absolute_position[0]) \
+            + abs(POSITION_A_Y - self.absolute_position[1])
     # verifier comment marchent les signaux si elle existe
 
     def broadcast(self, transferRate, fitness):
@@ -237,19 +223,6 @@ class MyWorldObserver(WorldObserver):
         retValue = b.can_register()
         b.register()
         b.show()
-        #ball.set_coordinates(750, 799)
-
-        # x, y = 20, 20
-        # #delta_X, delta_Y = 40, 40
-        # delta_X, delta_Y = 20, 40
-        # for robot in self.rob.controllers:
-        #     robot.set_absolute_orientation(random.randint(-180,180))
-        #     robot.set_position(x, y)
-        #     x = x + delta_X
-        #     if x > 780:
-        #         x = 20
-        #         y += delta_Y
-        # 2021-04-27 BP -- il faut créer les robots directements en python sinon ils doivent trouver un place au hasard avant
 
         print("End of worldobserver::init_post")
 
@@ -280,3 +253,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
