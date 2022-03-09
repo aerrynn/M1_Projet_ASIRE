@@ -30,6 +30,8 @@ class CarrierAgent(Agent):
         fitness : 
             :param sensors_data:
         '''
+        if self.id <= 5:
+            self.current_capacity += 1/c.EVALUATION_TIME
         global best_picker
         s = self.current_capacity
         self.current_capacity = 0
@@ -49,6 +51,30 @@ class CarrierAgent(Agent):
         self.current_capacity += 1
 
 
+    def apply_policy(self, observation): #HACK TEMPORARY FIX
+        '''
+            :return translation, rotation:
+        '''
+        if self.id > 5 :
+            return super().apply_policy(observation)
+        # We only look at the 3 frontal sensors :
+        # print(f"l:{observation[2]};{observation[3]}, f:{observation[4]};{observation[5]}, r{observation[6]},{observation[7]}")
+        if observation[5] == c.FOOD_ID:                         # Go straight for the object
+            return 1, 0
+        if observation[7] == c.FOOD_ID:
+            return 1, 0.5
+        if observation[3] == c.FOOD_ID:
+            return 1, -0.5
+        if observation[4] < .9: 
+            if observation[2] < observation[6]:                 # Avoid to the left
+                return 1, 0.5
+            return 1, - 0.5                                     # Avoid to the right
+        if observation[0] < 1 and observation[1] != c.FOOD_ID:
+            return 1, 0.5
+        if observation[8] < 1 and observation[9] != c.FOOD_ID:
+            return 1, -0.5
+        return 1, 0
+
 class ExpertAgent(CarrierAgent):
     '''
     ExpertAgent
@@ -61,9 +87,6 @@ class ExpertAgent(CarrierAgent):
     def __init__(self, wm) -> None:
         super().__init__(wm)
 
-    def step():
-        super().step()
-
     def fitness(self, sensors_data):
         '''
         @Overwrite
@@ -71,7 +94,7 @@ class ExpertAgent(CarrierAgent):
             :param sensors_data:
         '''
         global best_picker
-        s = self.current_capacity
+        s = self.current_capacity = 1/c.EVALUATION_TIME
         self.current_capacity = 0
         return s
 
@@ -79,21 +102,23 @@ class ExpertAgent(CarrierAgent):
         '''
             :return translation, rotation:
         '''
-
         # We only look at the 3 frontal sensors :
-        if observation[0] == 1 or observation[1] == c.FOOD_ID:  # Go straight for the object
+        # print(f"l:{observation[2]};{observation[3]}, f:{observation[4]};{observation[5]}, r{observation[6]},{observation[7]}")
+        if observation[5] == c.FOOD_ID:                         # Go straight for the object
             return 1, 0
-        else:
-            if observation[3] == c.FOOD_ID:
-                return 1, 0.25  # TODO: Check that it's the right angle
-            if observation[-1] == c.FOOD_ID:
-                return 1, -0.25
-            if observation[2] < 1 and observation[-2] < 1:      # Go backward
-                return -1, 0
-            if observation[2] < 1:                              # Avoid to the left
-                return 1, - 0.25
-            return 1, 0.25                                      # Avoid to the right
-        pass
+        if observation[7] == c.FOOD_ID:
+            return 1, 0.5
+        if observation[3] == c.FOOD_ID:
+            return 1, -0.5
+        if observation[4] < 0.75: 
+            if observation[2] < observation[6]:                 # Avoid to the left
+                return 1, 0.5
+            return 1, - 0.5                                 # Avoid to the right
+        if observation[0] < 1 and observation[1] != c.FOOD_ID:
+            return 1, 0.5
+        if observation[8] < 1 and observation[9] != c.FOOD_ID:
+            return 1, -0.5
+        return 1, 0
 
 
 ########################################################################################
@@ -188,9 +213,9 @@ class MyWorldObserver(WorldObserver):
             bush = BushNode(i, {})
             self.rob.add_object(bush)
 
-        ## To organize the robots initialisation
+        # To organize the robots initialisation
         # x, y = 5, 5
-        # delta_X, delta_Y = 20, 20  
+        # delta_X, delta_Y = 20, 20
         # for robot in self.rob.controllers:
         #     robot.set_absolute_orientation(random.randint(-180,180))
         #     robot.set_position(x, y)
@@ -216,6 +241,7 @@ def main():
     rob = Pyroborobo.create(
         "config/test.properties",
         controller_class=CarrierAgent,
+        # controller_class=ExpertAgent,
         world_observer_class=MyWorldObserver,
         object_class_dict={
             '_default': BushNode,

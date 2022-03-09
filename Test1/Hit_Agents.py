@@ -2,10 +2,6 @@ from pyroborobo import Pyroborobo, Controller, AgentObserver
 import numpy as np
 from Neural_network import NeuralNetwork
 import Const as c
-'''
-TODO: Increase convergence rate, but how ?!
-'''
-
 
 
 class Agent(Controller):
@@ -17,11 +13,15 @@ class Agent(Controller):
         Controller.__init__(self, wm)
         self.theta = NeuralNetwork(2*self.nb_sensors, 2, c.NB_HIDDENS)
         self.res = [0 for _ in range(c.EVALUATION_TIME)]
-        self.movements_data = [None for _ in range(c.MEMORY_RANGE)]
+        self.observation_data = np.array([None for _ in range(c.MEMORY_RANGE)])
+        self.movements_data = np.array([None for _ in range(c.MEMORY_RANGE)])
         # Stores the last received message, empties when read
         self.message = []
         self.rob = Pyroborobo.get()
         self.time = 0
+
+        # We don't want to learn more than once in a step from a single user
+        self.teachers = set()
 
     def reset(self):
         pass
@@ -34,22 +34,23 @@ class Agent(Controller):
         sense : get the data from the sensors of the agent
             :return data: the data retrieved, for each sensorn creates 3 inputs:
                 - distance of a detected obstacle
-                - distance of a detected robot
-                - distance of a detected wall
+                - type of the object
             :return fitness: the agent's score
         '''
         data = self.get_all_distances()
         data_plus = []
         for i, v in enumerate(data):
-            data_plus.append(v)                     # Adds the pos of the closest obstacle
+            # Adds the pos of the closest obstacle
+            data_plus.append(v)
             id_ = 0
-            if self.get_object_at(i) != -1:      # TODO: Check that its the right function
+            if self.get_object_at(i) != -1:
                 id_ = c.FOOD_ID
-            elif self.get_wall_at(i) != -1:
+            elif self.get_wall_at(i):
                 id_ = c.WALL_ID
             elif self.get_robot_id_at(i) != -1:
                 id_ = c.ROBOT_ID
-            data_plus.append(id_)                    # Adds the type_ID of the closest obstacle
+            # Adds the type_ID of the closest obstacle
+            data_plus.append(id_)
         data_plus = np.array(data_plus)
         fitness = self.fitness(data)
         return data_plus, fitness
@@ -69,18 +70,19 @@ class Agent(Controller):
         self.set_translation(action_vector[0])
         self.set_rotation(action_vector[1])
 
-    def broadcast(self, idx, score):
+    def broadcast(self, obs, mvm, score):
         '''
         broadcast sends a message containing theta, idx and score to nearby agents
-            :param idx: A vector of tuples containing the inputs and outputs of the agent
-                given its comportement
+            :param obs: A vector of tuples containing the inputs 
+            :param mvm: outputs of the agent given its comportement
             :param score: The fitness to send
         '''
         if self.theta == 0:
             return
         for i in range(self.nb_sensors):
             rob_id = self.get_robot_id_at(i)
-            self.rob.controllers[rob_id].message += [(idx, score)]
+            self.rob.controllers[rob_id].message.append(
+                (self.id, obs, mvm, score))
 
     def apply_policy(self, observations):
         '''
@@ -90,9 +92,35 @@ class Agent(Controller):
             :return a: an action vector
         '''
         # print((observations.shape))
-        out = self.theta.to_output(observations)
-        # print(out)
+        out = self.theta.ff_to_output(observations)
         return np.clip(out, -1, 1)
+
+    def transfer_function(self, G, message):
+        '''
+        transfer_function : If the sender of the message has a higher fitness score
+        replace the theta[idx] of the receiver by the theta[idx] of the sender
+            :param theta: The receiver agent policy
+            :param G: The fitness score of the receiver
+            :param message: the message to learn from
+                s_ID: the ID of the teacher (for debugging purposes)
+                s_O: the observations to learn from
+                s_M: the movements to learn
+                s_G: the sender's fitness score
+            :return theta: The new policy
+        '''
+        s_ID, s_O, s_M, s_G = message
+        if s_ID in self.teachers:
+            return
+        self.teachers.add(s_ID)
+        if G <= s_G:                                                # If the sender has a lower fitness
+            return                                                  # score don't do anything
+        self.theta.train(s_O, s_M, c.LEARNING_STEPS, c.LEARNING_RATE)
+
+    def gaussian_mutation(self):
+        '''
+        gaussian_mutation : Randomly mutates the agent, following a gaussian distribution
+        '''
+        self.theta.mutate()
 
     def hit_algorithm(self):
         '''
@@ -111,57 +139,27 @@ class Agent(Controller):
         self.res[self.time % c.EVALUATION_TIME] = r
         a = self.apply_policy(o)
         # Save the current movement for other agents to learn from
-        self.movements_data[self.time % c.MEMORY_RANGE] = (o, a)  
+        self.observation_data[self.time % c.MEMORY_RANGE] = o
+        self.movements_data[self.time % c.MEMORY_RANGE] = a
         self.act(a)
         # While agent time <= evaluation time, he is maturing
         if self.time > c.EVALUATION_TIME:
             G = np.sum(self.res)
-            self.broadcast(self.movements_data, G)
+            self.broadcast(self.observation_data, self.movements_data, G)
             for m in self.message:                              # The agent received at least a message
-                self.theta = transfer_function(                 # Learning from the message
-                    self.theta, G, m)
+                # Learning from the message
+                self.transfer_function(G, m)
                 # Enable / Disable Mutation of the agent
                 # self.theta = gaussian_mutation(
                 #     self.theta)
                 # After any change in its NN, the agent resets its evaluation
                 self.time = 0
-                self.message = []
+            if self.time == 0:
+                print(
+                    f"{self.id} has learned from {' '.join([str(x) for x in self.teachers])}!")
+                self.message.clear()
+                self.teachers.clear()
         self.time += 1
 
 
 ########################################################################################
-
-
-
-def transfer_function(theta, G, message):
-    '''
-    transfer_function : If the sender of the message has a higher fitness score
-    replace the theta[idx] of the receiver by the theta[idx] of the sender
-        :param theta: The receiver agent policy
-        :param G: The fitness score of the receiver
-        :param message: the message to learn from
-            s_idx: the tuples of comportements to learn from
-            s_G: the sender's fitness score
-        :return theta: The new policy
-    '''
-    s_idx, s_G = message
-    # print(s_idx)
-    if G <= s_G:                                                # If the sender has a lower fitness
-        return theta                                            # score don't do anything
-    # print(f"EVOLUTION! {s_G}")
-    X = [each[0] for each in s_idx]
-    Y = [each[1] for each in s_idx]
-    return theta.train_batch(X, Y, c.LEARNING_RATE)
-
-
-def gaussian_mutation(theta):
-    '''
-    gaussian_mutation : Randomly mutates the agent, following a gaussian distribution
-        :param theta: the agent policy
-        :return theta: the mutated policy
-    TODO: Check that the += doesn't creates bugs albeit it reduces memory usage
-    '''
-    for layer in range(len(theta)):
-        for i in range(len(theta[layer])):
-            theta[layer][i] += np.random.normal()
-    return theta

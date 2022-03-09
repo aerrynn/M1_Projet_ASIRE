@@ -12,6 +12,7 @@ FOOD_ID = 3
 NB_HIDDENS = 10
 EVALUATION_TIME = 100
 MEMORY_RANGE = 20
+LEARNING_STEPS = 30
 LEARNING_RATE = 0.5
 ########################################################################################
 #                                   carry_bots                                         #
