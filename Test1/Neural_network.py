@@ -329,9 +329,10 @@ if __name__ == '__main__':
 
     eval_x = np.array(eval_x)
 
-    nn = NeuralNetwork(16, 1, 16)
-    # nn.train(np.array([wall_left]), [1,0.5])
+    nn = NeuralNetwork(16, size_layer = 16)
     nn.train(data_x, data_y, 1000)
     for i, (each, att) in enumerate(zip(eval_x, attendu_y)):
-        print(f"{i}, {each}\n{nn.ff_to_output(each)}, expected {att}")
+        x, y = nn.ff_to_output(each)
+        print(f"{i}, [{x:.4f},{y:.4f}], expected {att}")
+
     # pass

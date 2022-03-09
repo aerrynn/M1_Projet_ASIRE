@@ -10,6 +10,9 @@ class Agent(Controller):
     '''
 
     def __init__(self, wm) -> None:
+        '''
+        Const
+        '''
         Controller.__init__(self, wm)
         self.theta = NeuralNetwork(2*self.nb_sensors, 2, c.NB_HIDDENS)
         self.res = [0 for _ in range(c.EVALUATION_TIME)]
@@ -22,9 +25,6 @@ class Agent(Controller):
 
         # We don't want to learn more than once in a step from a single user
         self.teachers = set()
-
-    def reset(self):
-        pass
 
     def step(self):
         self.hit_algorithm()
@@ -91,7 +91,6 @@ class Agent(Controller):
             :param theta: the policy
             :return a: an action vector
         '''
-        # print((observations.shape))
         out = self.theta.ff_to_output(observations)
         return np.clip(out, -1, 1)
 
@@ -155,8 +154,10 @@ class Agent(Controller):
                 # After any change in its NN, the agent resets its evaluation
                 self.time = 0
             if self.time == 0:
-                print(
-                    f"{self.id} has learned from {' '.join([str(x) for x in self.teachers])}!")
+                if c.VERBOSE:
+                    print(
+                        f"{self.id} has learned from {' '.join([str(x) for x in self.teachers])}!"
+                        )
                 self.message.clear()
                 self.teachers.clear()
         self.time += 1

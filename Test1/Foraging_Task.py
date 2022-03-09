@@ -10,13 +10,13 @@ import Const as c
 class CarrierAgent(Agent):
     '''
     CarrierAgent
-        TODO: Fill Description 
-        What ?
-        Why ?
-        How ?
+        Learning agent for the foraging task
     '''
 
     def __init__(self, wm) -> None:
+        '''
+        Const
+        '''
         super().__init__(wm)
         # This Agent can carry ressources
         self.max_capacity = c.MAX_CAPACITY
@@ -40,32 +40,29 @@ class CarrierAgent(Agent):
     def step(self):
         super().step()
 
-    def reset(self):
-        pass
-
     def inspect(self, prefix=""):
         return f'{self.id} : {self.current_capacity}'
 
     def pick_up(self):
-        # print(f'{self.id}: I picked up some sugar !')
+        if c.VERBOSE:
+            print(f'{self.id}: I picked up some sugar !')
         self.current_capacity += 1
 
-
-    def apply_policy(self, observation): #HACK TEMPORARY FIX
+    def apply_policy(self, observation):  # HACK TEMPORARY FIX
         '''
             :return translation, rotation:
         '''
-        if self.id > 5 :
+        if self.id > 5:
             return super().apply_policy(observation)
         # We only look at the 3 frontal sensors :
-        # print(f"l:{observation[2]};{observation[3]}, f:{observation[4]};{observation[5]}, r{observation[6]},{observation[7]}")
-        if observation[5] == c.FOOD_ID:                         # Go straight for the object
+        # Go straight for the object
+        if observation[5] == c.FOOD_ID:
             return 1, 0
         if observation[7] == c.FOOD_ID:
             return 1, 0.5
         if observation[3] == c.FOOD_ID:
             return 1, -0.5
-        if observation[4] < .9: 
+        if observation[4] < .9:
             if observation[2] < observation[6]:                 # Avoid to the left
                 return 1, 0.5
             return 1, - 0.5                                     # Avoid to the right
@@ -75,16 +72,20 @@ class CarrierAgent(Agent):
             return 1, -0.5
         return 1, 0
 
+
+########################################################################################
+
+
 class ExpertAgent(CarrierAgent):
     '''
     ExpertAgent
-        TODO: Fill Description 
-        What ?
-        Why ?
-        How ?
+        Agent with a fixed movement pattern
     '''
 
     def __init__(self, wm) -> None:
+        '''
+        Const
+        '''
         super().__init__(wm)
 
     def fitness(self, sensors_data):
@@ -100,18 +101,20 @@ class ExpertAgent(CarrierAgent):
 
     def apply_policy(self, observation):
         '''
+        apply_policy: define how the agent should behave given a stimulation
+        of its sensors
             :return translation, rotation:
         '''
         # We only look at the 3 frontal sensors :
         # print(f"l:{observation[2]};{observation[3]}, f:{observation[4]};{observation[5]}, r{observation[6]},{observation[7]}")
-        if observation[5] == c.FOOD_ID:                         # Go straight for the object
+        if observation[5] == c.FOOD_ID:                     # Go straight for the object
             return 1, 0
         if observation[7] == c.FOOD_ID:
             return 1, 0.5
         if observation[3] == c.FOOD_ID:
             return 1, -0.5
-        if observation[4] < 0.75: 
-            if observation[2] < observation[6]:                 # Avoid to the left
+        if observation[4] < 0.75:
+            if observation[2] < observation[6]:             # Avoid to the left
                 return 1, 0.5
             return 1, - 0.5                                 # Avoid to the right
         if observation[0] < 1 and observation[1] != c.FOOD_ID:
@@ -120,32 +123,6 @@ class ExpertAgent(CarrierAgent):
             return 1, -0.5
         return 1, 0
 
-
-########################################################################################
-
-class StorageNode(CircleObject):
-    '''
-    StorageNode :
-        TODO: Fill Description 
-        What ?
-        Why ?
-        How ?
-    '''
-
-    def __init__(self, id_, data):
-        CircleObject.__init__(self, id_)
-        self.rob = Pyroborobo.get()
-
-    def is_walked(self, rob_id):
-        # If the agent can store the ressource, increase it
-        if self.rob.controllers[rob_id].current_ressource > 0:
-            print(
-                f"{rob_id} deposited {self.rob.controllers[rob_id].current_ressource} ressources")
-            self.rob.controllers[rob_id].current_ressource = 0
-        return super.is_walked(self, rob_id)
-
-    def inspect(self, prefix=""):
-        return f"[INFO] I'm the object #{self.id}"
 
 ########################################################################################
 
@@ -160,6 +137,9 @@ class BushNode(CircleObject):
     '''
 
     def __init__(self, id_, data):
+        '''
+        Const
+        '''
         CircleObject.__init__(self, id_)
 
         # After depleting, the node takes regrowth_time steps to regrow
@@ -195,8 +175,8 @@ class BushNode(CircleObject):
     def inspect(self, prefix):
         return f"Ressource_Node_{self.id}\n"
 
-# World gen
-#
+
+########################################################################################
 
 
 class MyWorldObserver(WorldObserver):
@@ -239,7 +219,7 @@ class MyWorldObserver(WorldObserver):
 
 def main():
     rob = Pyroborobo.create(
-        "config/test.properties",
+        "config/Foraging_Task.properties",
         controller_class=CarrierAgent,
         # controller_class=ExpertAgent,
         world_observer_class=MyWorldObserver,
