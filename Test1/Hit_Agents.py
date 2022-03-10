@@ -26,10 +26,10 @@ class Agent(Controller):
         # We don't want to learn more than once in a step from a single user
         self.teachers = set()
 
-    def step(self):
+    def step(self) -> None:
         self.hit_algorithm()
 
-    def sense(self):
+    def sense(self) -> tuple:
         '''
         sense : get the data from the sensors of the agent
             :return data: the data retrieved, for each sensorn creates 3 inputs:
@@ -55,14 +55,14 @@ class Agent(Controller):
         fitness = self.fitness(data)
         return data_plus, fitness
 
-    def fitness(self, sensors_data):
+    def fitness(self, sensors_data: np.ndarray) -> float:
         '''
         fitness : Function to be overwritten
             :param sensors_data:
         '''
-        return 0
+        return 0.
 
-    def act(self, action_vector):
+    def act(self, action_vector: np.ndarray) -> None:
         '''
         act : compute the agent movement for this step
             :param action_vector: a deterministic vector
@@ -70,7 +70,7 @@ class Agent(Controller):
         self.set_translation(action_vector[0])
         self.set_rotation(action_vector[1])
 
-    def broadcast(self, obs, mvm, score):
+    def broadcast(self, obs: np.ndarray, mvm: np.ndarray, score: float) -> None:
         '''
         broadcast sends a message containing theta, idx and score to nearby agents
             :param obs: A vector of tuples containing the inputs 
@@ -84,7 +84,7 @@ class Agent(Controller):
             self.rob.controllers[rob_id].message.append(
                 (self.id, obs, mvm, score))
 
-    def apply_policy(self, observations):
+    def apply_policy(self, observations: np.ndarray) -> None:
         '''
         policy_function : Deterministic policy π_θ to compute the action vector 
             :param observation: the result vector of the observation
@@ -94,7 +94,7 @@ class Agent(Controller):
         out = self.theta.ff_to_output(observations)
         return np.clip(out, -1, 1)
 
-    def transfer_function(self, G, message):
+    def transfer_function(self, G: float, message: tuple) -> bool:
         '''
         transfer_function : If the sender of the message has a higher fitness score
         replace the theta[idx] of the receiver by the theta[idx] of the sender
@@ -109,19 +109,20 @@ class Agent(Controller):
         '''
         s_ID, s_O, s_M, s_G = message
         if s_ID in self.teachers:
-            return
+            return False
         self.teachers.add(s_ID)
         if G <= s_G:                                                # If the sender has a lower fitness
-            return                                                  # score don't do anything
+            return False                                            # score don't do anything
         self.theta.train(s_O, s_M, c.LEARNING_STEPS, c.LEARNING_RATE)
+        return True
 
-    def gaussian_mutation(self):
+    def gaussian_mutation(self) -> None:
         '''
         gaussian_mutation : Randomly mutates the agent, following a gaussian distribution
         '''
         self.theta.mutate()
 
-    def hit_algorithm(self):
+    def hit_algorithm(self) -> None:
         '''
         hit_algorithm : applies the hit learning algorithm to the current agent
             evaluation_time: amount of steps evaluated (T in the paper)
@@ -147,17 +148,15 @@ class Agent(Controller):
             self.broadcast(self.observation_data, self.movements_data, G)
             for m in self.message:                              # The agent received at least a message
                 # Learning from the message
-                self.transfer_function(G, m)
-                # Enable / Disable Mutation of the agent
-                # self.theta = gaussian_mutation(
-                #     self.theta)
-                # After any change in its NN, the agent resets its evaluation
-                self.time = 0
+                if (self.transfer_function(G, m)):
+                    # After any change in its NN, the agent resets its evaluation
+                    self.time = 0
             if self.time == 0:
                 if c.VERBOSE:
                     print(
                         f"{self.id} has learned from {' '.join([str(x) for x in self.teachers])}!"
-                        )
+                    )
+                self.gaussian_mutation()
                 self.message.clear()
                 self.teachers.clear()
         self.time += 1

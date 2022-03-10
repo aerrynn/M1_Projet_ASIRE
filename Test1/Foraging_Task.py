@@ -24,11 +24,9 @@ class CarrierAgent(Agent):
         # keeps in memory if he stored some ressource
         self.has_stored = 0
 
-    def fitness(self, sensors_data):
+    def fitness(self, sensors_data:np.ndarray) -> float:
         '''
         @Overwrite
-        fitness : 
-            :param sensors_data:
         '''
         if self.id <= 5:
             self.current_capacity += 1/c.EVALUATION_TIME
@@ -37,20 +35,20 @@ class CarrierAgent(Agent):
         self.current_capacity = 0
         return s
 
-    def step(self):
+    def step(self) -> None:
         super().step()
 
-    def inspect(self, prefix=""):
+    def inspect(self, prefix="") -> str:
         return f'{self.id} : {self.current_capacity}'
 
-    def pick_up(self):
+    def pick_up(self) -> None:
         if c.VERBOSE:
             print(f'{self.id}: I picked up some sugar !')
         self.current_capacity += 1
 
-    def apply_policy(self, observation):  # HACK TEMPORARY FIX
+    def apply_policy(self, observation:np.ndarray) -> tuple:  # HACK TEMPORARY FIX
         '''
-            :return translation, rotation:
+        @Overwrite
         '''
         if self.id > 5:
             return super().apply_policy(observation)
@@ -88,22 +86,18 @@ class ExpertAgent(CarrierAgent):
         '''
         super().__init__(wm)
 
-    def fitness(self, sensors_data):
+    def fitness(self, sensors_data: np.ndarray) -> float:
         '''
         @Overwrite
-        fitness : 
-            :param sensors_data:
         '''
         global best_picker
         s = self.current_capacity = 1/c.EVALUATION_TIME
         self.current_capacity = 0
         return s
 
-    def apply_policy(self, observation):
+    def apply_policy(self, observation: np.ndarray) -> tuple:
         '''
-        apply_policy: define how the agent should behave given a stimulation
-        of its sensors
-            :return translation, rotation:
+        @Overwrite
         '''
         # We only look at the 3 frontal sensors :
         # print(f"l:{observation[2]};{observation[3]}, f:{observation[4]};{observation[5]}, r{observation[6]},{observation[7]}")
@@ -129,11 +123,7 @@ class ExpertAgent(CarrierAgent):
 
 class BushNode(CircleObject):
     '''
-    RessourceNode :
-        TODO: Fill Description 
-        What ?
-        Why ?
-        How ?
+    RessourceNode : Simple interactible object that can be picked up by agents
     '''
 
     def __init__(self, id_, data):
@@ -151,12 +141,18 @@ class BushNode(CircleObject):
         self.rob = Pyroborobo.get()
 
     def reset(self):
+        '''
+        @Overwrite
+        '''
         self.show()
         self.register()
         self.regrowing = False
         self.cur_regrow = 0
 
     def step(self):
+        '''
+        @Overwrite
+        '''
         if self.regrowing:
             self.cur_regrow -= 1		        # Reduce the left regrowth time
             if self.cur_regrow <= 0: 	        # The node has finished regrowing
@@ -165,6 +161,9 @@ class BushNode(CircleObject):
                 self.regrowing = False          # Regrowth ended
 
     def is_walked(self, rob_id):
+        '''
+        @Overwrite
+        '''
         # If the agent can store the ressource, increase it
         self.rob.controllers[rob_id].pick_up()
         self.regrowing = True
