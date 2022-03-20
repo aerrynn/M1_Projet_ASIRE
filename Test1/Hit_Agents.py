@@ -1,10 +1,11 @@
 from pyroborobo import Pyroborobo, Controller, AgentObserver
 import numpy as np
+from ExtendedAgent import Agent
 from Neural_network import NeuralNetwork
 import Const as c
 
 
-class Agent(Controller):
+class HitAgent(Agent):
     '''
     Simple agent attributes and functions for it to be able to learn from the HIT-EE method
     '''
@@ -13,14 +14,13 @@ class Agent(Controller):
         '''
         Const
         '''
-        Controller.__init__(self, wm)
+        super.__init__(self, wm)
         self.theta = NeuralNetwork(2*self.nb_sensors, 2, c.NB_HIDDENS)
         self.res = [0 for _ in range(c.EVALUATION_TIME)]
         self.observation_data = np.array([None for _ in range(c.MEMORY_RANGE)])
         self.movements_data = np.array([None for _ in range(c.MEMORY_RANGE)])
         # Stores the last received message, empties when read
-        self.message = []
-        self.rob = Pyroborobo.get()
+
         self.time = 0
 
         # We don't want to learn more than once in a step from a single user
@@ -29,70 +29,13 @@ class Agent(Controller):
     def step(self) -> None:
         self.hit_algorithm()
 
-    def sense(self) -> tuple:
-        '''
-        sense : get the data from the sensors of the agent
-            :return data: the data retrieved, for each sensorn creates 3 inputs:
-                - distance of a detected obstacle
-                - type of the object
-            :return fitness: the agent's score
-        '''
-        data = self.get_all_distances()
-        data_plus = []
-        for i, v in enumerate(data):
-            # Adds the pos of the closest obstacle
-            data_plus.append(v)
-            id_ = 0
-            if self.get_object_at(i) != -1:
-                id_ = c.FOOD_ID
-            elif self.get_wall_at(i):
-                id_ = c.WALL_ID
-            elif self.get_robot_id_at(i) != -1:
-                id_ = c.ROBOT_ID
-            # Adds the type_ID of the closest obstacle
-            data_plus.append(id_)
-        data_plus = np.array(data_plus)
-        fitness = self.fitness(data)
-        return data_plus, fitness
-
-    def fitness(self, sensors_data: np.ndarray) -> float:
-        '''
-        fitness : Function to be overwritten
-            :param sensors_data:
-        '''
-        return 0.
-
-    def act(self, action_vector: np.ndarray) -> None:
-        '''
-        act : compute the agent movement for this step
-            :param action_vector: a deterministic vector
-        '''
-        self.set_translation(action_vector[0])
-        self.set_rotation(action_vector[1])
-
     def broadcast(self, obs: np.ndarray, mvm: np.ndarray, score: float) -> None:
         '''
-        broadcast sends a message containing theta, idx and score to nearby agents
-            :param obs: A vector of tuples containing the inputs 
-            :param mvm: outputs of the agent given its comportement
-            :param score: The fitness to send
+        @override
         '''
         if self.theta == 0:
             return
-        for i in range(self.nb_sensors):
-            rob_id = self.get_robot_id_at(i)
-            self.rob.controllers[rob_id].message.append(
-                (self.id, obs, mvm, score))
-
-    def apply_policy(self, observations: np.ndarray) -> None:
-        '''
-        policy_function : Deterministic policy π_θ to compute the action vector 
-            :param observation: the result vector of the observation
-            :param theta: the policy
-            :return a: an action vector
-        '''
-        out = self.theta.ff_to_output(observations)
-        return np.clip(out, -1, 1)
+        super().broadcast(obs, mvm, score)
 
     def transfer_function(self, G: float, message: tuple) -> bool:
         '''

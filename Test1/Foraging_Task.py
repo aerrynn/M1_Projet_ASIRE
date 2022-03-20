@@ -1,122 +1,9 @@
 from pyroborobo import CircleObject, Pyroborobo, WorldObserver
-from Hit_Agents import Agent
+from ExtendedAgent import Agent
+from MemoryAgent import MemoryAgent
 import numpy as np
 import random
 import Const as c
-
-########################################################################################
-
-
-class CarrierAgent(Agent):
-    '''
-    CarrierAgent
-        Learning agent for the foraging task
-    '''
-
-    def __init__(self, wm) -> None:
-        '''
-        Const
-        '''
-        super().__init__(wm)
-        # This Agent can carry ressources
-        self.max_capacity = c.MAX_CAPACITY
-        self.current_capacity = 0
-        # keeps in memory if he stored some ressource
-        self.has_stored = 0
-
-    def fitness(self, sensors_data:np.ndarray) -> float:
-        '''
-        @Overwrite
-        '''
-        if self.id <= 5:
-            self.current_capacity += 1/c.EVALUATION_TIME
-        global best_picker
-        s = self.current_capacity
-        self.current_capacity = 0
-        return s
-
-    def step(self) -> None:
-        super().step()
-
-    def inspect(self, prefix="") -> str:
-        return f'{self.id} : {self.current_capacity}'
-
-    def pick_up(self) -> None:
-        if c.VERBOSE:
-            print(f'{self.id}: I picked up some sugar !')
-        self.current_capacity += 1
-
-    def apply_policy(self, observation:np.ndarray) -> tuple:  # HACK TEMPORARY FIX
-        '''
-        @Overwrite
-        '''
-        if self.id > 5:
-            return super().apply_policy(observation)
-        # We only look at the 3 frontal sensors :
-        # Go straight for the object
-        if observation[5] == c.FOOD_ID:
-            return 1, 0
-        if observation[7] == c.FOOD_ID:
-            return 1, 0.5
-        if observation[3] == c.FOOD_ID:
-            return 1, -0.5
-        if observation[4] < .9:
-            if observation[2] < observation[6]:                 # Avoid to the left
-                return 1, 0.5
-            return 1, - 0.5                                     # Avoid to the right
-        if observation[0] < 1 and observation[1] != c.FOOD_ID:
-            return 1, 0.5
-        if observation[8] < 1 and observation[9] != c.FOOD_ID:
-            return 1, -0.5
-        return 1, 0
-
-
-########################################################################################
-
-
-class ExpertAgent(CarrierAgent):
-    '''
-    ExpertAgent
-        Agent with a fixed movement pattern
-    '''
-
-    def __init__(self, wm) -> None:
-        '''
-        Const
-        '''
-        super().__init__(wm)
-
-    def fitness(self, sensors_data: np.ndarray) -> float:
-        '''
-        @Overwrite
-        '''
-        global best_picker
-        s = self.current_capacity = 1/c.EVALUATION_TIME
-        self.current_capacity = 0
-        return s
-
-    def apply_policy(self, observation: np.ndarray) -> tuple:
-        '''
-        @Overwrite
-        '''
-        # We only look at the 3 frontal sensors :
-        # print(f"l:{observation[2]};{observation[3]}, f:{observation[4]};{observation[5]}, r{observation[6]},{observation[7]}")
-        if observation[5] == c.FOOD_ID:                     # Go straight for the object
-            return 1, 0
-        if observation[7] == c.FOOD_ID:
-            return 1, 0.5
-        if observation[3] == c.FOOD_ID:
-            return 1, -0.5
-        if observation[4] < 0.75:
-            if observation[2] < observation[6]:             # Avoid to the left
-                return 1, 0.5
-            return 1, - 0.5                                 # Avoid to the right
-        if observation[0] < 1 and observation[1] != c.FOOD_ID:
-            return 1, 0.5
-        if observation[8] < 1 and observation[9] != c.FOOD_ID:
-            return 1, -0.5
-        return 1, 0
-
 
 ########################################################################################
 
@@ -218,9 +105,8 @@ class MyWorldObserver(WorldObserver):
 
 def main():
     rob = Pyroborobo.create(
-        "config/Foraging_Task.properties",
-        controller_class=CarrierAgent,
-        # controller_class=ExpertAgent,
+        "config/ForagingTask.properties",
+        controller_class=MemoryAgent,
         world_observer_class=MyWorldObserver,
         object_class_dict={
             '_default': BushNode,

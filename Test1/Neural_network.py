@@ -153,7 +153,7 @@ class NeuralNetwork:
         to_output: Changes the neural network output range from ([0,1],[0,1]) to ([0,1],[-0.5,0.5])
             :@param last_layer: the vector calculated by the last layer of the neural network
         '''
-        return(last_layer[0], last_layer[1]-0.5)
+        return(2*(last_layer[0]-.5), 2*(last_layer[1]-.5))
 
     def ff_to_output(self, observations: np.ndarray) -> np.ndarray:
         '''
@@ -364,9 +364,10 @@ def main():
 
 
 if __name__ == '__main__':
-    n = Layer(4, 2)
-    w1 = np.copy(n.weights)
-    b1 = np.copy(n.biases)
-    n.mutate()
-    print(w1 - n.weights)
-    print(b1 - n.biases)
+    main()
+    # n = Layer(4, 2)
+    # w1 = np.copy(n.weights)
+    # b1 = np.copy(n.biases)
+    # n.mutate()
+    # print(w1 - n.weights)
+    # print(b1 - n.biases)
