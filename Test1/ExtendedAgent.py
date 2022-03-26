@@ -14,7 +14,7 @@ class Agent(Controller):
         Const
         '''
         Controller.__init__(self, wm)
-        self.theta = NeuralNetwork(3*self.nb_sensors, 2, c.NB_HIDDENS)
+        self.theta = NeuralNetwork(2*self.nb_sensors, 2, c.NB_HIDDENS)
         self.messages = [] # used to store broadcasts
         self.current_capacity = 0
         self.rob = Pyroborobo.get()
@@ -44,12 +44,13 @@ class Agent(Controller):
         for i, v in enumerate(data):
             # Adds the pos of the closest obstacle
             data_plus.append(v)
+            # Adds a boolean, whether the object is a target, or an obstacle
             data_plus.append(self.get_object_at(i) != -1)
-            data_plus.append(self.get_wall_at(i) == 1 or (self.get_robot_id_at(i) != -1))
-            # Adds the type_ID of the closest obstacle
+            # data_plus.append(self.get_wall_at(i) == 1 or (self.get_robot_id_at(i) != -1))
         data_plus = np.array(data_plus)
         fitness = self.fitness(data)
         return data_plus, fitness
+
 
     def fitness(self, sensors_data: np.ndarray) -> float:
         '''
@@ -79,8 +80,6 @@ class Agent(Controller):
                 continue
             self.rob.controllers[rob_id].messages.append(
                 (self.id, obs, mvm, score))
-            if c.VERBOSE and rob_id <= 2:
-                print(f'm:{self.id} -> {rob_id}')
 
     def apply_policy(self, observations: np.ndarray) -> None:
         '''

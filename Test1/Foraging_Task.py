@@ -44,6 +44,8 @@ class BushNode(CircleObject):
         if self.regrowing:
             self.cur_regrow -= 1		        # Reduce the left regrowth time
             if self.cur_regrow <= 0: 	        # The node has finished regrowing
+                if c.CHANGE_POSITION :
+                    self.relocate()
                 self.show()				        # Displaying the node
                 self.register()
                 self.regrowing = False          # Regrowth ended

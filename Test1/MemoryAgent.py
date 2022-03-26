@@ -5,12 +5,12 @@ import Const as c
 data = dict()
 
 
-
 def save_data(filename):
     with open(filename, 'w+') as f:
         for each in data.keys():
             f.write(str(data[each])+'\n')
     print('Done')
+
 
 class MemoryAgent(Agent):
     def __init__(self, wm) -> None:
@@ -19,18 +19,19 @@ class MemoryAgent(Agent):
         '''
         super().__init__(wm)
         self.sliding_window = [0 for _ in range(c.LEARNING_GAP)]
-        self.total_data_size = 0
+        self.total_data_size = 0                        # Tracker for debugging purpose
         if self.id < c.NB_LEARNER:
-            self.type = 0           # 0 -> learner
-            self.act_function = super().apply_policy
+            self.type = 0                               # 0 -> learner
+            self.act_function = super().apply_policy    # Neural Network based_movement
         else:
-            self.type = 1           # 1 -> teacher
+            self.type = 1                               # 1 -> teacher
             self.act_function = self.expertPolicy
-        self.memory = []
-        self.last_action = None
-        self.last_observation = None
 
     def fitness(self, sensors_data):
+        '''
+        At each point of time, we track if the agent has picked up something
+        if he has, we increase by one point its fitness for the step
+        '''
         value = self.current_capacity
         self.current_capacity = 0
         return value
@@ -40,82 +41,74 @@ class MemoryAgent(Agent):
         obs, fitness = self.sense()
         if self.type == 1:
             mvm = self.expertPolicy(obs)
+            self.act(mvm)
+            self.broadcast(obs, mvm, 0)
         else:
             mvm = super().apply_policy(obs)
-        self.act(mvm)
-
-        self.broadcast(self.last_observation, self.last_action, 0)
-        self.last_observation = obs
-        self.last_action = mvm
-        self.learn_from_msg()
-        if self.age == c.LEARNING_GAP :
+            self.act(mvm)
+            self.learn_from_msg()
+        # Computing the fitness based off a sliding window of the picked up circles
+        if self.age == c.LEARNING_GAP:
             self.age = 0
             self.current_capacity = 0
         self.sliding_window[self.age] = fitness
-        try :
-            data[self.id].append(np.mean(self.sliding_window))
-        except KeyError:
-            data[self.id] = [np.mean(self.sliding_window)]
+
+        # For dataCollection purposes
+        if c.DATA_SAVE:
+            try:
+                data[self.id].append(np.mean(self.sliding_window))
+            except KeyError:
+                data[self.id] = [np.mean(self.sliding_window)]
 
     def learn_from_msg(self):
-        if self.type == 1:
+        if self.type == 1:                              # Experts Don't learn
             return
-        # print(f"{self.age}/{c.LEARNING_GAP}")
-        if self.age != c.LEARNING_GAP:
+        if self.age != c.LEARNING_GAP or len(self.messages) == 0:
             return
-        if len(self.messages) == 0:
-            return
-        # print(f"{self.id} received {len(self.messages)} messages !")
         for message in self.messages:
+            data_x = []
+            data_y = []
             _, obs, mvmt, _ = message
-            self.memory.append((obs, mvmt))
-        self.theta.train(np.array([x[0] for x in self.memory]), np.array(
-                [x[1] for x in self.memory]))
+            data_x.append(obs)
+            data_y.append(mvmt)
+        self.theta.train(np.array(data_x), np.array(data_y))
         n = len(self.messages)
         self.total_data_size += n
-        if n != 0:
+        if c.VERBOSE and n != 0:
             print(
                 f"{self.id} learned from {n} messages ({self.total_data_size} total)")
-        self.messages[:]=[]
-        self.memory[:] = []
+        self.messages[:] = []
 
     def expertPolicy(self, observation: np.ndarray) -> tuple:
         '''
         @Overwrite
         '''
-        # We only look at the 3 frontal sensors :
-        # Go straight for the object
-        # print('expert', observation)
 
         # Check each frontal sensor for food :
         food_spots = []
         food_spotted = False
         for sensor_id in range(0, 5):
-            if observation[(sensor_id*3)+1]:
-                food_spots.append(observation[sensor_id*3])
+            if observation[(sensor_id*2)+1] == 1:
+                food_spots.append(observation[sensor_id*2])
                 food_spotted = True
             else:
                 food_spots.append(2)
         if food_spotted:
-            direction = np.argmin(food_spots)
-            if direction == 2:
-                return 1, 0
-            if direction < 2:
-                return 1, -0.5
-            return 1, 0.5
+            direction = np.argmin(food_spots)   # Go toward the closest food source
+            return c.EXPERT_SPEED, (direction -2) * 0.5
         # Check each frontal sensor for obstacles
-        if (observation[(2*3)+2]) == 0:  # There's nothing in front
+        if (observation[(2*2)]) == 1:  # There's nothing in front
             # if there's something on the left
-            if (observation[(1*3)+2] ) == 1:
-                return 1, 0.5
+            if (observation[(1*2)]) < 1:
+                return c.EXPERT_SPEED, 0.5
             # if there's something on the right
-            if (observation[(3*3)+2] ) == 1:
-                return 1, -0.5
-            return 1, 0
+            if (observation[(3*2)]) < 1:
+                return c.EXPERT_SPEED, -0.5
+            return c.EXPERT_SPEED, 0
         # If there's something in front
-        if (observation[(0*3)+2]) == 1: # and on the left
-            return 1, 1 # Turn straight right
-        return 1, -1 # else : turn straight left
+        if (observation[(0*2)]) < 1:  # and on the left
+            return c.EXPERT_SPEED, 1  # Turn straight right
+        return c.EXPERT_SPEED, -1  # else : turn straight left
 
     def broadcast(self, obs, mvm, score):
         if self.type == 0:
