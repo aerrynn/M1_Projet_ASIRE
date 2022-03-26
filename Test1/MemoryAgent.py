@@ -2,28 +2,31 @@ from ExtendedAgent import Agent
 import numpy as np
 import Const as c
 
+
 class MemoryAgent(Agent):
     def __init__(self, wm) -> None:
         '''
         Const
         '''
         super().__init__(wm)
-        if self.id <= c.NB_LEARNER:
+        self.total_data_size = 0
+        if self.id < c.NB_LEARNER:
             self.type = 0           # 0 -> learner
-            self.act_function = self.memory_based_policy
-        else : 
+            self.act_function = super().apply_policy
+        else:
             self.type = 1           # 1 -> teacher
-        self.memory = [None for _ in range(c.MEMORY_SIZE)]
-        self.chunck_index = 0
+            self.act_function = self.expertPolicy
+        self.memory = []
         self.last_action = None
         self.last_observation = None
 
     def step(self):
+        self.age += 1
         obs = self.sense()
-        if self.type == 1 :
+        if self.type == 1:
             mvm = self.expertPolicy(obs)
-        else :
-            mvm = self.memory_based_policy(obs)
+        else:
+            mvm = super().apply_policy(obs)
         self.act(mvm)
 
         self.broadcast(self.last_observation, self.last_action, 0)
@@ -34,26 +37,21 @@ class MemoryAgent(Agent):
     def learn_from_msg(self):
         if self.type == 1:
             return
+        if self.age != c.LEARNING_GAP:
+            return
         # print(f"{self.id} received {len(self.messages)} messages !")
         for message in self.messages:
             _, obs, mvmt, _ = message
-            self.memory[self.chunck_index] = (discretise(obs), mvmt)
-            self.chunck_index += 1
-            if self.chunck_index == c.MEMORY_SIZE:
-                self.chunck_index = 0
-        self.messages = []
+            self.memory.append((obs, mvmt))
+        self.theta.train(np.array([x[0] for x in self.memory]), np.array(
+                [x[1] for x in self.memory]))
+        n = len(self.messages)
+        self.total_data_size += n
+        if n != 0:
+            print(f"{self.id} learned from {n} messages ({self.total_data_size} total)")
+        self.messages[:]
 
-    def memory_based_policy(self, obs):
-        dobs = discretise(obs)
-        for each in self.memory :
-            if each == None:
-                continue
-            # print(each)
-            if np.all(each[0] == dobs):
-                return each[1]
-        return super().apply_policy(obs)
-
-    def expertPolicy(self, observation:np.ndarray) -> tuple:  
+    def expertPolicy(self, observation: np.ndarray) -> tuple:
         '''
         @Overwrite
         '''
@@ -61,28 +59,41 @@ class MemoryAgent(Agent):
         # Go straight for the object
         # print('expert', observation)
 
-        if observation[5] == c.FOOD_ID:
-            return 1, 0
-        if observation[7] == c.FOOD_ID:
-            return 1, 0.5
-        if observation[3] == c.FOOD_ID:
-            return 1, -0.5
-        if observation[4] < .9:
-            if observation[2] < observation[6]:                 # Avoid to the left
+
+        # Check each frontal sensor for food :
+        food_spots = []
+        food_spotted = False
+        for sensor_id in range(0,5):
+            if observation[(sensor_id*4)+1]:
+                food_spots.append(observation[sensor_id*4])
+                food_spotted = True
+            else :
+                food_spots.append(2)
+        print(food_spots)
+        if food_spotted :
+            direction = np.argmin(food_spots)
+            if direction == 2:
+                return 1, 0
+            if direction < 2:
                 return 1, 0.5
-            return 1, - 0.5                                     # Avoid to the right
-        if observation[0] < 1 and observation[1] != c.FOOD_ID:
-            return 1, 0.5
-        if observation[8] < 1 and observation[9] != c.FOOD_ID:
             return 1, -0.5
-        return 1, 0
+        # Check each frontal sensor for obstacles
+        obstacles = []
+        for sensor_id in range(0,5):
+            if observation[(sensor_id*4)+2] + observation[(sensor_id*4)+3] > 0:
+                obstacles.append(observation[sensor_id*4])
+            else :
+                obstacles.append(3/(np.abs(2-sensor_id)+1))
+        print(obstacles)
+        direction = np.argmax(obstacles)
+        return 1, (direction-2) * 0.5
 
     def sense(self):
         s, _ = super().sense()
         return s
 
     def broadcast(self, obs, mvm, score):
-        if self.type == 0 :
+        if self.type == 0:
             return
         super().broadcast(obs, mvm, score)
 
@@ -90,4 +101,3 @@ class MemoryAgent(Agent):
 def discretise(obs):
     # print('discretise', obs)
     return np.array([(x//.1)/10 + .1 for x in obs])
-

@@ -14,12 +14,14 @@ class Agent(Controller):
         Const
         '''
         Controller.__init__(self, wm)
-        self.theta = NeuralNetwork(2*self.nb_sensors, 2, c.NB_HIDDENS)
+        self.theta = NeuralNetwork(4*self.nb_sensors, 2, c.NB_HIDDENS)
         self.messages = [] # used to store broadcasts
         self.current_capacity = 0
         self.rob = Pyroborobo.get()
+        self.age = 0
 
     def step(self) -> None:
+        self.age += 1
         obs, score = self.sense()
         mvm = self.apply_policy(obs)
         self.act(mvm)
@@ -42,15 +44,10 @@ class Agent(Controller):
         for i, v in enumerate(data):
             # Adds the pos of the closest obstacle
             data_plus.append(v)
-            id_ = 0
-            if self.get_object_at(i) != -1:
-                id_ = c.FOOD_ID
-            elif self.get_wall_at(i):
-                id_ = c.WALL_ID
-            elif self.get_robot_id_at(i) != -1:
-                id_ = c.ROBOT_ID
+            data_plus.append(self.get_object_at(i) != -1)
+            data_plus.append(self.get_wall_at(i))
+            data_plus.append(self.get_robot_id_at(i) != -1)
             # Adds the type_ID of the closest obstacle
-            data_plus.append(id_)
         data_plus = np.array(data_plus)
         fitness = self.fitness(data)
         return data_plus, fitness

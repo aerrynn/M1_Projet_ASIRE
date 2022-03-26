@@ -116,7 +116,7 @@ def main():
 
     rob.start()
     rob.update(c.NB_ITER)
-    Pyroborobo.close()
+    rob.close()
 
 
 if __name__ == "__main__":

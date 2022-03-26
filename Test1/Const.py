@@ -33,6 +33,6 @@ MAX_RESSOURCE_LEVEL = 1
 NB_ITER = 10000
 ########################################################################################
 
-
+LEARNING_GAP = 60
 MEMORY_SIZE = 100
-NB_LEARNER = 2
+NB_LEARNER = 0
