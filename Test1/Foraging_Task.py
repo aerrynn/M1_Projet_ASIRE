@@ -1,11 +1,12 @@
 from pyroborobo import CircleObject, Pyroborobo, WorldObserver
 from ExtendedAgent import Agent
-from MemoryAgent import MemoryAgent
+from MemoryAgent import MemoryAgent, save_data
 import numpy as np
 import random
 import Const as c
 
 ########################################################################################
+
 
 
 class BushNode(CircleObject):
@@ -117,6 +118,7 @@ def main():
     rob.start()
     rob.update(c.NB_ITER)
     rob.close()
+    save_data('Data.values')
 
 
 if __name__ == "__main__":

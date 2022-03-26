@@ -57,7 +57,7 @@ class Agent(Controller):
         fitness : Function to be overwritten
             :param sensors_data:
         '''
-        return 0.
+        return self.current_capacity
 
     def act(self, action_vector: np.ndarray) -> None:
         '''
