@@ -98,8 +98,8 @@ class RobotsController(Controller):
 
         self.genome = []
         self.expertGenome = []
-        self.sensors, self.nbExtendedSensors = get24ExtendedSensors(self)    
-        self.tabSensors = []
+        self.sensors, self.tabSensors = get24ExtendedSensors(self)
+        self.nbExtendedSensors = len(self.tabSensors)
 
         self.messages = []
         
@@ -113,13 +113,8 @@ class RobotsController(Controller):
         global currentAgent                 # sets value of currentAgent, mandatory declaration of global var
         currentAgent = self.id              # used to tell which robot hits the object
         
-        # Set sensors vector (dicto)
-        self.sensors, _ = get24ExtendedSensors(self)
-        self.tabSensors = []
-        for key in self.sensors:
-            self.tabSensors.append(self.sensors[key]["distance_to_robot"])
-            self.tabSensors.append(self.sensors[key]["distance_to_object"])
-            self.tabSensors.append(self.sensors[key]["distance_to_wall"])
+        # Set sensors vectors
+        self.sensors, self.tabSensors = get24ExtendedSensors(self)
 
 
         global isFirstIteration

@@ -57,6 +57,12 @@ def get24ExtendedSensors(self):
         if sensors[key]["isWall"] == True:
             sensors[key]["distance_to_wall"] = sensors[key]["distance"]
 
-    return sensors, 24
+    tabSensors = []
+    for key in sensors:
+        tabSensors.append(sensors[key]["distance_to_robot"])
+        tabSensors.append(sensors[key]["distance_to_object"])
+        tabSensors.append(sensors[key]["distance_to_wall"])
+
+    return sensors, tabSensors
 
 
