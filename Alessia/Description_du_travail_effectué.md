@@ -11,7 +11,7 @@
     - swarmBehavior : réseau de neurones (combinaison linéaire simple 8 senseurs de base @ poids) avec des valeurs de base pour t et r, de manière à se rapporcher du comportement de l'expert lorsque la partie neuronale tend à zéro.
     - fitness : nombre de Food_Object collectés (tableau de nbRobots cases).  
 
-- ***trial1.py*** : équivalent à *trial1+hit_ee_v1.py*, constitue une prémière structuration du code, notamment on sépare hit_ee de la classe Controller.  
+- ***trial1.py*** : [FORAGING TASK] équivalent à *trial1+hit_ee_v1.py*, constitue une prémière structuration du code, notamment on sépare hit_ee de la classe Controller.  
 
 - ***hit_ee.py*** : algorithmes hit_ee, pour l'instant il n'y a que la version simple de l'article "HIT-EE : a Novel Embodied Evolutionary Algorithm for Low Cost Swarm Robotics".  
 
