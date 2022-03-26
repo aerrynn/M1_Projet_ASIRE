@@ -44,7 +44,8 @@ def get24ExtendedSensors(self):
             {"distance": self.get_distance_at(i),       \
             "isRobot": self.get_robot_id_at(i) != -1,   \
             "isObject": self.get_object_at(i) != -1,    \
-            "isWall": self.get_wall_at(i)}
+            "isWall": self.get_wall_at(i) == 1} 
+
 
     for key in sensors:
         sensors[key]["distance_to_robot"] = 1.0
