@@ -11,7 +11,6 @@ from pyroborobo import Pyroborobo
 from pyroborobo import Controller
 from pyroborobo import CircleObject, MovableObject
 
-import copy
 
 ################################################################################################################
 # PARAMETERS
@@ -34,12 +33,6 @@ class Kale_A_Object(CircleObject):
         self.str = "[Kale_A_Object] : "
         self.cptSteps = 0
         # self.rob = Pyroborobo.get()       # get pyroborobo singleton ?
-       
-        #-------------------------------------------------------------------------------------------------------
-
-        self.data = data
-        self.default_x = copy.copy(data["x"])
-        self.default_y = copy.copy(data["y"])
 
         #-------------------------------------------------------------------------------------------------------
 
@@ -50,13 +43,6 @@ class Kale_A_Object(CircleObject):
     def step(self):
         self.cptSteps += 1
         print(self.str + "I'm object n." + str(self.id) + ", cptSteps = " + str(self.cptSteps) )
-
-        #-------------------------------------------------------------------------------------------------------
-
-        x, y = self.position
-        new_x, new_y = x+20, y
-        self.set_coordinates(new_x, new_y)
-        self.set_coordinates(self.default_x, self.default_y)
 
         #-------------------------------------------------------------------------------------------------------
 

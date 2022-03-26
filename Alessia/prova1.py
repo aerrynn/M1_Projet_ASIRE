@@ -15,7 +15,7 @@ from pyroborobo import Controller           # in MAIN and OVERRIDE C++ CONTROLLE
 ################################################################################################################
 
 fileConfig = "config/prova1.properties"     # configuration file
-nbSteps = 50                                # number of steps
+nbSteps = 200                                # number of steps
 
 
 

@@ -10,8 +10,6 @@ from pyroborobo import Pyroborobo
 from pyroborobo import Controller
 from pyroborobo import CircleObject
 
-from hit_ee import hit_ee_v1
-
 import numpy as np
 
 
@@ -23,7 +21,7 @@ import numpy as np
 fileConfig = "config/trial1.properties" 
 nbRobots = 30                               # get this value in the trial1.properties file
 
-nbSteps = 5000
+nbSteps = 1000
 cptStepsG = 0                               # global, used to know the passed number of steps
 
 currentAgent = None                         # global, used to know wich agent hits one object
@@ -33,7 +31,9 @@ mutationRate = 0                            # global, used by HIT-EE algorithm
 transferRate = 0.5  # 0.9                   # global, used by HIT-EE algorithm
 maturationDelay = 400                       # global, used by HIT-EE algorithm
 
-verbose = True                              # set true if you want to see execution details on terminal
+verbose = False                             # set true if you want to see execution details on terminal
+
+
 
 
 ################################################################################################################
@@ -110,7 +110,7 @@ class RobotsController(Controller):
 
         global currentAgent                 # sets value of currentAgent, mandatory declaration of global var
         currentAgent = self.id              # used to tell which robot hits the object
-        
+
         # Set sensors vector
         for i in range(self.nb_sensors):
             self.sensors[i] = self.get_distance_at(i)
@@ -118,15 +118,15 @@ class RobotsController(Controller):
         if verbose :
             print("\nRobot n." + str(self.id) + " au passage actuellement")
             print("\tgenome =", self.genome)
-            print("\tsensors :", self.sensors)
+            print("\tSensors :", self.sensors)
             if cptStepsG % nbRobots == 0 :
                 print("\ttabSumFood :", tabSumFood)  # fitness values
 
 
         # Robots' behaviours exchange (communication)
-        hit_ee_v1(self, tabSumFood, mutationRate, transferRate, maturationDelay, verbose)       # uses global mutationRate, transferRate, maturationDelay
+        self.hit_ee()       # uses global mutationRate, transferRate, maturationDelay
 
-        # Expert behaviour : le robot n.0 et n.1 play the role of the experts
+        # Expert behaviour : le robot n.0 plays the role of the expert
         if self.id == 0 or self.id == 1:
             t, r = self.expertBehaviour()
             self.set_translation(t)
@@ -178,6 +178,53 @@ class RobotsController(Controller):
         t = max(-1, min(t, 1))
         r = max(-1, min(r, 1))
         return t, r
+
+
+    def hit_ee(self):
+        newGenome = False
+        if self.age >= maturationDelay:     # The robot is ready to learn or teach
+            
+            # Teaching knowledge to every robot in the neighborhood
+            self.broadcast(self.genome, transferRate, tabSumFood[self.id])
+
+            # Learning knowledge from received packets
+            for m in self.messages:
+                if m[3] >= tabSumFood[self.id]:     # m[3] = fitnessRS
+                    newGenome = self.transferGenome(m)
+                    newGenome = True
+
+                if newGenome:
+                    newGenome = False
+                    self.age = 0
+                    #self.fitness = 0         # line code in the HIT-EE algorithm, not used in this trial
+                    
+        self.age += 1
+
+
+    def broadcast(self, genome, transferRate, fitness):
+        for i in range (self.nb_sensors):
+            robotDestId = self.get_robot_id_at(i)
+            if robotDestId == -1:
+                continue
+            nbElemToReplace = int(len(genome) * transferRate)
+            elemToReplace = np.random.choice(range(0, len(self.genome)), nbElemToReplace, False)
+            self.rob.controllers[robotDestId].messages += [(self.id, genome, elemToReplace, fitness)]
+
+            if verbose :
+                print("[SENT MSG] I'm the robot n." + str(self.id) + " and I've sent a msg to robot n." + str(robotDestId))  
+
+
+    def transferGenome(self, message):
+        robotSourceId, genomeRS, elemToReplaceRS, fitnessRS = message
+        if fitnessRS >= tabSumFood[self.id]:
+            oldGenome = self.genome
+            for index in elemToReplaceRS:
+                self.genome[index] = genomeRS[index] * (1-mutationRate)
+        
+            if verbose :
+                print("\n[RECEIVED MSG] I'm the robot n." + str(self.id) + " and I've received a good msg from robot n." + str(robotSourceId))  
+                print("\tI've changed my genome :\n\tfrom oldGenome =", oldGenome, ", \n\tto newGenome =", self.genome, ", \n\tlearned by genomeRS =", genomeRS)
+                print("\tbecause fitness robot n.", robotSourceId," (" , fitnessRS , ") is > than our fitness, (", tabSumFood[self.id], ")\n")
 
 
     def inspect(self, prefix=""):

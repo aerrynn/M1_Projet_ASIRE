@@ -1,5 +1,5 @@
 
-#                                           TRIAL 1 : FORAGING TASK
+#                                           TRIAL 2 : FORAGING TASK
 
 
 ################################################################################################################
@@ -11,6 +11,8 @@ from pyroborobo import Controller
 from pyroborobo import CircleObject
 
 from hit_ee import hit_ee_v1
+from extendedSensors import get24ExtendedSensors
+import robotsBehaviors
 
 import numpy as np
 
@@ -23,7 +25,7 @@ import numpy as np
 fileConfig = "config/trial1.properties" 
 nbRobots = 30                               # get this value in the trial1.properties file
 
-nbSteps = 5000
+nbSteps = 2000
 cptStepsG = 0                               # global, used to know the passed number of steps
 
 currentAgent = None                         # global, used to know wich agent hits one object
@@ -33,7 +35,8 @@ mutationRate = 0                            # global, used by HIT-EE algorithm
 transferRate = 0.5  # 0.9                   # global, used by HIT-EE algorithm
 maturationDelay = 400                       # global, used by HIT-EE algorithm
 
-verbose = True                              # set true if you want to see execution details on terminal
+verbose = False                              # set true if you want to see execution details on terminal
+isFirstIteration = [True] * nbRobots
 
 
 ################################################################################################################
@@ -93,11 +96,10 @@ class RobotsController(Controller):
         self.rob = Pyroborobo.get()
         self.age = 0
 
-        self.genome = [self.randNotZero()/2 for _ in range(self.nb_sensors)]
-        self.expertGenome = [0] * self.nb_sensors                   # initialisation and definitive vector
-        self.sensors = [0] * self.nb_sensors
-        self.halfSizeGenome = int(np.ceil(len(self.genome)/2))
-        self.halfSizeSensors = int(np.ceil(len(self.sensors)/2))
+        self.genome = []
+        self.expertGenome = []
+        self.sensors, self.nbExtendedSensors = get24ExtendedSensors(self)    
+        self.tabSensors = []
 
         self.messages = []
         
@@ -111,10 +113,22 @@ class RobotsController(Controller):
         global currentAgent                 # sets value of currentAgent, mandatory declaration of global var
         currentAgent = self.id              # used to tell which robot hits the object
         
-        # Set sensors vector
-        for i in range(self.nb_sensors):
-            self.sensors[i] = self.get_distance_at(i)
-            
+        # Set sensors vector (dicto)
+        self.sensors, _ = get24ExtendedSensors(self)
+        self.tabSensors = []
+        for key in self.sensors:
+            self.tabSensors.append(self.sensors[key]["distance_to_robot"])
+            self.tabSensors.append(self.sensors[key]["distance_to_object"])
+            self.tabSensors.append(self.sensors[key]["distance_to_wall"])
+
+
+        global isFirstIteration
+        if isFirstIteration[currentAgent] :   # parameters initialization    
+            self.genome = [self.randNotZero()/2 for _ in range(self.nbExtendedSensors)]
+            self.expertGenome = [0] * self.nbExtendedSensors
+            isFirstIteration[currentAgent] = False
+      
+
         if verbose :
             print("\nRobot n." + str(self.id) + " au passage actuellement")
             print("\tgenome =", self.genome)
@@ -146,38 +160,15 @@ class RobotsController(Controller):
         return aleaFloat
 
 
-    def expertBehaviour(self):
-        t = 1
-        r = 0
-
-        if self.get_distance_at(1) < 1 or self.get_distance_at(2) < 1 :
-            r = 0.5
-        elif self.get_distance_at(3) < 1 :
-            r = -0.5
-
+    def expertBehaviour(self):      
         if verbose :
             print ("Hello I'm " + str(self.id) + " and I'm super cool 'cause I'm expert")    
 
-        return self.testControllersValidRange(t, r)
+        return robotsBehaviors.avoidEverything(self)
 
 
     def swarmBehaviour(self):
-        t = 0
-        r = 0
-
-        # Neural network 1 : linear combination of sensory imputs and genome vector (weights)
-        if len(self.genome) == len(self.sensors):    
-            t = 1 + np.dot(self.genome[0:self.halfSizeGenome], self.sensors[0:self.halfSizeSensors])
-            r = np.random.choice([-1, 1]) * 0.5 + np.dot(self.genome[self.halfSizeGenome:len(self.genome)], self.sensors[self.halfSizeSensors:len(self.sensors)])
-        
-        return self.testControllersValidRange(t, r)
-
-
-    def testControllersValidRange(self, t, r):
-        # Limits the values of transition and rotation from -1 to +1
-        t = max(-1, min(t, 1))
-        r = max(-1, min(r, 1))
-        return t, r
+        return robotsBehaviors.compute_neuralNetwork(self)
 
 
     def inspect(self, prefix=""):
