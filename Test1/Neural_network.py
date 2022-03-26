@@ -172,8 +172,6 @@ class NeuralNetwork:
             :batch size: Mac amount of input/output tuples in each batch
         '''
         n = Y.size
-        print(f"computing {n}-sized data batch, {steps} times")
-        print(Y)
         for i in range(steps):                                  # Repeats steps times
             # Iterates over each element of the data subdivided into smaller batches
             for batch_start in range(0, n, batch_size):

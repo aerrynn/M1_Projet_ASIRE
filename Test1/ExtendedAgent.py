@@ -14,7 +14,7 @@ class Agent(Controller):
         Const
         '''
         Controller.__init__(self, wm)
-        self.theta = NeuralNetwork(4*self.nb_sensors, 2, c.NB_HIDDENS)
+        self.theta = NeuralNetwork(3*self.nb_sensors, 2, c.NB_HIDDENS)
         self.messages = [] # used to store broadcasts
         self.current_capacity = 0
         self.rob = Pyroborobo.get()
@@ -45,8 +45,7 @@ class Agent(Controller):
             # Adds the pos of the closest obstacle
             data_plus.append(v)
             data_plus.append(self.get_object_at(i) != -1)
-            data_plus.append(self.get_wall_at(i))
-            data_plus.append(self.get_robot_id_at(i) != -1)
+            data_plus.append(self.get_wall_at(i) == 1 or (self.get_robot_id_at(i) != -1))
             # Adds the type_ID of the closest obstacle
         data_plus = np.array(data_plus)
         fitness = self.fitness(data)

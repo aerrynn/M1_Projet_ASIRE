@@ -30,9 +30,9 @@ MAX_CAPACITY = 1
 ## BushNode
 REGROWTH_TIME = 150
 MAX_RESSOURCE_LEVEL = 1
-NB_ITER = 10000
+NB_ITER = 100000
 ########################################################################################
 
 LEARNING_GAP = 60
 MEMORY_SIZE = 100
-NB_LEARNER = 6
+NB_LEARNER = 24

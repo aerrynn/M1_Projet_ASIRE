@@ -91,8 +91,8 @@ class MemoryAgent(Agent):
         food_spots = []
         food_spotted = False
         for sensor_id in range(0, 5):
-            if observation[(sensor_id*4)+1]:
-                food_spots.append(observation[sensor_id*4])
+            if observation[(sensor_id*3)+1]:
+                food_spots.append(observation[sensor_id*3])
                 food_spotted = True
             else:
                 food_spots.append(2)
@@ -104,17 +104,18 @@ class MemoryAgent(Agent):
                 return 1, -0.5
             return 1, 0.5
         # Check each frontal sensor for obstacles
-        if (observation[(2*4)+2] + observation[(2*4)+3]) == 0:  # There's nothing in front
+        if (observation[(2*3)+2]) == 0:  # There's nothing in front
             # if there's something on the left
-            if (observation[(1*4)+2] + observation[(1*4)+3]) > 0:
-                return 1, -0.5
-            # if there's something on the right
-            if (observation[(1*4)+2] + observation[(1*4)+3]) > 0:
+            if (observation[(1*3)+2] ) == 1:
                 return 1, 0.5
+            # if there's something on the right
+            if (observation[(3*3)+2] ) == 1:
+                return 1, -0.5
             return 1, 0
-        if (observation[(0*4)+2] + observation[(0*4)+3]) > 0:
-            return 1, 1
-        return 1, -1
+        # If there's something in front
+        if (observation[(0*3)+2]) == 1: # and on the left
+            return 1, 1 # Turn straight right
+        return 1, -1 # else : turn straight left
 
     def broadcast(self, obs, mvm, score):
         if self.type == 0:
