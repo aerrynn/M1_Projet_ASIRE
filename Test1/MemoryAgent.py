@@ -1,6 +1,7 @@
 from ExtendedAgent import Agent
 import numpy as np
 import Const as c
+from AdaptativeLearningRate import exponentialDecay
 
 data = dict()
 
@@ -51,14 +52,13 @@ class MemoryAgent(Agent):
         if self.age == c.LEARNING_GAP:
             self.age = 0
             self.current_capacity = 0
+            # For dataCollection purposes
+            if c.DATA_SAVE:
+                try:
+                    data[self.id].append(np.mean(self.sliding_window))
+                except KeyError:
+                    data[self.id] = [np.mean(self.sliding_window)]
         self.sliding_window[self.age] = fitness
-
-        # For dataCollection purposes
-        if c.DATA_SAVE:
-            try:
-                data[self.id].append(np.mean(self.sliding_window))
-            except KeyError:
-                data[self.id] = [np.mean(self.sliding_window)]
 
     def learn_from_msg(self):
         if self.type == 1:                              # Experts Don't learn
@@ -71,7 +71,8 @@ class MemoryAgent(Agent):
             _, obs, mvmt, _ = message
             data_x.append(obs)
             data_y.append(mvmt)
-        self.theta.train(np.array(data_x), np.array(data_y))
+        self.theta.train(np.array(data_x), np.array(data_y),
+                         learning_rate=exponentialDecay(self.total_data_size))
         n = len(self.messages)
         self.total_data_size += n
         if c.VERBOSE and n != 0:
@@ -94,8 +95,9 @@ class MemoryAgent(Agent):
             else:
                 food_spots.append(2)
         if food_spotted:
-            direction = np.argmin(food_spots)   # Go toward the closest food source
-            return c.EXPERT_SPEED, (direction -2) * 0.5
+            # Go toward the closest food source
+            direction = np.argmin(food_spots)
+            return c.EXPERT_SPEED, (direction - 2) * 0.5
         # Check each frontal sensor for obstacles
         if (observation[(2*2)]) == 1:  # There's nothing in front
             # if there's something on the left

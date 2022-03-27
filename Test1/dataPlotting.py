@@ -18,7 +18,8 @@ if __name__ == '__main__':
                     learner_data[ite].append(float(score))
                 else :
                     teacher_data[ite].append(float(score))
-    print(np.sum(learner_data, axis=1))
-    plt.plot(list(range(total_iterations)), learner_data, label = 'learner')
+    
+    # plt.boxplot(teacher_data[-1], list(range(total_iterations)))
+    # plt.plot(list(range(total_iterations)), [x[:1]for x in learner_data], label = 'learner')
     plt.plot(list(range(total_iterations)),[np.mean(x) for x in teacher_data])
     plt.show()
