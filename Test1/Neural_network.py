@@ -13,10 +13,9 @@ def sigmoid(x: float) -> float:
     return 1.0 / (1.0 + np.exp(-x))
 
 
-# Sigmoide derivative
 def d_sigmoid(x: float) -> float:
     '''
-    derivative of the aforementioned sigmoid function
+    d_sigmoid: derivative of the aforementioned sigmoid function
     '''
     return sigmoid(x) * (1.0 - sigmoid(x))
 
@@ -34,7 +33,7 @@ class Layer:
         '''
         self.size = size
         self.input_size = input_size
-        self.weights = np.random.randn(size, input_size)    #
+        self.weights = np.random.randn(size, input_size)    # Random Biases
         self.biases = np.random.randn(size)                 # Neuron Bias
 
     def forward(self, data: np.ndarray) -> np.ndarray:
@@ -168,8 +167,8 @@ class NeuralNetwork:
             :param X: list of inputs of the data
             :param Y: list of outputs of the data
             :param steps: Amount of times the network iterates over the data
-            :param learning rate: Neural network learning rate
-            :batch size: Mac amount of input/output tuples in each batch
+            :param learning_rate: Neural network learning rate
+            :param batch_size: Max amount of input/output tuples in each batch
         '''
         n = Y.size
         for i in range(steps):                                  # Repeats steps times
@@ -179,7 +178,7 @@ class NeuralNetwork:
                                      batch_size], Y[batch_start:batch_start + batch_size]
                 self.train_batch(X_batch, Y_batch, learning_rate)
 
-    def train_batch(self, X: np.ndarray, Y: np.ndarray, learning_rate: float) -> None:
+    def train_batch(self, X: np.ndarray, Y: np.ndarray, learning_rate: float = 0.3) -> None:
         '''
         train_batch: train the neural network with both retropropagation and
         descending gradient
@@ -203,11 +202,8 @@ class NeuralNetwork:
         # Average of each gradient
         avg_weight_gradient = [wg / max(1, Y.size) for wg in weight_gradient]
         avg_bias_gradient = [bg / max(1, Y.size) for bg in bias_gradient]
-
         # Updating biaises and weights
-        for layer, weight_gradient, bias_gradient in zip(self.layers,
-                                                         avg_weight_gradient,
-                                                         avg_bias_gradient):
+        for layer, weight_gradient, bias_gradient in zip(self.layers, avg_weight_gradient, avg_bias_gradient):
             layer.update_weights(weight_gradient, learning_rate)
             layer.update_biases(bias_gradient, learning_rate)
 
@@ -230,7 +226,7 @@ class NeuralNetwork:
             activations.append(activation)
         target = y
         # Computing delta on the last layer
-        delta = self.get_output_delta(activation, target)
+        delta, alpha = self.get_output_delta(activation, target)
         deltas = [delta]
         nb_layers = len(self.layers)
         # Retropropagation
@@ -248,8 +244,8 @@ class NeuralNetwork:
             prev_activation = activations[l]
             weight_gradient.append(np.outer(deltas[l], prev_activation))
             bias_gradient.append(deltas[l])
-
-        return weight_gradient, bias_gradient
+        # print(np.exp(alpha))
+        return map(lambda x: x*np.exp(alpha), weight_gradient), map(lambda x: x*np.exp(alpha), bias_gradient)
 
     def get_output_delta(self, activation, target) -> np.ndarray:
         '''
@@ -257,11 +253,15 @@ class NeuralNetwork:
         calculated value for each component of the output vector
             :param activation: the computed value of the last layer of the network
             :param target: The targeted output
-            :param delta: The difference of the expected action and the wanted action
+            :return delta: The difference of the expected action and the wanted action
+            :return alpha: The correctness of the classification 
         '''
         activation = self.to_output(activation)
         delta = activation - target
-        return delta
+        correctness = 1 - (np.abs(delta[0])+np.abs(delta[1]))/4
+        s_delta = np.log(correctness)
+        alpha = 1/2 * s_delta
+        return delta, alpha
 
     def mutate(self) -> None:
         '''
@@ -359,8 +359,6 @@ def main():
     for i, (each, att) in enumerate(zip(eval_x, attendu_y)):
         x, y = nn.ff_to_output(each)
         print(f"{i}, [{x:.4f},{y:.4f}], expected {att}")
-
-    # pass
 
 
 if __name__ == '__main__':

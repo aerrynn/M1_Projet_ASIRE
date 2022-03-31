@@ -1,12 +1,14 @@
 from pyroborobo import CircleObject, Pyroborobo, WorldObserver
 from ExtendedAgent import Agent
-from MemoryAgent import MemoryAgent, save_data
+from MemoryAgent import MemoryAgent
+from NeuralLearner import NeuralLearner
+import DataHandler
 import numpy as np
 import random
 import Const as c
+import sys
 
 ########################################################################################
-
 
 
 class BushNode(CircleObject):
@@ -44,7 +46,7 @@ class BushNode(CircleObject):
         if self.regrowing:
             self.cur_regrow -= 1		        # Reduce the left regrowth time
             if self.cur_regrow <= 0: 	        # The node has finished regrowing
-                if c.CHANGE_POSITION :
+                if c.CHANGE_POSITION:
                     self.relocate()
                 self.show()				        # Displaying the node
                 self.register()
@@ -78,7 +80,7 @@ class MyWorldObserver(WorldObserver):
 
     def init_post(self):
         super().init_post()
-        for i in range(50):
+        for i in range(c.NB_ITEMS):
             bush = BushNode(i, {})
             self.rob.add_object(bush)
 
@@ -106,22 +108,30 @@ class MyWorldObserver(WorldObserver):
 ########################################################################################
 
 
-def main():
+def main(agent_class):
     rob = Pyroborobo.create(
         "config/ForagingTask.properties",
-        controller_class=MemoryAgent,
+        controller_class=agent_class,
         world_observer_class=MyWorldObserver,
         object_class_dict={
             '_default': BushNode,
             'bush': BushNode
         }
     )
+    DataHandler.init_dict()
 
     rob.start()
     rob.update(c.NB_ITER)
     rob.close()
-    save_data('Data.values')
+    if c.SAVE_FILE:
+        DataHandler.save_data()
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'MemoryAgent':
+            main(MemoryAgent)
+        elif sys.argv[1] == 'NeuralLearner':
+            main(NeuralLearner)
+    else:
+        main(MemoryAgent)

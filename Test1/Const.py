@@ -1,10 +1,15 @@
+from AdaptativeLearningRate import *
+
+
 ########################################################################################
 #                                    Global                                            #
 ########################################################################################
-VERBOSE = True
-# VERBOSE = False
+
+# VERBOSE = True
+VERBOSE = False
 DATA_SAVE = True
 # DATA_SAVE = False
+SAVE_FILE = 'data_neural'
 ########################################################################################
 #                                   Objects ID                                         #
 ########################################################################################
@@ -13,34 +18,43 @@ WALL_ID = 1
 ROBOT_ID = 2
 FOOD_ID = 3
 ########################################################################################
-#                                   HitAgents                                          #    
+#                                   HitAgents                                          #
 ########################################################################################
 
 NB_HIDDENS = 10
-EVALUATION_TIME = 100
+EVALUATION_TIME = 600
 MEMORY_RANGE = 20
 LEARNING_STEPS = 30
 LEARNING_RATE = 0.5
-MUTATION_RATE = 0.5
-DECAY = 2
+MUTATION_RATE = 0.
+########################################################################################
+#                                 NeuralLearner                                        #
+########################################################################################
+
+PROPAGATION = True
+DECAY_FUNCTION = constantLearningRate
+DECAY_RATIO = 0.01
 ########################################################################################
 #                                 Foraging Task                                        #
 ########################################################################################
 
-## Carrier_Agents
+# Carrier_Agents
 MAX_CAPACITY = 1
 
-## BushNode
+# BushNode
+NB_ITEMS = 100
 REGROWTH_TIME = 10
 CHANGE_POSITION = True
 MAX_RESSOURCE_LEVEL = 1
 NB_ITER = 100000
 ########################################################################################
-#                                 MemoryAgents                                         #    
+#                                 MemoryAgents                                         #
 ########################################################################################
-EXPERT_SPEED = 1                                                       # between 0 and 1
+
+# between 0 and 1
+EXPERT_SPEED = 1
 LEARNING_GAP = 60
 MEMORY_SIZE = 100
 NB_LEARNER = 24
+LEARNT_BEHAVIOUR_PROPAGATION = True
 ########################################################################################
-

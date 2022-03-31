@@ -3,6 +3,8 @@ import numpy as np
 from Neural_network import NeuralNetwork
 import Const as c
 
+iteration = 0
+
 
 class Agent(Controller):
     '''
@@ -14,14 +16,21 @@ class Agent(Controller):
         Const
         '''
         Controller.__init__(self, wm)
+        self.sliding_window = [0 for _ in range(c.EVALUATION_TIME)]
         self.theta = NeuralNetwork(2*self.nb_sensors, 2, c.NB_HIDDENS)
-        self.messages = [] # used to store broadcasts
+        self.messages = []  # used to store broadcasts
         self.current_capacity = 0
         self.rob = Pyroborobo.get()
         self.age = 0
 
     def step(self) -> None:
+        global iteration
         self.age += 1
+        if self.id == 0:
+            iteration += 1
+            if iteration == c.EVALUATION_TIME:
+                iteration = 0
+        self.sliding_window[iteration] = 0
         obs, score = self.sense()
         mvm = self.apply_policy(obs)
         self.act(mvm)
@@ -51,7 +60,6 @@ class Agent(Controller):
         fitness = self.fitness(data)
         return data_plus, fitness
 
-
     def fitness(self, sensors_data: np.ndarray) -> float:
         '''
         fitness : Function to be overwritten
@@ -76,7 +84,7 @@ class Agent(Controller):
         '''
         for i in range(self.nb_sensors):
             rob_id = self.get_robot_id_at(i)
-            if rob_id==-1:
+            if rob_id == -1:
                 continue
             self.rob.controllers[rob_id].messages.append(
                 (self.id, obs, mvm, score))
@@ -91,13 +99,22 @@ class Agent(Controller):
         out = self.theta.ff_to_output(observations)
         return np.clip(out, -1, 1)
 
+    def save_data(self):
+        '''
+        save_data: saves the current fitness of the agent in a dict to be able
+        to trace its evolution 
+        '''
+        if c.DATA_SAVE:
+            DataHandler.add_data(self.id, self.fitness())
 
     def learn_from_msg(self):
-        pass
+        '''
+        learn_from_msg: used to teach the agent how to act through messages received
+        through broadcast
+        '''
+        self.messages[:] = []
 
     def pick_up(self) -> None:
-        if c.VERBOSE:
-            print(f'{self.id}: I picked up some sugar !')
-        self.current_capacity += 1
+        self.sliding_window[self.age] = 1
 
 ########################################################################################
