@@ -159,7 +159,7 @@ class RobotsController(Controller):
         if verbose :
             print ("Hello I'm " + str(self.id) + " and I'm super cool 'cause I'm expert")    
 
-        return robotsBehaviors.avoidEverything(self)
+        return robotsBehaviors.avoidRobotsWalls_getObjects(self)
 
 
     def swarmBehaviour(self):

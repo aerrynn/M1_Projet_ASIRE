@@ -10,7 +10,7 @@ from pyroborobo import Pyroborobo
 from pyroborobo import Controller
 from pyroborobo import CircleObject
 
-from hit_ee import hit_ee_v1
+from hit_ee import hit_ee_v3
 from extendedSensors import get24ExtendedSensors
 import robotsBehaviors
 
@@ -133,7 +133,7 @@ class RobotsController(Controller):
 
 
         # Robots' behaviours exchange (communication)
-        hit_ee_v1(self, tabSumFood, mutationRate, transferRate, maturationDelay, verbose)       # uses global mutationRate, transferRate, maturationDelay
+        hit_ee_v3(self, genome, tabSensors, genomeExpert, tabSensorsExpert, tabF, learning_rate, allowed_error, nbMaxIt, verbose)
 
         # Expert behaviour : le robot n.0 et n.1 play the role of the experts
         if self.id == 0 or self.id == 1:
