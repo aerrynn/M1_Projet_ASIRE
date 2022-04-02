@@ -130,12 +130,12 @@ def compute_neuralNetwork(self):
     t = 0
     r = 0
 
-    assert len(self.genome) == len(self.tabSensors)
+    assert len(self.genome) == len(self.tabExtSensorsFloat)
 
     halfSizeGenome = int(np.ceil(len(self.genome)/2))
 
-    t = 1 + np.dot(self.genome[0:halfSizeGenome], self.tabSensors[0:halfSizeGenome])
-    r = np.random.choice([-1, 1]) * 0.5 + np.dot(self.genome[halfSizeGenome:len(self.genome)], self.tabSensors[halfSizeGenome:len(self.tabSensors)])
+    t = 1 + np.dot(self.genome[0:halfSizeGenome], self.tabExtSensorsFloat[0:halfSizeGenome])
+    r = np.random.choice([-1, 1]) * 0.5 + np.dot(self.genome[halfSizeGenome:len(self.genome)], self.tabExtSensorsFloat[halfSizeGenome:len(self.tabExtSensorsFloat)])
     
     return testControllersValidRange(t, r)
     

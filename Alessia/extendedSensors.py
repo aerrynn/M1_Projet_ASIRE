@@ -1,5 +1,5 @@
 
-#                                                getExtendedSensors
+#                                             getExtendedSensors
 
 
 ################################################################################################################
@@ -32,8 +32,20 @@
 
 
 def get24ExtendedSensors(self):
+    """ Méthode pour obtenir 24 nouveaux senseurs deduits à partir des 8 senseurs de base.
+    Retourne :
+        - sensors (dictionnaire) : ( distance, isRobot (bool), isObject (bool), isWall (bool), distance_to_robot, distance_to_object, distance_to_wall ) pour chaque senseur de base
+        - tabExtSensors (liste) : ( distance_to_robot, distance_to_object, distance_to_wall ) pour chaque senseur de base
+
+    Paramètres:
+    :param self.nb_sensors : nombre de senseurs de base d'un robot (assert : self.nb_sensors = 8)
+    :param self.get_distance_at() : valeur de la distance à un obstacle (robot ou objet ou wall)
+    :param self.get_robot_id_at() : valeur de la distance à un robot
+    :param self.get_object_at() : valeur de la distance à un objet
+    :param self.get_wall_at() : valeur de la distance à un wall
+    """
     
-    assert self.nb_sensors == 8, "getExtendedSensors only works with 8 sensors"
+    assert self.nb_sensors == 8, "get24ExtendedSensors only works with 8 base sensors"
 
     sensors = {}
     labels = ["sensor_left", "sensor_front_left", "sensor_front", "sensor_front_right", "sensor_right", "sensor_back_right", "sensor_back", "sensor_back_left"]
@@ -58,12 +70,41 @@ def get24ExtendedSensors(self):
         if sensors[key]["isWall"] == True:
             sensors[key]["distance_to_wall"] = sensors[key]["distance"]
 
-    tabSensors = []
+
+    return sensors
+
+
+#--------------------------------------------------------------------------------------------------------------
+
+def extractExtSensors_float(sensors):
+    """Méthode pour extraire les 24 extended sensors sous forme de tableau, de manière à les utiliser comme input dans le perceptron.
+    Retourne un tabExtSensors (liste) : ( distance_to_robot, distance_to_object, distance_to_wall ) pour chaque senseur de base
+    
+    :param sensors : dictionnaire representant les 24 extended sensors
+    """
+
+    tabExtSensors = []
     for key in sensors:
-        tabSensors.append(sensors[key]["distance_to_robot"])
-        tabSensors.append(sensors[key]["distance_to_object"])
-        tabSensors.append(sensors[key]["distance_to_wall"])
+        tabExtSensors.append(sensors[key]["distance_to_robot"])
+        tabExtSensors.append(sensors[key]["distance_to_object"])
+        tabExtSensors.append(sensors[key]["distance_to_wall"])
 
-    return sensors, tabSensors
+    return tabExtSensors
 
 
+#--------------------------------------------------------------------------------------------------------------
+
+def extractExtSensors_bool(sensors):
+    """Méthode pour extraire les 24 extended sensors sous forme de tableau, de manière à les utiliser comme input dans le perceptron.
+    Retourne un tabExtSensors (liste) : ( distance, isRobot (bool), isObject(bool), isWall(bool) ) pour chaque senseur de base
+    
+    :param sensors : dictionnaire representant les 24 extended sensors
+    """
+
+    tabExtSensors = []
+    for key in sensors:
+        tabExtSensors.append(sensors[key]["isRobot"])
+        tabExtSensors.append(sensors[key]["isObject"])
+        tabExtSensors.append(sensors[key]["isWall"])
+
+    return tabExtSensors

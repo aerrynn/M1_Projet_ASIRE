@@ -24,7 +24,6 @@ nbRobots = 30                               # get this value in the trial1.prope
 nbSteps = 1000
 cptStepsG = 0                               # global, used to know the passed number of steps
 
-currentAgent = None                         # global, used to know wich agent hits one object
 tabSumFood = [0] * nbRobots                 # global, used to store the fitness function
 
 mutationRate = 0                            # global, used by HIT-EE algorithm
@@ -47,7 +46,6 @@ class Food_Object(CircleObject):
         CircleObject.__init__(self, id)
         self.str = "[Food_Object " + str(id) + "] : "
         self.cptSteps = 0
-        # self.rob = Pyroborobo.get()       # get pyroborobo singleton ?
 
     def reset(self):
         pass
@@ -67,11 +65,10 @@ class Food_Object(CircleObject):
         self.unregister()
 
         global tabSumFood
-        tabSumFood[currentAgent] += 1       # foraging task, fitness array
+        tabSumFood[id] += 1       # foraging task, fitness array
 
         if verbose :
-            print(self.str + "is_touched by robot n." + str(currentAgent) )
-
+            print("[GNAM GNAM] Object n.", self.id, "is_touched by robot n.", id)
 
     def inspect(self, prefix=""):
         return "\n" + self.str + f"[INSPECT] I'm the object #{self.id}\n\n"
@@ -107,9 +104,6 @@ class RobotsController(Controller):
 
 
     def step(self):
-
-        global currentAgent                 # sets value of currentAgent, mandatory declaration of global var
-        currentAgent = self.id              # used to tell which robot hits the object
 
         # Set sensors vector
         for i in range(self.nb_sensors):

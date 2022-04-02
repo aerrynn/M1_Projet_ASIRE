@@ -11,7 +11,7 @@ from pyroborobo import Controller
 from pyroborobo import CircleObject
 
 from hit_ee import hit_ee_v3
-from extendedSensors import get24ExtendedSensors
+from extendedSensors import get24ExtendedSensors, extractExtSensors_float
 import robotsBehaviors
 
 import numpy as np
@@ -25,18 +25,23 @@ import numpy as np
 fileConfig = "config/trial3.properties" 
 nbRobots = 3                              # get this value in the trial1.properties file
 
-nbSteps = 1000
+nbSteps = 100
 cptStepsG = 0                               # global, used to know the passed number of steps
 
-currentAgent = None                         # global, used to know wich agent hits one object
 tabSumFood = [0] * nbRobots                 # global, used to store the fitness function
 
 mutationRate = 0                            # global, used by HIT-EE algorithm
 transferRate = 0.5  # 0.9                   # global, used by HIT-EE algorithm
 maturationDelay = 400                       # global, used by HIT-EE algorithm
 
-verbose = False                              # set true if you want to see execution details on terminal
+verbose = True                              # set true if you want to see execution details on terminal
 isFirstIteration = [True] * nbRobots
+
+
+# Parameters used in the Perceptron class
+learningRate = 0.5
+allowedError = 0.1
+nbMaxIt = 10
 
 
 ################################################################################################################
@@ -50,7 +55,6 @@ class Food_Object(CircleObject):
         CircleObject.__init__(self, id)
         self.str = "[Food_Object " + str(id) + "] : "
         self.cptSteps = 0
-        # self.rob = Pyroborobo.get()       # get pyroborobo singleton ?
 
     def reset(self):
         pass
@@ -59,10 +63,7 @@ class Food_Object(CircleObject):
         self.cptSteps += 1
 
         global cptStepsG
-        cptStepsG = self.cptSteps           # value used in RobotsController too
-
-        if verbose : 
-            print(self.str + "I'm object n." + str(self.id) + ", cptSteps = " + str(self.cptSteps) )
+        cptStepsG = self.cptSteps
 
 
     def is_touched(self, id):
@@ -70,10 +71,10 @@ class Food_Object(CircleObject):
         self.unregister()
 
         global tabSumFood
-        tabSumFood[currentAgent] += 1       # foraging task, fitness array
+        tabSumFood[id] += 1       # foraging task, fitness array
 
         if verbose :
-            print(self.str + "is_touched by robot n." + str(currentAgent) )
+            print("[GNAM GNAM] Object n.", self.id, "is_touched by robot n.", id)
 
 
     def inspect(self, prefix=""):
@@ -98,8 +99,12 @@ class RobotsController(Controller):
 
         self.genome = []
         self.expertGenome = []
-        self.sensors, self.tabSensors = get24ExtendedSensors(self)
-        self.nbExtendedSensors = len(self.tabSensors)
+
+        self.sensors = get24ExtendedSensors(self)
+        self.tabExtSensorsFloat = extractExtSensors_float(self.sensors)
+        self.nbExtendedSensors = len(self.tabExtSensorsFloat)
+
+        self.fitness = tabSumFood[self.id]
 
         self.messages = []
         
@@ -109,31 +114,32 @@ class RobotsController(Controller):
 
 
     def step(self):
-
-        global currentAgent                 # sets value of currentAgent, mandatory declaration of global var
-        currentAgent = self.id              # used to tell which robot hits the object
         
         # Set sensors vectors
-        self.sensors, self.tabSensors = get24ExtendedSensors(self)
+        self.sensors = get24ExtendedSensors(self)
+        self.tabExtSensorsFloat = extractExtSensors_float(self.sensors)
 
 
         global isFirstIteration
-        if isFirstIteration[currentAgent] :   # parameters initialization    
-            self.genome = [self.randNotZero()/2 for _ in range(self.nbExtendedSensors)]
+        if isFirstIteration[self.id] :   # parameters initialization    
+            self.genome = [self.randNotZero()/10 for _ in range(self.nbExtendedSensors)]
             self.expertGenome = [0] * self.nbExtendedSensors
-            isFirstIteration[currentAgent] = False
+            isFirstIteration[self.id] = False
       
 
         if verbose :
             print("\nRobot n." + str(self.id) + " au passage actuellement")
-            print("\tgenome =", self.genome)
-            print("\tsensors :", self.sensors)
+            print("\ngenome =", self.genome)
+            print("\nsensors :", self.sensors)
+            print("\n---------------------------------------------------------------")
+
             if cptStepsG % nbRobots == 0 :
-                print("\ttabSumFood :", tabSumFood)  # fitness values
+                print("\ntabSumFood :", tabSumFood)  # fitness values
+                print("\n---------------------------------------------------------------")
 
 
         # Robots' behaviours exchange (communication)
-        hit_ee_v3(self, genome, tabSensors, genomeExpert, tabSensorsExpert, tabF, learning_rate, allowed_error, nbMaxIt, verbose)
+        hit_ee_v3(self, maturationDelay, learningRate, allowedError, nbMaxIt, verbose)
 
         # Expert behaviour : le robot n.0 et n.1 play the role of the experts
         if self.id == 0 or self.id == 1:
@@ -155,12 +161,9 @@ class RobotsController(Controller):
         return aleaFloat
 
 
-    def expertBehaviour(self):      
-        if verbose :
-            print ("Hello I'm " + str(self.id) + " and I'm super cool 'cause I'm expert") 
-               
-        #return robotsBehaviors.avoidRobotsWalls_getObjects_strongVersion(self)
+    def expertBehaviour(self): 
         return robotsBehaviors.avoidRobotsWalls_getObjects(self)
+
 
     def swarmBehaviour(self):
         return robotsBehaviors.compute_neuralNetwork(self)
