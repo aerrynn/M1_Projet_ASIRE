@@ -1,5 +1,5 @@
 
-#                                           TRIAL 3 : FORAGING TASK
+#                                           TRIAL 4 : FORAGING TASK
 
 
 ################################################################################################################
@@ -13,6 +13,7 @@ from pyroborobo import CircleObject
 from hit_ee import hit_ee_v3
 from extendedSensors import get24ExtendedSensors, extractExtSensors_float
 import robotsBehaviors
+import analyses
 
 import numpy as np
 
@@ -22,10 +23,10 @@ import numpy as np
 # PARAMETERS
 ################################################################################################################
 
-fileConfig = "config/trial3.properties" 
-nbRobots = 3                              # get this value in the trial1.properties file
+fileConfig = "config/trial4.properties" 
+nbRobots = 150                              # get this value in the trial1.properties file
 
-nbSteps = 100
+nbSteps = 2000
 cptStepsG = 0                               # global, used to know the passed number of steps
 
 tabSumFood = [0] * nbRobots                 # global, used to store the fitness function
@@ -35,6 +36,7 @@ transferRate = 0.5  # 0.9                   # global, used by HIT-EE algorithm
 maturationDelay = 400                       # global, used by HIT-EE algorithm
 
 verbose = False                             # set true if you want to see execution details on terminal
+plot = True                                 # set true if you want to plot results
 isFirstIteration = [True] * nbRobots
 
 
@@ -54,27 +56,43 @@ class Food_Object(CircleObject):
     def __init__(self, id, data):           # put "data" even if it is not used
         CircleObject.__init__(self, id)
         self.str = "[Food_Object " + str(id) + "] : "
+        self.regrow_time = 200
+        self.cur_regrow = 0
+        self.triggered = False
         self.cptSteps = 0
 
+
     def reset(self):
-        pass
+        self.show()
+        self.register()
+        self.triggered = False
+        self.cur_regrow = 0
+
 
     def step(self):
         self.cptSteps += 1
-
         global cptStepsG
         cptStepsG = self.cptSteps
 
+        if self.triggered :
+            self.cur_regrow -= 1
+            if self.cur_regrow <= 0:
+                self.show()
+                self.register()
+                self.triggered = False
 
-    def is_touched(self, id):
+
+    def is_walked(self, id):
+        self.triggered = True
+        self.cur_regrow = self.regrow_time
         self.hide()
         self.unregister()
 
         global tabSumFood
-        tabSumFood[id] += 1       # foraging task, fitness array
+        tabSumFood[id] += 1       # foraging task, fitness global array
 
         if verbose :
-            print("[GNAM GNAM] Object n.", self.id, "is_touched by robot n.", id)
+            print("[GNAM GNAM] Object n.", self.id, "is_walked by robot n.", id)
 
 
     def inspect(self, prefix=""):
@@ -136,6 +154,11 @@ class RobotsController(Controller):
             if cptStepsG % nbRobots == 0 :
                 print("\ntabSumFood :", tabSumFood)  # fitness values
                 print("\n---------------------------------------------------------------")
+
+
+        if plot:
+            if cptStepsG % nbRobots == 0 or cptStepsG == nbSteps:
+                analyses.plotAverageFitness(tabSumFood, cptStepsG, nbSteps, funcObj = "maximisation")
 
 
         # Robots' behaviours exchange (communication)
