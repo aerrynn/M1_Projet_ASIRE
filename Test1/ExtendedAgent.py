@@ -2,8 +2,7 @@ from pyroborobo import Pyroborobo, Controller, AgentObserver
 import numpy as np
 from Neural_network import NeuralNetwork
 import Const as c
-
-iteration = 0
+import DataHandler
 
 
 class Agent(Controller):
@@ -22,6 +21,14 @@ class Agent(Controller):
         self.current_capacity = 0
         self.rob = Pyroborobo.get()
         self.age = 0
+        if self.id < c.NB_LEARNER:
+            self.type = 0                               # 0 -> learner
+            self.set_color(255, 0, 0)
+        else:
+            self.type = 1                               # 1 -> teacher
+            self.set_color(0, 0, 255)
+            self.last_obs = []
+            self.last_mvm = None
 
     def step(self) -> None:
         global iteration
@@ -105,7 +112,10 @@ class Agent(Controller):
         to trace its evolution 
         '''
         if c.DATA_SAVE:
-            DataHandler.add_data(self.id, self.fitness())
+            if self.type == 1:
+                DataHandler.add_teacher_data(self.id, self.fitness())
+            else :
+                DataHandler.add_student_data(self.id, self.fitness())
 
     def learn_from_msg(self):
         '''
@@ -115,6 +125,6 @@ class Agent(Controller):
         self.messages[:] = []
 
     def pick_up(self) -> None:
-        self.sliding_window[self.age] = 1
+        self.sliding_window[DataHandler.evaluation_iteration] = 1
 
 ########################################################################################

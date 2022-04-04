@@ -4,10 +4,8 @@ import Const as c
 from AdaptativeLearningRate import exponentialDecay
 import DataHandler
 
-data = dict()
-
+teach_data = [[] for _ in range(c.NB_ITER)]
 iteration = 0
-
 
 class MemoryAgent(Agent):
     def __init__(self, wm) -> None:
@@ -17,14 +15,6 @@ class MemoryAgent(Agent):
         super().__init__(wm)
         self.memory = {}
         self.total_data_size = 0                        # Tracker for debugging purpose
-        if self.id < c.NB_LEARNER:
-            self.type = 0                               # 0 -> learner
-            self.set_color(255, 0, 0)
-        else:
-            self.type = 1                               # 1 -> teacher
-            self.set_color(0, 0, 255)
-            self.last_obs = []
-            self.last_mvm = None
 
     def fitness(self, sensors_data=None):
         '''
@@ -38,6 +28,7 @@ class MemoryAgent(Agent):
         @Overwrite
         '''
         global iteration
+        self.sliding_window[DataHandler.evaluation_iteration] = 0
         self.age += 1
         obs, fitness = self.sense()
         self.theta.backprop(
@@ -48,20 +39,25 @@ class MemoryAgent(Agent):
             self.broadcast(obs, mvm, 0)
             self.last_mvm = mvm
             self.last_obs = obs
+            DataHandler.add_teacher_data(self.id, self.fitness())
         else:
             mvm = self.learnerPolicy(obs)
             self.act(mvm)
             self.learn_from_msg()
+            DataHandler.add_student_data(self.id, self.fitness())
         # Computing the fitness based off a sliding window of the picked up circles
         if self.age == c.LEARNING_GAP:
             self.age = 0
             self.current_capacity = 0
             # For dataCollection purposes
-        if self.id == 0:
+        if self.id == 28:
             iteration += 1
-            if iteration == c.EVALUATION_TIME:
-                iteration = 0
-        self.sliding_window[iteration] = 0
+            # print(DataHandler.evaluation_iteration, self.sliding_window[DataHandler.evaluation_iteration])
+            DataHandler.evaluation_iteration += 1
+            DataHandler.iteration += 1
+            print(f"\r{DataHandler.iteration}/{c.NB_ITER}", end='')
+            if DataHandler.evaluation_iteration == c.EVALUATION_TIME:
+                DataHandler.evaluation_iteration = 0
         self.save_data()
 
     def learn_from_msg(self):
@@ -88,7 +84,7 @@ class MemoryAgent(Agent):
         self.total_data_size += n
         if c.VERBOSE and n != 0:
             print(
-                f"{self.id} learned from {n} messages ({self.total_data_size} total)")
+                f"{self.id} learned from {n} messages ({self.total_data_size} total, {len(self.memory.keys())} differents)")
         self.messages[:] = []
 
     def learnerPolicy(self, observation: np.ndarray) -> tuple:
@@ -144,7 +140,7 @@ class MemoryAgent(Agent):
         return c.EXPERT_SPEED, -1  # else : turn straight left
 
     def inspect(self, prefix=''):
-        return str(self.id) + "  " + str(self.type)
+        return str(self.id) + "  " + str(self.type) +'\n' + str(self.memory) 
 
     def broadcast(self, obs, mvm, score):
         '''
@@ -162,4 +158,4 @@ def discretise(obs):
         :param obs: the input observations of the agent
         :return : a string to hash for behaviour adaptation
     '''
-    return ','.join([str((x//.5)/2) for x in obs[:10]])
+    return ','.join([str((x//1)) for x in obs[:10]])

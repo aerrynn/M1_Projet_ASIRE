@@ -4,6 +4,7 @@ import numpy as np
 import Const as c
 import DataHandler
 
+counter = 0
 
 class NeuralLearner(Agent):
     def __init__(self, wm) -> None:
@@ -12,7 +13,7 @@ class NeuralLearner(Agent):
         '''
         super().__init__(wm)
         self.sliding_window = [0 for _ in range(c.EVALUATION_TIME)]
-        self.total_data_size = 0                        # Tracker for debugging purpose
+        self.memory_size = 0
         if self.id < c.NB_LEARNER:
             self.type = 0                               # 0 -> learner
             self.set_color(255, 0, 0)
@@ -33,6 +34,7 @@ class NeuralLearner(Agent):
         '''
         @Overwrite
         '''
+        global counter
         self.age += 1
         obs, fitness = self.sense()
         if self.type == 1:
@@ -44,15 +46,18 @@ class NeuralLearner(Agent):
         else:
             mvm = super().apply_policy(obs)
             self.act(mvm)
-            if c.PROPAGATION:
+            if c.PROPAGATION == True:
+                print("here")
                 self.broadcast(obs, mvm, self.fitness())
             self.learn_from_msg()
         # Computing the fitness based off a sliding window of the picked up circles
-        if self.age == c.LEARNING_GAP:
+        if self.age ==  int(np.exp(self.memory_size/100)) * c.LEARNING_GAP:
             self.age = 0
             self.current_capacity = 0
         # For dataCollection purposes
         if self.id == 0:
+            if self.age == 0:
+                counter += 1
             DataHandler.evaluation_iteration += 1
             DataHandler.iteration += 1
             print(f"\r{DataHandler.iteration}/{c.NB_ITER}", end='')
@@ -79,10 +84,10 @@ class NeuralLearner(Agent):
             data_y.append(mvmt)
         self.theta.train_batch(np.array(data_x), np.array(
             data_y), c.DECAY_FUNCTION(DataHandler.iteration))
-        n = len(self.messages)
-        if c.VERBOSE and n != 0:
+        self.memory_size = len(self.messages)
+        if c.VERBOSE and self.memory_size != 0:
             print(
-                f"{self.id} learned from {n} messages ({self.total_data_size} total)")
+                f"{self.id} learned from {self.memory_size} messages ")
 
     def expertPolicy(self, observation: np.ndarray) -> tuple:
         '''
@@ -126,3 +131,6 @@ class NeuralLearner(Agent):
             super().broadcast(self.last_obs, self.last_mvm, score)
             return
         super().broadcast(obs, mvm, score)
+
+    def inspect(self, prefix=""):
+        return str(self.messages)

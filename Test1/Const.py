@@ -9,14 +9,8 @@ from AdaptativeLearningRate import *
 VERBOSE = False
 DATA_SAVE = True
 # DATA_SAVE = False
-SAVE_FILE = 'data_neural'
-########################################################################################
-#                                   Objects ID                                         #
-########################################################################################
-
-WALL_ID = 1
-ROBOT_ID = 2
-FOOD_ID = 3
+SAVE_FILE = 'SavedData/data_memory'
+OVERWRITE_FILE = False
 ########################################################################################
 #                                   HitAgents                                          #
 ########################################################################################
@@ -25,13 +19,13 @@ NB_HIDDENS = 10
 EVALUATION_TIME = 600
 MEMORY_RANGE = 20
 LEARNING_STEPS = 30
-LEARNING_RATE = 0.5
+LEARNING_RATE = 0.8
 MUTATION_RATE = 0.
 ########################################################################################
 #                                 NeuralLearner                                        #
 ########################################################################################
 
-PROPAGATION = True
+PROPAGATION = False
 DECAY_FUNCTION = constantLearningRate
 DECAY_RATIO = 0.01
 ########################################################################################
@@ -56,5 +50,5 @@ EXPERT_SPEED = 1
 LEARNING_GAP = 60
 MEMORY_SIZE = 100
 NB_LEARNER = 24
-LEARNT_BEHAVIOUR_PROPAGATION = True
+LEARNT_BEHAVIOUR_PROPAGATION = False
 ########################################################################################
