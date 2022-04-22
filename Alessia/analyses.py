@@ -44,7 +44,6 @@ def plotAverageFitness(tabFitnesses, cptSteps, nbSteps, funcObj = "maximisation"
  
     global notYetPlotted
     if cptSteps == nbSteps and notYetPlotted == True :
-        print(cptSteps)
         plt.figure()
 
         plt.title("Swarm performance in foraging")
