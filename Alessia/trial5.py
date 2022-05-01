@@ -12,11 +12,12 @@ from pyroborobo import CircleObject
 
 from hit_ee_versionDiffusion import hit_ee_versionDiffusion
 from extendedSensors import get24ExtendedSensors, extractExtSensors_float
-import robotsBehaviors
-import analyses
-import perceptron_supervisedLearning
+from tools import buildDefaultListBehaviors, getOwnAction, buildExpertListBehaviors, getExpertFixedBehavior
 
-import numpy as np
+import robotsBehaviors
+import perceptron_supervisedLearning
+import analyses
+
 
 
 
@@ -25,32 +26,32 @@ import numpy as np
 ################################################################################################################
 
 fileConfig = "config/trial5.properties" 
-nbRobots = 20                               # get this value in the trial1.properties file
+nbRobots = 5                                # get this value in the trial1.properties file
 
-nbSteps = 2000
+nbSteps = 500
 cptStepsG = 0                               # global, used to know the passed number of steps
 
 tabSumFood = [0] * nbRobots                 # global, used to store the fitness function
 
-transferRate = 1  # 0.9                   # global, used by HIT-EE algorithm
-maturationDelay = 100                       # global, used by HIT-EE algorithm
+transferRate = 0.3  # 0.9                     # global, used by HIT-EE algorithm (how many behaviors the expert sends)
+maturationDelay = 0                         # global, used by HIT-EE algorithm
 
-verbose = False                              # set true if you want to see execution details on terminal
+verbose = False                             # set true if you want to see execution details on terminal
 plot = False                                # set true if you want to plot results
 isFirstIteration = [True] * nbRobots
 
 
 # Neural network swarm
 nb_hiddenLayers = 1
-nb_neuronsPerHidden = 1
+nb_neuronsPerHidden = 8
 nb_neuronsPerOutputs = 2
 
 definedExpertBehavior = None
 defaultBehavior = [-1, 0]                    # default behavior : t=1, r=0
 maxSizeDictMyBehaviors = 100
 
-learningRate = 1
-epsilon = 0.2 # NB check : epsilon = unit value. small epsilon = more accuracy required to match
+learningRate = 0.5
+epsilon = 0.25 # NB check : epsilon = unit value. small epsilon = more accuracy required to match
 
 
 ################################################################################################################
@@ -156,12 +157,13 @@ class RobotsController(Controller):
         if isFirstIteration[self.id] :   # parameters initialization
 
             if self.id == 0 or self.id == 1:
-                posInit = (400 * self.id + 20, 400 * self.id + 20)
-                rob.controllers[self.id].set_position(posInit[0], posInit[1])
-                rob.controllers[self.id].set_absolute_orientation(90 * self.id)
-                self.dictMyBehaviors = robotsBehaviors.buildExpertListBehaviors(0, 1, 3, self.nbExtendedSensors, maxSizeDictMyBehaviors, robotsBehaviors.avoidRobotsWalls_getObjects)
+                #posInit = (400 * self.id + 20, 400 * self.id + 20)
+                #rob.controllers[self.id].set_position(posInit[0], posInit[1])
+                #rob.controllers[self.id].set_absolute_orientation(90 * self.id)
+                #self.dictMyBehaviors = buildExpertListBehaviors(0, 1, 4, self.nbExtendedSensors, [0], 3, robotsBehaviors.avoidRobotsWalls_getObjects, maxSizeDictMyBehaviors=maxSizeDictMyBehaviors)
+                self.dictMyBehaviors = getExpertFixedBehavior(robotsBehaviors.avoidRobotsWalls_getObjects)
             else:
-                self.dictMyBehaviors = robotsBehaviors.buildDefaultListBehaviors(self.nbExtendedSensors, defaultBehavior)
+                self.dictMyBehaviors = buildDefaultListBehaviors(self.nbExtendedSensors, defaultBehavior)
                 
                 self.myNetwork = perceptron_supervisedLearning.neuralNetwork(   \
                     self.nbExtendedSensors,                                     \
@@ -207,19 +209,22 @@ class RobotsController(Controller):
     def expertBehavior(self, epsilon): 
         sensoryInputs = self.tabExtSensorsFloat
         
-        distanceBehaviors, s, action = robotsBehaviors.getOwnAction(self, sensoryInputs, epsilon)
+        distanceBehaviors, s, action = getOwnAction(self, sensoryInputs, epsilon)
 
         # If no available action corresponds to the current sensors situation, apply the default behavior
         if action == None :
             #print("Aucune action trouvée... on crée une nouvelle par default")
-            #action = robotsBehaviors.addBehavior(self, sensoryInputs, defaultBehavior, maxSizeDictMyBehaviors) # default action
-            #action = robotsBehaviors.getOwnAction(self, sensoryInputs, epsilon) # default action
+            #action = tools.addBehavior(self, sensoryInputs, defaultBehavior, maxSizeDictMyBehaviors) # default action
+            #action = tools.getOwnAction(self, sensoryInputs, epsilon) # default action
             action = defaultBehavior
 
+ 
         if verbose and self.id == 0:
-            print("\n[Robot " + str(self.id) + "] Expert choice : t=", action[0] , ", r=" , action[1], "car :", sensoryInputs, "et", s)
+            print("\n[Robot " + str(self.id) + "] Expert choice : t=", action[0] , ", r=" , action[1], "car :")
+            print(sensoryInputs, "\n", s)
             print("Distances between behaviors:", distanceBehaviors[0])
             print("ScoreDistances:", distanceBehaviors[1])
+
         return action[0], action[1]
 
 

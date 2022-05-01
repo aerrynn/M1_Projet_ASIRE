@@ -7,8 +7,7 @@
 ################################################################################################################
 
 import numpy as np
-import perceptron_supervisedLearning as perceptronSL
-from robotsBehaviors import addBehavior
+from tools import addBehavior
 
 
 ################################################################################################################
@@ -59,48 +58,48 @@ class hit_ee_versionDiffusion():
         selfC = selfRobot
 
         
-        # hit_ee algorithm
-        if selfC.age >= maturationDelay:     # The robot is ready to learn or teach
-            
-            # Teaching knowledge to every robot in the neighborhood
-            if selfC.id == 0 or selfC.id == 1:
-                self.broadcast()
-
-            # Learning knowledge from received packets
-            if selfC.id != 0 and selfC.id != 1:
-                for m in selfC.messages:
-                    if m[3] >= selfC.fitness:     # m[3] = 4eme part of the message = fitnessRS
-                        self.transferGenome(m, epsilon)
-                        selfC.age = 0
-                    
-        selfC.age += 1
-
-
-    def broadcast(self):
         for i in range (selfC.nb_sensors):
             robotDestId = selfC.get_robot_id_at(i)
             if robotDestId == -1:
                 continue
+            else:
+                # hit_ee algorithm
+                if selfC.age >= maturationDelay:     # The robot is ready to learn or teach
+                    
+                    # Teaching knowledge to every robot in the neighborhood
+                    if selfC.id == 0 or selfC.id == 1:
+                        self.broadcast(robotDestId)
 
-            nbElemToSend = int(len(selfC.dictMyBehaviors) * transferRate)
-            #print("nbElemToSend", nbElemToSend)
+                    # Learning knowledge from received packets
+                    if selfC.id != 0 and selfC.id != 1:
+                        for m in selfC.messages:
+                            if m[3] >= selfC.fitness:     # m[3] = 4eme part of the message = fitnessRS
+                                self.transferGenome(m, epsilon)
+                                selfC.age = 0    
+                selfC.age += 1
 
-            #--------------------------
-            tabChoice = []
-            for key in selfC.dictMyBehaviors:
-                tabChoice.append(list(key))
-            #print(">>>>>>>>>>>>>>>tabChoice", tabChoice)
-            #--------------------------
 
-            h_choice = np.random.choice([i for i in range(len(tabChoice))], nbElemToSend, False)
-            sensoryInputsToSend = [tuple(tabChoice[h]) for h in h_choice]
-            #print("sensoryInputsToSend", sensoryInputsToSend)
-            outputsToSend = [selfC.dictMyBehaviors[input] for input in sensoryInputsToSend]
-            
-            selfC.rob.controllers[robotDestId].messages += [(selfC.id, sensoryInputsToSend, outputsToSend, selfC.fitness)]
+    def broadcast(self, robotDestId):
 
-            if verbose :
-                print("[SENT MSG] I'm the robot n." + str(selfC.id) + " and I've sent a msg to robot n." + str(robotDestId))  
+        nbElemToSend = int(len(selfC.dictMyBehaviors) * transferRate)
+        print("nbElemToSend", nbElemToSend)
+
+        #--------------------------
+        tabChoice = []
+        for key in selfC.dictMyBehaviors:
+            tabChoice.append(list(key))
+        #print(">>>>>>>>>>>>>>>tabChoice", tabChoice)
+        #--------------------------
+
+        h_choice = np.random.choice([i for i in range(len(tabChoice))], nbElemToSend, False)
+        sensoryInputsToSend = [tuple(tabChoice[h]) for h in h_choice]
+        #print("sensoryInputsToSend", sensoryInputsToSend)
+        outputsToSend = [selfC.dictMyBehaviors[input] for input in sensoryInputsToSend]
+        
+        selfC.rob.controllers[robotDestId].messages += [(selfC.id, sensoryInputsToSend, outputsToSend, selfC.fitness)]
+
+        if verbose :
+            print("[SENT MSG] I'm the robot n." + str(selfC.id) + " and I've sent a msg to robot n." + str(robotDestId))  
 
 
     def transferGenome(self, message, epsilon):        # RS : Robot Source du message
@@ -108,6 +107,7 @@ class hit_ee_versionDiffusion():
         if fitnessRS >= selfC.fitness:
 
             # this robot accepts and adds the list of behaviors sent by the RS in its behaviors collection
+            selfC.dictMyBehaviors = {}
             for i in range(len(inputsRS)):
                 addBehavior(selfC, inputsRS[i], outputsRS[i], maxSizeDictMyBehaviors, epsilon)
 
