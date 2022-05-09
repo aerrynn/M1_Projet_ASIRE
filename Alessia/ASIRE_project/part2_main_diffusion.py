@@ -61,20 +61,20 @@ swarmLearningMode = "neuralNetworkBackpropagation"
 # PARAMETERS
 ################################################################################################################
 
-nbSteps = 6000
+nbSteps = 2000
 cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
 tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
 isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once
 
 
 # HIT-EE algorithm parameters
-transferRate = 0.4                          # percentage of behaviors the expert sends in the broadcast phase
+transferRate = 0.8                          # percentage of behaviors the expert sends in the broadcast phase
 maturationDelay = 0                         # number of steps each robot waits before starting teaching or learning
-learningOnlyFromExperts=False               # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
+learningOnlyFromExperts=True               # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
 
 
 # Storage behaviors mode parameters (used in HIT-EE algorithm)
-maxSizeDictMyBehaviors = 10 #None           # maximal size allowed for storing behaviors. None=unlimited
+maxSizeDictMyBehaviors = 100 #None           # maximal size allowed for storing behaviors. None=unlimited
 
 
 # Neural Network parameters
@@ -375,7 +375,7 @@ class RobotsController(Controller):
                 file2 = "sizeDictMyBehaviors_20.txt"
                 file3 = "sizeDictMyBehaviors_50.txt"
                 #periods = [i for i in range(0,2001,100)]
-                allParts_analyses.plotAverageFitness_sizeDB(strDetails, file1, file2, file3, periods, fileName=None)
+                #allParts_analyses.plotAverageFitness_sizeDB(strDetails, file1, file2, file3, periods, fileName=None)
 
 
 
