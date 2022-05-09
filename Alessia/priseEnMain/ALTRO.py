@@ -131,3 +131,19 @@ class Perceptron():
 
 
 #---------------------------------------------------------------------------------------------------------------
+
+
+# pour knn : idee k adaptatif
+    def predict(self, behavior1, dictMyBehaviors, k, notAccuracyRunning=True):
+
+        # If k == None, then we test de better k considering its accuracy on the current database
+        if k == None:
+            evalK = []
+            for k in range(3, int(len(dictMyBehaviors)/4)):
+                accuracyK, action = self.predict(behavior1, dictMyBehaviors, k, notAccuracyRunning)
+                evalK.append((accuracyK, action))
+            evalK.sort(key = lambda x: x[0])
+            print("evalK", evalK)
+            return evalK[1]
+
+#---------------------------------------------------------------------------------------------------------------

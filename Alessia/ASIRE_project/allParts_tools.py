@@ -8,6 +8,7 @@
 
 import numpy as np
 import random
+from math import sqrt
 
 from part2_discretizeBehaviors import discretizeBehavior, inputLayerTo24Sensors
 
@@ -134,18 +135,117 @@ def getExpertFixedBehavior(definedExpertBehavior):
 ################################################################################################################
 
 
-def addBehavior(self, newSensoryInputs, newBehavior, maxSizeDictMyBehaviors, epsilon):
+def addBehavior(self, newSensoryInputs, newAction, maxSizeDictMyBehaviors, distanceEpsilon):
     if tuple(newSensoryInputs) not in self.dictMyBehaviors:
         if len(self.dictMyBehaviors) < maxSizeDictMyBehaviors:
-            self.dictMyBehaviors[tuple(newSensoryInputs)] = newBehavior
+            self.dictMyBehaviors[tuple(newSensoryInputs)] = newAction
         else:
             # we look for the most similar older existing behavior in the database
-            nearestSensors, _ = findNearestBehavior(self, newSensoryInputs, epsilon)
+            nearestSensors, _ = findNearestBehavior(self, newSensoryInputs, distanceEpsilon)
             # we choose to keep the older or the newer behavior
-            centroid = chooseCentroid(self.dictMyBehaviors, newSensoryInputs, nearestSensors)
-            if centroid != nearestSensors:
+            usefulBehavior = chooseUsefulBehavior(self.dictMyBehaviors, newSensoryInputs, nearestSensors)
+            
+            if usefulBehavior != None and usefulBehavior != nearestSensors:
                 del self.dictMyBehaviors[nearestSensors]
-                self.dictMyBehaviors[tuple(centroid)] = newBehavior
+                self.dictMyBehaviors[usefulBehavior] = newAction
+
+
+#---------------------------------------------------------------------------------------------------------------
+
+def chooseUsefulBehavior(dictMyBehaviors, newSensoryInputs, nearestSensors, debug=False):
+    clusters = buildClusters(dictMyBehaviors)
+
+    for c in range(len(clusters)):
+        if nearestSensors in clusters[c]:
+            selectedCluster = c
+            break
+
+    if debug:
+        l = clusters[selectedCluster]
+        print(l[0], "\n")
+        for c in range(len(l)):
+            if c != len(l)-1:
+                print(l)
+            else:
+                print("\n", l)
+
+
+
+    frontierHead = None
+    frontierEnd = None
+    if selectedCluster != 0:
+        frontierHead = clusters[selectedCluster-1][-1]
+    if selectedCluster != len(clusters)-1:
+        frontierEnd = clusters[selectedCluster+1][0]
+
+    # print("\nfrontierHead", frontierHead)
+    # print("\nselected cluster", clusters[selectedCluster])
+    # print("\nfrontierEnd", frontierEnd)
+
+
+    # replace the current first frontier by our newSensoryInputs?
+    if nearestSensors == clusters[selectedCluster][0]:
+        if frontierHead != None:
+            d1 = behaviorsEuclideanDistance(newSensoryInputs, frontierHead)
+            d2 = behaviorsEuclideanDistance(nearestSensors, frontierHead)
+            if d1 < d2:
+                return newSensoryInputs
+            return nearestSensors
+
+    # replace the current last frontier by our newSensoryInputs?
+    elif nearestSensors == clusters[selectedCluster][-1]:
+        if frontierEnd != None:
+            d1 = behaviorsEuclideanDistance(newSensoryInputs, frontierEnd)
+            d2 = behaviorsEuclideanDistance(nearestSensors, frontierEnd)
+            if d1 < d2:
+                return newSensoryInputs
+            return nearestSensors
+
+    # objectif : better distribution of behaviors. Our newSensoryInputs can improve it?
+    else:
+        for row in range(len(clusters[selectedCluster])):
+            if nearestSensors == clusters[selectedCluster][row]:
+                
+                d_left_i = behaviorsEuclideanDistance(clusters[selectedCluster][row-1], newSensoryInputs)
+                d_right_i = behaviorsEuclideanDistance(newSensoryInputs, clusters[selectedCluster][row+1])
+
+                d_left_n = behaviorsEuclideanDistance(clusters[selectedCluster][row-1], nearestSensors)
+                d_right_n = behaviorsEuclideanDistance(nearestSensors, clusters[selectedCluster][row+1])
+            
+                d1 = max(d_left_i, d_right_i)
+                d2 = max(d_left_n, d_right_n)
+                
+                if d1 < d2:
+                    return newSensoryInputs
+                return nearestSensors
+
+
+#---------------------------------------------------------------------------------------------------------------
+
+def buildClusters(dictMyBehaviors, debug=False):
+    sensors = list(dictMyBehaviors.keys())
+    sensors.sort()
+
+    clusters = {}
+    cpt = -1
+    previousAction = None
+    for s in sensors:
+        a = dictMyBehaviors[s]
+        if a == previousAction:
+            clusters[cpt].append(s)
+        else:
+            cpt += 1
+            clusters[cpt] = [s]
+        previousAction = a
+    
+    if debug:
+        print("\nCLUSTERS DETAILS :")
+        for c in clusters:
+            print("\nCluster", c)
+            for row in clusters[c]:
+                print(row, ":", dictMyBehaviors[row])
+
+    return clusters
 
 
 #---------------------------------------------------------------------------------------------------------------
@@ -164,17 +264,34 @@ def behaviorsDistance(behavior1, behavior2):
 
 #---------------------------------------------------------------------------------------------------------------
 
+def behaviorsEuclideanDistance(behavior1, behavior2):
+    """Returns the euclidean distance between les éléménts in behavior1 (expert) and behavior2
+    """
+    d = 0
+    for i in range(len(behavior1)):
+        d += (behavior1[i] - behavior2[i])**2
+    return sqrt(d)
+
+#---------------------------------------------------------------------------------------------------------------
+
 def findNearestBehavior(self, sensoryInputs, distanceEpsilon):
     minDistance = np.inf
     nearestSensors = []
     listBehaviors = list(self.dictMyBehaviors.keys())
 
     for b in range(len(listBehaviors)):
-        distances = behaviorsDistance(listBehaviors[b], sensoryInputs) # tableau des distances, senseur par senseur
-        cptDistance = 0
-        for i in range(len(distances)):
-            if distances[i] >= distanceEpsilon : # we don't consider little differences
-                cptDistance += distances[i]
+
+        #---------------------------------------------------------------------------
+        # variant distance 1
+        # distances = behaviorsDistance(listBehaviors[b], sensoryInputs) # tableau des distances, senseur par senseur
+        # cptDistance = 0
+        # for i in range(len(distances)):
+        #     if distances[i] >= distanceEpsilon : # we don't consider little differences
+        #         cptDistance += distances[i]
+        #---------------------------------------------------------------------------
+        # variant distance 2 (euclidean distance)
+        cptDistance = behaviorsEuclideanDistance(listBehaviors[b], sensoryInputs)
+        #---------------------------------------------------------------------------
 
         if cptDistance < minDistance:
             minDistance = cptDistance

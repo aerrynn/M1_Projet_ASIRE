@@ -61,7 +61,7 @@ swarmLearningMode = "kNearestNeighbors"
 # PARAMETERS
 ################################################################################################################
 
-nbSteps = 100
+nbSteps = 200
 cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
 tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
 isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once
@@ -74,7 +74,7 @@ learningOnlyFromExperts=False               # 'True'= only experts robots can br
 
 
 # Storage behaviors mode parameters (used in HIT-EE algorithm)
-maxSizeDictMyBehaviors = 100 #None          # maximal size allowed for storing behaviors. None=unlimited
+maxSizeDictMyBehaviors = 20 #None           # maximal size allowed for storing behaviors. None=unlimited
 
 
 # Neural Network parameters
@@ -110,7 +110,7 @@ debug_part2_diffusion = False
 debug_objects = False
 debug_extendedSensors = False
 debug_hitDiffusion = False
-debug_supervisedLearning = False         # only 'selectedRobots' details are shown
+debug_supervisedLearning = False            # only 'selectedRobots' details are shown
 debug_knn = False
 debug_knn_accuracy = False
 
@@ -118,8 +118,8 @@ debug_knn_accuracy = False
 # set 'True' if you want to plot results           
 plot = True
 evaluationTime = 100                        # number of steps (period) inwhich evaluate performances. None=unlimited time
-slidingWindowTime = 100
-resetEvaluation = True
+slidingWindowTime = 100                     # slidingWindowTime==0 means inactive
+resetEvaluation = False
 resetEvaluationTime = 2000                  # behaviors DB will be reinitialized (conteining only the default behavior) at each resetBehaviorsDBTime
 
 performances = []
@@ -279,25 +279,29 @@ class RobotsController(Controller):
                 self.posInit = self.absolute_position
                 self.dictMyBehaviors = allParts_tools.buildDefaultListBehaviors(self.nbExtendedSensors, defaultBehavior)
                 
-                setDebug = False
-                if self.id in selectedRobots and debug_supervisedLearning:
-                    setDebug = True
-
-                self.myNetwork = part2_supervisedLearning.neuralNetwork(
-                                self.nbExtendedSensors,
-                                nb_hiddenLayers,
-                                nb_neuronsPerHidden,
-                                nb_neuronsPerOutputs,
-                                debugNN=setDebug,
-                                strRId=self.str)
                 
-                if self.id in selectedRobots and debug_supervisedLearning:
-                    self.myNetwork.printNetworkInformation()
+                if swarmLearningMode == "neuralNetworkBackpropagation":
+                    setDebug = False
+                    if self.id in selectedRobots and debug_supervisedLearning:
+                        setDebug = True
+
+                    self.myNetwork = part2_supervisedLearning.neuralNetwork(
+                                    self.nbExtendedSensors,
+                                    nb_hiddenLayers,
+                                    nb_neuronsPerHidden,
+                                    nb_neuronsPerOutputs,
+                                    debugNN=setDebug,
+                                    strRId=self.str)
+                    
+                    if self.id in selectedRobots and debug_supervisedLearning:
+                        self.myNetwork.printNetworkInformation()
 
 
-            self.myKnnClassifier = knn(debugKNN=debug_knn, debugAcc=debug_knn_accuracy, strRId=self.str)
+            if swarmLearningMode == "kNearestNeighbors":
+                self.myKnnClassifier = knn(debugKNN=debug_knn, debugAcc=debug_knn_accuracy, strRId=self.str)
 
             isFirstIteration[self.id] = False
+
 
 
         # reset of the evaluation setting for each robot
@@ -327,6 +331,7 @@ class RobotsController(Controller):
                     periods.append(cptStepsG)
 
                 performances.append(list(tabSumFood))
+                print(" :", cptStepsG)  # monitoring passed time at terminal
 
 
             if cptStepsG == nbSteps:
