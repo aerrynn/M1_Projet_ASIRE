@@ -49,7 +49,6 @@ def plotAverageFitness(strDetails, bestExpertFitness, bestFitness, median, q25, 
     plt.subplot(211)
     plt.xlabel("Number of steps")
     plt.ylabel("Average reward")
-    periods = [i for i in range(len(bestExpertFitness))]
     plt.plot(periods, bestExpertFitness, label = "Expert best fitness")
     plt.plot(periods, bestFitness, label = "Swarm best fitness")
     plt.plot(periods, median, label = "Swarm median")
@@ -163,6 +162,39 @@ def getAllData():
 
 #--------------------------------------------------------------------------------------------------------------
 
+
+def getOneData():
+
+    file1 = "bestExpertFitness_100a.txt"
+    with open(file1, 'r', encoding='utf-8') as f:
+        tmp = f.readlines()
+        bestExpertFitness = [float(i) for i in tmp]
+
+    file1 = "bestFitness_100a.txt"
+    with open(file1, 'r', encoding='utf-8') as f:
+        tmp = f.readlines()
+        bestFitness = [float(i) for i in tmp]
+
+    file1 = "median_100a.txt"
+    with open(file1, 'r', encoding='utf-8') as f:
+        tmp = f.readlines()
+        median = [float(i) for i in tmp]
+
+    file1 = "q25_100a.txt"
+    with open(file1, 'r', encoding='utf-8') as f:
+        tmp = f.readlines()
+        q25 = [float(i) for i in tmp]
+
+    file1 = "q75_100a.txt"
+    with open(file1, 'r', encoding='utf-8') as f:
+        tmp = f.readlines()
+        q75 = [float(i) for i in tmp]
+
+    return bestExpertFitness, bestFitness, median, q25, q75
+
+
+#--------------------------------------------------------------------------------------------------------------
+
 def writeAllData(strDetails, performances, maxSizeDictMyBehaviors):
     
     bestExpertFitness = []
@@ -182,7 +214,6 @@ def writeAllData(strDetails, performances, maxSizeDictMyBehaviors):
         q25.append(np.quantile(tabFitnesses, 0.25))
         q75.append(np.quantile(tabFitnesses, 0.75))
     
-
     s1 = ''
     for x in bestExpertFitness:
         s1 += f"{x}\n"
@@ -348,5 +379,6 @@ def writeExpertVsNotExpertDistances(self,
 #--------------------------------------------------------------------------------------------------------------
 
     
+
 
 
