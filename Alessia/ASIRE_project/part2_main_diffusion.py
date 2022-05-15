@@ -33,8 +33,8 @@ import part2_learningModes
 # If you don't want to set a parameter, set its value to 'None'
 ################################################################################################################
 
-nbExpertsRobots = 98
-nbNotExpertsRobots = 2
+nbExpertsRobots = 10
+nbNotExpertsRobots = 90
 nbFoodObjects = 100
 
 nbRobots = nbNotExpertsRobots + nbExpertsRobots
@@ -62,7 +62,7 @@ swarmLearningMode = "neuralNetworkBackpropagation"
 # PARAMETERS
 ################################################################################################################
 
-nbSteps = 2000
+nbSteps = 20000
 cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
 tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
 isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once
@@ -105,21 +105,19 @@ k = 7
 ################################################################################################################
 
 # set 'True' if you want to see execution details on terminal
-#selectedRobots = [2,3]              
-selectedRobots = [98, 99]              
-
+selectedRobots = [2,3]                          
 
 debug_part2_diffusion = False
 debug_objects = False
 debug_extendedSensors = False
 debug_hitDiffusion = False
-debug_supervisedLearning = True            # only 'selectedRobots' details are shown
+debug_supervisedLearning = False            # only 'selectedRobots' details are shown
 debug_knn = False
 debug_knn_accuracy = False
 
 
 # set 'True' if you want to plot results           
-plot = False
+plot = True
 evaluationTime = 100                        # number of steps (period) inwhich evaluate performances. None=unlimited time
 slidingWindowTime = 100                     # slidingWindowTime==0 means inactive
 resetEvaluation = True
@@ -210,7 +208,7 @@ class RobotsController(Controller):
         Controller.__init__(self, world_model)
         self.rob = Pyroborobo.get()
         self.arenaHeight, self.arenaWidth = self.rob.arena_size
-        #self.posInit = self.absolute_position
+        self.posInit = self.absolute_position
 
         self.str = f"[Robot n.{self.id}] : "
 
@@ -279,11 +277,11 @@ class RobotsController(Controller):
                             debug_hitDiffusion)
 
             if self.id < nbExpertsRobots: # if this robot is an expert
-                #self.posInit = (int(self.arenaHeight/2) + (self.id*25), int(self.arenaWidth/2) + (self.id*25))
+                self.posInit = (int(self.arenaHeight/2) + (self.id*25), int(self.arenaWidth/2) + (self.id*25))
                 #self.dictMyBehaviors = buildExpertListBehaviors(0, 1, 4, self.nbExtendedSensors, [0], 3, robotsBehaviors.avoidRobotsWalls_getObjects, maxSizeDictMyBehaviors=maxSizeDictMyBehaviors)
                 self.dictMyBehaviors = allParts_tools.getExpertFixedBehavior(allParts_robotsBehaviors.avoidRobotsWalls_getObjects)
             else:
-                #self.posInit = self.absolute_position
+                self.posInit = self.absolute_position
                 self.dictMyBehaviors = allParts_tools.buildDefaultListBehaviors(self.nbExtendedSensors, defaultBehavior)
                 
                 
@@ -313,7 +311,7 @@ class RobotsController(Controller):
 
         # reset of the evaluation settings for each robot
         if resetEvaluation and (cptStepsG == 1 or cptStepsG % resetEvaluationTime == 0):
-            #rob.controllers[self.id].set_position(self.posInit[0], self.posInit[1])
+            rob.controllers[self.id].set_position(self.posInit[0], self.posInit[1])
             tabSumFood[self.id] = 0
 
             if self.id >= nbExpertsRobots: # if this robot isn't an expert
