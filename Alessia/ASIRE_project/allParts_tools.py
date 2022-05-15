@@ -60,6 +60,8 @@ def getExpertFixedBehavior(definedExpertBehavior):
     dictBehaviors = {}
 
     fictitiousSensors = [
+
+        # wall avoider, one arm, 0.5
         [1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
         [1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
         [1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
@@ -67,38 +69,49 @@ def getExpertFixedBehavior(definedExpertBehavior):
         [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
         [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1],
         [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1],
-        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0.5],
+        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0.5],     # 8
 
+        # wall avoider, arm0 + one arm, 0.5
         [1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
         [1,1,0.5, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
         [1,1,0.5, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
         [1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
         [1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1],
         [1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1],
-        [1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0.5],
+        [1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0.5],   # 15
 
-        [1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
+        # wall avoider, arm1 + one arm, 0.5
         [1,1,1, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
         [1,1,1, 1,1,0.5, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
-        [1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],   # 18
 
-        [1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
-        [1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
+        # wall avoider, arm2 + one arm, 0.5
         [1,1,1, 1,1,1, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
         [1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,1, 1,1,1, 1,1,1, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],   # 21
 
-        [1,1,1, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
-        [1,1,1, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
-        [1,1,1, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
-        [1,1,1, 1,1,1, 1,1,1, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
-        #------------------------
-        [1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
+        # wall avoider, 3 arms, 0.5
+        [1,1,1, 1,1,1, 1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,1, 1,1,0.5, 1,1,1, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,1, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,1, 1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0.5, 1,1,1, 1,1,1, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0.5, 1,1,1, 1,1,0.5, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0.5, 1,1,1, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0.5, 1,1,0.5, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1], # 31
+
+        # wall avoider, 4 arms, 0.5
+        [1,1,1, 1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
         [1,1,0.5, 1,1,1, 1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
-        [1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
-        [1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
-        [1,1,1, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
-        [1,1,1, 1,1,1, 1,1,1, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0.5, 1,1,0.5, 1,1,1, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1],   # 35
 
+        # wall avoider, 5 arms, 0.5
+        [1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,0.5, 1,1,1, 1,1,1, 1,1,1], # 36
+
+        # wall avoider, 2 arms, 0
         [1,1,0, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0],
         [1,1,0, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,1],
         [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,0, 1,1,1, 1,1,1],
@@ -108,15 +121,82 @@ def getExpertFixedBehavior(definedExpertBehavior):
         [1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,1],
         [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,0, 1,1,1, 1,1,1],
         [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,0, 1,1,1],
-        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,0],
+        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,0],   # 46
 
+        # wall avoider, 3 arms, 0
+        [1,1,1, 1,1,1, 1,1,0, 1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,1, 1,1,0, 1,1,1, 1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,1, 1,1,0, 1,1,0, 1,1,1, 1,1,0, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,1, 1,1,0, 1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0, 1,1,1, 1,1,1, 1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0, 1,1,1, 1,1,0, 1,1,1, 1,1,0, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0, 1,1,1, 1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,0, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0, 1,1,0, 1,1,1, 1,1,0, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0, 1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
         [1,1,0, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,0],
+        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,0, 1,1,0],   # 58
+        
+        # wall avoider, 4 arms, 0
+        [1,1,1, 1,1,0, 1,1,0, 1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0, 1,1,1, 1,1,0, 1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0, 1,1,0, 1,1,1, 1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,0, 1,1,0, 1,1,0, 1,1,1, 1,1,0, 1,1,1, 1,1,1, 1,1,1],
         [1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,0],
-        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,0, 1,1,0],
-        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,0, 1,1,0, 1,1,0],
+        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,0, 1,1,0, 1,1,0, 1,1,0],   # 64
 
-        [1,1,1, 1,1,1, 0.5, 0.5, 0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
-        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        # wall avoider, 5 arms, 0
+        [1,1,0, 1,1,0, 1,1,0, 1,1,0, 1,1,0, 1,1,1, 1,1,1, 1,1,1],   # 65   
+ 
+        # robots avoider, 1 arm, 0.5
+        [0.5,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 1,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1], # 70
+
+        # robots avoider, 2 arms, 0.5
+        [0.5,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 0.5,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 0.5,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 1,1,1, 0.5,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1],  
+        [0.5,1,1, 1,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 0.5,1,1, 1,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1], # 76
+
+        # robots avoider, 3 arms, 0.5
+        [1,1,1, 1,1,1, 0.5,1,1, 0.5,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,1, 0.5,1,1, 0.5,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
+        [0.5,1,1, 0.5,1,1, 0.5,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1], # 79
+
+        # robots avoider, 1 arm, 0
+        [0,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 0,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 0,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 1,1,1, 0,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 0,1,1, 1,1,1, 1,1,1, 1,1,1],   # 84
+
+        # robots avoider, 2 arms, 0
+        [0,1,1, 0,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 0,1,1, 0,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 0,1,1, 0,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 1,1,1, 0,1,1, 0,1,1, 1,1,1, 1,1,1, 1,1,1],  
+        [0,1,1, 1,1,1, 0,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 0,1,1, 1,1,1, 0,1,1, 1,1,1, 1,1,1, 1,1,1], # 90
+
+        # get objects, 0.5
+        [1,0.5,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,0.5,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 1,0.5,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 1,1,1, 1,0.5,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],      
+        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,0.5,1, 1,1,1, 1,1,1, 1,1,1], # 95
+
+        # others
+        [0.5, 0.5, 0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,1, 0.5, 0.5, 0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],
+        [1,1,1, 1,1,1, 0.5, 0.5, 0.5, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1], # 98
+
+        # no obstacles
+        [1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1],   # 99   
     ]
 
     for f in fictitiousSensors:
@@ -177,11 +257,7 @@ def chooseUsefulBehavior(dictMyBehaviors, newSensoryInputs, nearestSensors, debu
         frontierHead = clusters[selectedCluster-1][-1]
     if selectedCluster != len(clusters)-1:
         frontierEnd = clusters[selectedCluster+1][0]
-
-    # print("\nfrontierHead", frontierHead)
-    # print("\nselected cluster", clusters[selectedCluster])
-    # print("\nfrontierEnd", frontierEnd)
-
+        
 
     # replace the current first frontier by our newSensoryInputs?
     if nearestSensors == clusters[selectedCluster][0]:
@@ -316,6 +392,64 @@ def getOwnAction(self, sensoryInputs, distanceEpsilon=1.0):
      
 #---------------------------------------------------------------------------------------------------------------
 
+def getStrDetails(nbRobots,
+                nbExpertsRobots,
+                nbNotExpertsRobots,
+                nbFoodObjects,
+                maxSizeDictMyBehaviors,
+                transferRate,
+                maturationDelay,
+                learningOnlyFromExperts,
+                swarmLearningMode,
+                nb_hiddenLayers,
+                nb_neuronsPerHidden,
+                nb_neuronsPerOutputs,
+                defaultBehavior,
+                learningRate,
+                distanceEpsilon,
+                nbEpoch,
+                k,
+                evaluationTime,
+                resetEvaluation,
+                resetEvaluationTime):
+
+    strDetails = {}
+    strDetails["nbRobots"] = nbRobots
+    strDetails["nbExpertsRobots"] = nbExpertsRobots
+    strDetails["nbNotExpertsRobots"] = nbNotExpertsRobots
+
+    strDetails["nbFoodObjects"] = nbFoodObjects
+    strDetails["maxSizeDictMyBehaviors"] = maxSizeDictMyBehaviors
+
+    strDetails["hit_ee transferRate"] = transferRate
+    strDetails["hit_ee maturationDelay"] = maturationDelay
+    strDetails["hit_ee learningOnlyFromExperts"] = learningOnlyFromExperts
+
+    strDetails["swarmLearningMode"] = swarmLearningMode
+
+    if swarmLearningMode == "neuralNetworkBackpropagation":
+        strDetails["nb_hiddenLayers"] = nb_hiddenLayers
+        strDetails["nb_neuronsPerHidden"] = nb_neuronsPerHidden
+        strDetails["nb_neuronsPerOutputs"] = nb_neuronsPerOutputs
+
+        strDetails["defaultBehavior"] = defaultBehavior
+        strDetails["learningRate"] = learningRate
+        strDetails["distanceEpsilon"] = distanceEpsilon
+        strDetails["nbEpoch"] = nbEpoch
+
+    if swarmLearningMode == "kNearestNeighbors":
+        strDetails["k"] = k
+
+    strDetails["evaluationTime"] = evaluationTime
+    strDetails["resetEvaluation"] = resetEvaluation
+    if resetEvaluation:
+        strDetails["resetEvaluationTime"] = resetEvaluationTime
+
+    return strDetails
+
+
+#---------------------------------------------------------------------------------------------------------------
+
 def buildFileConfig(nbRobots, nbFoodObjects):
 
     s = ""
@@ -328,7 +462,7 @@ def buildFileConfig(nbRobots, nbFoodObjects):
     "gNbOfLandmarks = 0\n"\
     f"gNbOfPhysicalObjects = {nbFoodObjects}              # number of objects (see also PHYSICAL OBJECTS section)\n"\
     "#----------------------------------------------------------------------------------------------\n"\
-    "gSensorRange = 24\n"\
+    "gSensorRange = 16\n"\
     "gSynchronization = true                 # not implemented\n"\
     "#----------------------------------------------------------------------------------------------\n"\
     "gDisplayMode = 0\n"\
@@ -351,19 +485,19 @@ def buildFileConfig(nbRobots, nbFoodObjects):
     "gRobotSpecsImageFilename = data/minirobot-specs-8sensors.bmp\n"\
     "#----------------------------------------------------------------------------------------------\n"\
     "# environment: 400, 600, 1000, 1400x800, 4000\n"\
-    "gForegroundImageFilename = data/env_600_foreground.bmp\n"\
-    "gEnvironmentImageFilename = data/env_600_environment.bmp\n"\
-    "gBackgroundImageFilename = data/env_600_background.bmp\n"\
-    "gFootprintImageFilename = data/env_600_footprints.bmp\n"\
-    "gScreenWidth = 600\n"\
-    "gScreenHeight = 600\n"\
+    "gForegroundImageFilename = data/env_1400_foreground.bmp\n"\
+    "gEnvironmentImageFilename = data/env_1400_environment.bmp\n"\
+    "gBackgroundImageFilename = data/env_1400_background.bmp\n"\
+    "gFootprintImageFilename = data/env_1400_footprints.bmp\n"\
+    "gScreenWidth = 1400\n"\
+    "gScreenHeight = 800\n"\
     "#----------------------------------------------------------------------------------------------\n"\
     "# default environment\n"\
-    "#gForegroundImageFilename =	data/default_foreground.bmp\n"\
+    "#gForegroundImageFilename = data/default_foreground.bmp\n"\
     "#gEnvironmentImageFilename = data/default_environment.bmp\n"\
     "#gBackgroundImageFilename = data/default_background.bmp\n"\
     "#gFootprintImageFilename = data/default_footprints.bmp\n"\
-    "#gScreenWidth = 1350\n"\
+    "#gScreenWidth = 1400\n"\
     "#gScreenHeight = 800\n"\
     "#----------------------------------------------------------------------------------------------\n"\
     "# gLogFilename = logs/log.txt # if commented, create a time-stamped file.\n"\
@@ -406,8 +540,8 @@ def buildFileConfig(nbRobots, nbFoodObjects):
     "# MONITORING\n"\
     "###############################################################################################\n"\
     "\n"\
-    "gVideoRecording = false                 # significantly slow down simulation\n"\
-    "gTrajectoryMonitor = false              # significantly slow down simulation\n"\
+    f"gVideoRecording = false            # significantly slow down simulation\n"\
+    f"gTrajectoryMonitor = false         # significantly slow down simulation\n"\
     "#----------------------------------------------------------------------------------------------\n"\
     "gInspectorMode = false\n"\
     "gInspectorAgent = false\n"\

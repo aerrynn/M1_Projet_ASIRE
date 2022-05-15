@@ -33,12 +33,13 @@ import part2_learningModes
 # If you don't want to set a parameter, set its value to 'None'
 ################################################################################################################
 
-nbExpertsRobots = 2
-nbNotExpertsRobots = 18
-nbFoodObjects = 150
+nbExpertsRobots = 98
+nbNotExpertsRobots = 2
+nbFoodObjects = 100
 
 nbRobots = nbNotExpertsRobots + nbExpertsRobots
-allParts_tools.buildFileConfig(nbRobots, nbFoodObjects)           # modify the configuration file
+
+allParts_tools.buildFileConfig(nbRobots, nbFoodObjects) # modify the configuration file
 fileConfig = "config/config.properties"
 
 
@@ -68,33 +69,33 @@ isFirstIteration = [True] * nbRobots        # booleen used to initialize paramet
 
 
 # HIT-EE algorithm parameters
-transferRate = 0.8                          # percentage of behaviors the expert sends in the broadcast phase
+transferRate = 0.4                          # percentage of behaviors the expert sends in the broadcast phase
 maturationDelay = 0                         # number of steps each robot waits before starting teaching or learning
-learningOnlyFromExperts=True               # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
+learningOnlyFromExperts=True                # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
 
 
 # Storage behaviors mode parameters (used in HIT-EE algorithm)
-maxSizeDictMyBehaviors = 100 #None           # maximal size allowed for storing behaviors. None=unlimited
+maxSizeDictMyBehaviors = 100 #None          # maximal size allowed for storing behaviors. None=unlimited
 
 
 # Neural Network parameters
 nb_hiddenLayers = 1
-nb_neuronsPerHidden = 8
+nb_neuronsPerHidden = 16
 nb_neuronsPerOutputs = 2
 
 defaultBehavior = [1, 0.5]                  # translation and rotation
 
-learningRate = 0.1                          # pourcentage that controls how much to modify the NN weights to correct the error.
+learningRate = 0.4                          # pourcentage that controls how much to modify the NN weights to correct the error.
                                             # learningRate = 0.1 ---> 10% of correction is applied
 
 distanceEpsilon = 0.25                      # required maximal distance between behaviors to be considered similars
                                             # small epsilon = more accuracy required to match
 
-nbEpoch = 20                                # number of iterations for backpropagation training
+nbEpoch = 200                               # number of iterations for backpropagation training
 
 
 # k nearest neighborgs
-k = 5
+k = 7
 
 
 
@@ -104,28 +105,33 @@ k = 5
 ################################################################################################################
 
 # set 'True' if you want to see execution details on terminal
-selectedRobots = [2,3]              
+#selectedRobots = [2,3]              
+selectedRobots = [98, 99]              
+
 
 debug_part2_diffusion = False
 debug_objects = False
 debug_extendedSensors = False
 debug_hitDiffusion = False
-debug_supervisedLearning = False            # only 'selectedRobots' details are shown
+debug_supervisedLearning = True            # only 'selectedRobots' details are shown
 debug_knn = False
 debug_knn_accuracy = False
 
 
 # set 'True' if you want to plot results           
-plot = True
+plot = False
 evaluationTime = 100                        # number of steps (period) inwhich evaluate performances. None=unlimited time
 slidingWindowTime = 100                     # slidingWindowTime==0 means inactive
-resetEvaluation = False
+resetEvaluation = True
 resetEvaluationTime = 2000                  # behaviors DB will be reinitialized (conteining only the default behavior) at each resetBehaviorsDBTime
+
 
 performances = []
 periods = []
-
-
+expertSensorsPath = []
+expertActions = []
+strDetails = None
+selectedComparisonMoments = [1000, 10000, nbSteps]   # to write the distance between expert et best not expert behaviors
 
 
 
@@ -204,7 +210,7 @@ class RobotsController(Controller):
         Controller.__init__(self, world_model)
         self.rob = Pyroborobo.get()
         self.arenaHeight, self.arenaWidth = self.rob.arena_size
-        self.posInit = self.absolute_position
+        #self.posInit = self.absolute_position
 
         self.str = f"[Robot n.{self.id}] : "
 
@@ -230,6 +236,7 @@ class RobotsController(Controller):
 
         # KNN parameters
         self.myKnnClassifier = None
+
 
     #----------------------------------------------
 
@@ -272,11 +279,11 @@ class RobotsController(Controller):
                             debug_hitDiffusion)
 
             if self.id < nbExpertsRobots: # if this robot is an expert
-                self.posInit = ((self.arenaHeight/3*2) * self.id + 20, (self.arenaWidth/3*2) * self.id + 20)
+                #self.posInit = (int(self.arenaHeight/2) + (self.id*25), int(self.arenaWidth/2) + (self.id*25))
                 #self.dictMyBehaviors = buildExpertListBehaviors(0, 1, 4, self.nbExtendedSensors, [0], 3, robotsBehaviors.avoidRobotsWalls_getObjects, maxSizeDictMyBehaviors=maxSizeDictMyBehaviors)
                 self.dictMyBehaviors = allParts_tools.getExpertFixedBehavior(allParts_robotsBehaviors.avoidRobotsWalls_getObjects)
             else:
-                self.posInit = self.absolute_position
+                #self.posInit = self.absolute_position
                 self.dictMyBehaviors = allParts_tools.buildDefaultListBehaviors(self.nbExtendedSensors, defaultBehavior)
                 
                 
@@ -304,9 +311,9 @@ class RobotsController(Controller):
 
 
 
-        # reset of the evaluation setting for each robot
+        # reset of the evaluation settings for each robot
         if resetEvaluation and (cptStepsG == 1 or cptStepsG % resetEvaluationTime == 0):
-            rob.controllers[self.id].set_position(self.posInit[0], self.posInit[1])
+            #rob.controllers[self.id].set_position(self.posInit[0], self.posInit[1])
             tabSumFood[self.id] = 0
 
             if self.id >= nbExpertsRobots: # if this robot isn't an expert
@@ -320,13 +327,50 @@ class RobotsController(Controller):
             print("***************************************************************\n")
 
 
+
+
         if plot and self.id == 0: # we observe parameters when robot n.0 is passing by
 
-            if cptStepsG == 1 or cptStepsG % evaluationTime == 0 :
-                global performances, periods
+            if cptStepsG in selectedComparisonMoments:
+                # looking for the best not expert individual in the swarm
+                swarmFitnesses = tabSumFood[nbExpertsRobots:]
+                bestNotExpertRobotId = swarmFitnesses.index(max(swarmFitnesses)) + nbExpertsRobots
+                bestNotExpertRobot = self.rob.controllers[bestNotExpertRobotId]
 
+                allParts_analyses.writeExpertVsNotExpertDistances(bestNotExpertRobot,
+                                                                swarmLearningMode,
+                                                                cptStepsG,
+                                                                k,
+                                                                expertSensorsPath,
+                                                                expertActions)
+
+
+            if cptStepsG == 1 or cptStepsG % evaluationTime == 0 :
+                
+                global strDetails, performances, periods
                 if cptStepsG == 1: # first Step
                     periods.append(0)
+
+                    strDetails = allParts_tools.getStrDetails(nbRobots,
+                            nbExpertsRobots,
+                            nbNotExpertsRobots,
+                            nbFoodObjects,
+                            maxSizeDictMyBehaviors,
+                            transferRate,
+                            maturationDelay,
+                            learningOnlyFromExperts,
+                            swarmLearningMode,
+                            nb_hiddenLayers,
+                            nb_neuronsPerHidden,
+                            nb_neuronsPerOutputs,
+                            defaultBehavior,
+                            learningRate,
+                            distanceEpsilon,
+                            nbEpoch,
+                            k,
+                            evaluationTime,
+                            resetEvaluation,
+                            resetEvaluationTime)
                 else:
                     periods.append(cptStepsG)
 
@@ -334,48 +378,24 @@ class RobotsController(Controller):
                 print("cptStepsG :", cptStepsG)  # monitoring passed time at terminal
 
 
+
             if cptStepsG == nbSteps:
-                strDetails = {}
-                strDetails["nbRobots"] = nbRobots
-                strDetails["nbExpertsRobots"] = nbExpertsRobots
-                strDetails["nbNotExpertsRobots"] = nbNotExpertsRobots
 
-                strDetails["nbFoodObjects"] = nbFoodObjects
-                strDetails["maxSizeDictMyBehaviors"] = maxSizeDictMyBehaviors
+                allParts_analyses.writeAllData(strDetails, performances, maxSizeDictMyBehaviors)
+                #bestExpertFitness, bestFitness, median, q25, q75 = allParts_analyses.getAllData()
+                #allParts_analyses.plotAverageFitness(strDetails, bestExpertFitness, bestFitness, median, q25, q75, periods, fileName=None)
 
-                strDetails["hit_ee transferRate"] = transferRate
-                strDetails["hit_ee maturationDelay"] = maturationDelay
-                strDetails["hit_ee learningOnlyFromExperts"] = learningOnlyFromExperts
+                # analysis in function of the database size
+                file1 = "notExpertsMedian_10.txt"
+                file2 = "notExpertsMedian_20.txt"
+                file3 = "notExpertsMedian_50.txt"
+                #allParts_analyses.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Swarm performance in foraging in function of size behaviors", "Average reward", fileName=None)
 
-                strDetails["swarmLearningMode"] = swarmLearningMode
-
-                if swarmLearningMode == "neuralNetworkBackpropagation":
-                    strDetails["nb_hiddenLayers"] = nb_hiddenLayers
-                    strDetails["nb_neuronsPerHidden"] = nb_neuronsPerHidden
-                    strDetails["nb_neuronsPerOutputs"] = nb_neuronsPerOutputs
-
-                    strDetails["defaultBehavior"] = defaultBehavior
-                    strDetails["learningRate"] = learningRate
-                    strDetails["distanceEpsilon"] = distanceEpsilon
-                    strDetails["nbEpoch"] = nbEpoch
-
-                if swarmLearningMode == "kNearestNeighbors":
-                    strDetails["k"] = k
-
-                strDetails["evaluationTime"] = evaluationTime
-                strDetails["resetEvaluation"] = resetEvaluation
-                if resetEvaluation:
-                    strDetails["resetEvaluationTime"] = resetEvaluationTime
-
-
-                allParts_analyses.plotAverageFitness(strDetails, performances, periods, funcObj="maximisation", fileName=None)
-                allParts_analyses.writeSizeDictMyBehaviors(strDetails, performances, maxSizeDictMyBehaviors)
-
-                file1 = "sizeDictMyBehaviors_10.txt"
-                file2 = "sizeDictMyBehaviors_20.txt"
-                file3 = "sizeDictMyBehaviors_50.txt"
-                #periods = [i for i in range(0,2001,100)]
-                #allParts_analyses.plotAverageFitness_sizeDB(strDetails, file1, file2, file3, periods, fileName=None)
+                # analysis to compare expert et best not experts action choices, in terms of distances
+                file1 = "distances_atStepNb1000.txt"
+                file2 = "distances_atStepNb10000.txt"
+                file3 = "distances_atStepNb20000.txt"
+                allParts_analyses.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Euclidean distance between expert / notExpert action choices in expert path", "Actions euclidean distance", fileName=None)
 
 
 
@@ -418,6 +438,11 @@ class RobotsController(Controller):
             print(f"\n\t\tBehaviors' distance between them is {distanceBehaviors}")
             print("\n---------------------------------------------------------------")
 
+        if plot and self.id == 0:
+            global expertSensorsPath, expertActions
+            expertSensorsPath.append(sensoryInputs)
+            expertActions.append(action)
+
         return action[0], action[1]
 
 
@@ -441,10 +466,8 @@ class RobotsController(Controller):
                     k,
                     debug_part2_diffusion)
 
-        elif swarmLearningMode == "evolutionnaryAlgorithm":
-            pass
         else:
-            print("No valid learning mode found : use one of neuralNetworkBackpropagation / kNearestNeighbors / evolutionnaryAlgorithm")
+            print("No valid learning mode found : use one of neuralNetworkBackpropagation / kNearestNeighbors")
             exit()
 
         return action[0], action[1]
