@@ -334,12 +334,12 @@ class RobotsController(Controller):
                 bestNotExpertRobotId = swarmFitnesses.index(max(swarmFitnesses)) + nbExpertsRobots
                 bestNotExpertRobot = self.rob.controllers[bestNotExpertRobotId]
 
-                allParts_analysis.writeExpertVsNotExpertDistances(bestNotExpertRobot,
-                                                                swarmLearningMode,
-                                                                cptStepsG,
-                                                                k,
-                                                                expertSensorsPath,
-                                                                expertActions)
+                # allParts_analysis.writeExpertVsNotExpertDistances(bestNotExpertRobot,
+                #                                                 swarmLearningMode,
+                #                                                 cptStepsG,
+                #                                                 k,
+                #                                                 expertSensorsPath,
+                #                                                 expertActions)
 
 
             if cptStepsG == 1 or cptStepsG % evaluationTime == 0 :
@@ -380,21 +380,21 @@ class RobotsController(Controller):
 
                 #allParts_analysis.writeAllData(strDetails, performances, maxSizeDictMyBehaviors)
                 #bestExpertFitness, bestFitness, median, q25, q75 = allParts_analysis.getAllData()
-                bestExpertFitness, bestFitness, median, q25, q75 = allParts_analysis.getOneData(maxSizeDictMyBehaviors)
+                #bestExpertFitness, bestFitness, median, q25, q75 = allParts_analysis.getOneData(maxSizeDictMyBehaviors)
                 #periods = [i for i in range(0,6001,100)]
                 #allParts_analysis.plotAverageFitness(strDetails, bestExpertFitness, bestFitness, median, q25, q75, periods, fileName=None)
 
                 # analysis in function of the database size
-                file1 = "median_10.txt"
+                #file1 = "median_10.txt"
                 file2 = "median_50.txt"
                 file3 = "median_100.txt"
-                #allParts_analysis.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Swarm performance in foraging in function of size behaviors", "Average reward", fileName=None)
+                allParts_analysis.plotAverageFitnessFromFiles(strDetails, file2, file3, periods, "Swarm performance in foraging in function of size behaviors", "Average reward", fileName=None)
 
                 # analysis to compare expert et best not experts action choices, in terms of distances
                 file1 = "distances_atStepNb1000.txt"
                 file2 = "distances_atStepNb2500.txt"
                 file3 = "distances_atStepNb6000.txt"
-                allParts_analysis.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Euclidean distance between expert / notExpert action choices in expert path", "Actions euclidean distance", fileName=None)
+                #allParts_analysis.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Euclidean distance between expert / notExpert action choices in expert path", "Actions euclidean distance", fileName=None)
 
 
 

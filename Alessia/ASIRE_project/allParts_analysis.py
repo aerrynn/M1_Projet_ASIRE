@@ -264,11 +264,11 @@ def writeAllData(strDetails, performances, maxSizeDictMyBehaviors):
 
 #--------------------------------------------------------------------------------------------------------------
 
-def plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, suptitle, ylabel, fileName=None):
+def plotAverageFitnessFromFiles(strDetails, file2, file3, periods, suptitle, ylabel, fileName=None):
 
-    with open(file1, 'r', encoding='utf-8') as f:
-        tmp = f.readlines()
-        data1 = [float(i) for i in tmp]
+    # with open(file1, 'r', encoding='utf-8') as f:
+    #     tmp = f.readlines()
+    #     data1 = [float(i) for i in tmp]
 
     with open(file2, 'r', encoding='utf-8') as f:
         tmp = f.readlines()
@@ -288,17 +288,19 @@ def plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, suptit
     plt.xlabel("Number of steps")
     plt.ylabel(ylabel)
 
-    if len(data1) != periods:
-        periods = [i for i in range(len(data1))]
-    plt.scatter(periods, data1, label = file1)
+    # if len(data1) != periods:
+    #     periods = [i for i in range(len(data1))]
+    # plt.scatter(periods, data1, label = file1)
 
     if len(data2) != periods:
         periods = [i for i in range(len(data2))]
-    plt.scatter(periods, data2, label = file2)
+    periods = [i for i in range(0, 6001, 100)]
+    plt.plot(periods, data2, label = file2)
 
     if len(data3) != periods:
         periods = [i for i in range(len(data2))]
-    plt.scatter(periods, data3[:len(data2)], label = file3)
+    periods = [i for i in range(0, 6001, 100)]
+    plt.plot(periods, data3[:len(data2)], label = file3)
 
     plt.legend()
     
