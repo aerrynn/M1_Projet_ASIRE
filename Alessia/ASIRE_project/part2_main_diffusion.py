@@ -61,7 +61,7 @@ swarmLearningMode = "kNearestNeighbors"
 # PARAMETERS
 ################################################################################################################
 
-nbSteps = 1000
+nbSteps = 5000
 cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
 tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
 isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once
@@ -128,7 +128,7 @@ periods = []
 expertSensorsPath = []
 expertActions = []
 strDetails = None
-selectedComparisonMoments = [500, 1000, nbSteps]   # to write the distance between expert et best not expert behaviors
+selectedComparisonMoments = [1000, 2500, nbSteps]   # to write the distance between expert et best not expert behaviors
 
 
 
