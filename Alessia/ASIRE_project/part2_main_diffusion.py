@@ -61,7 +61,7 @@ swarmLearningMode = "neuralNetworkBackpropagation"
 # PARAMETERS
 ################################################################################################################
 
-nbSteps = 6000
+nbSteps = 10
 cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
 tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
 isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once
@@ -378,17 +378,17 @@ class RobotsController(Controller):
 
             if cptStepsG == nbSteps:
 
-                allParts_analysis.writeAllData(strDetails, performances, maxSizeDictMyBehaviors)
+                #allParts_analysis.writeAllData(strDetails, performances, maxSizeDictMyBehaviors)
                 #bestExpertFitness, bestFitness, median, q25, q75 = allParts_analysis.getAllData()
                 bestExpertFitness, bestFitness, median, q25, q75 = allParts_analysis.getOneData(maxSizeDictMyBehaviors)
                 #periods = [i for i in range(0,6001,100)]
-                allParts_analysis.plotAverageFitness(strDetails, bestExpertFitness, bestFitness, median, q25, q75, periods, fileName=None)
+                #allParts_analysis.plotAverageFitness(strDetails, bestExpertFitness, bestFitness, median, q25, q75, periods, fileName=None)
 
                 # analysis in function of the database size
                 file1 = "median_10.txt"
                 file2 = "median_50.txt"
                 file3 = "median_100.txt"
-                allParts_analysis.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Swarm performance in foraging in function of size behaviors", "Average reward", fileName=None)
+                #allParts_analysis.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Swarm performance in foraging in function of size behaviors", "Average reward", fileName=None)
 
                 # analysis to compare expert et best not experts action choices, in terms of distances
                 file1 = "distances_atStepNb1000.txt"
