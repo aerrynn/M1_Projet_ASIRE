@@ -334,7 +334,7 @@ class RobotsController(Controller):
                 bestNotExpertRobotId = swarmFitnesses.index(max(swarmFitnesses)) + nbExpertsRobots
                 bestNotExpertRobot = self.rob.controllers[bestNotExpertRobotId]
 
-                allParts_analyses.writeExpertVsNotExpertDistances(bestNotExpertRobot,
+                allParts_analysis.writeExpertVsNotExpertDistances(bestNotExpertRobot,
                                                                 swarmLearningMode,
                                                                 cptStepsG,
                                                                 k,
@@ -379,7 +379,7 @@ class RobotsController(Controller):
             if cptStepsG == nbSteps:
 
                 allParts_analysis.writeAllData(strDetails, performances, maxSizeDictMyBehaviors)
-                #bestExpertFitness, bestFitness, median, q25, q75 = allParts_analyses.getAllData()
+                #bestExpertFitness, bestFitness, median, q25, q75 = allParts_analysis.getAllData()
                 bestExpertFitness, bestFitness, median, q25, q75 = allParts_analysis.getOneData(maxSizeDictMyBehaviors)
                 #periods = [i for i in range(0,6001,100)]
                 allParts_analysis.plotAverageFitness(strDetails, bestExpertFitness, bestFitness, median, q25, q75, periods, fileName=None)
