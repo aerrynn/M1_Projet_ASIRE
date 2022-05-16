@@ -17,7 +17,7 @@ from allParts_extendedSensors import get24ExtendedSensors, extractExtSensors_flo
 import allParts_tools
 import allParts_robotsBehaviors
 import part2_supervisedLearning
-import allParts_analyses
+import allParts_analysis
 from part2_kNearestNeighbors import knn
 import part2_learningModes
 
@@ -51,8 +51,8 @@ fileConfig = "config/config.properties"
 #   - "kNearestNeighbors"
 ################################################################################################################
 
-#swarmLearningMode = "neuralNetworkBackpropagation"
-swarmLearningMode = "kNearestNeighbors"
+swarmLearningMode = "neuralNetworkBackpropagation"
+#swarmLearningMode = "kNearestNeighbors"
 
 
 
@@ -74,7 +74,7 @@ learningOnlyFromExperts=True                # 'True'= only experts robots can br
 
 
 # Storage behaviors mode parameters (used in HIT-EE algorithm)
-maxSizeDictMyBehaviors = 100                # maximal size allowed for storing behaviors. None=unlimited
+maxSizeDictMyBehaviors = 50                # maximal size allowed for storing behaviors. None=unlimited
 
 
 # Neural Network parameters
@@ -378,22 +378,23 @@ class RobotsController(Controller):
 
             if cptStepsG == nbSteps:
 
-                allParts_analyses.writeAllData(strDetails, performances, maxSizeDictMyBehaviors)
+                allParts_analysis.writeAllData(strDetails, performances, maxSizeDictMyBehaviors)
                 #bestExpertFitness, bestFitness, median, q25, q75 = allParts_analyses.getAllData()
-                bestExpertFitness, bestFitness, median, q25, q75 = allParts_analyses.getOneData()
-                allParts_analyses.plotAverageFitness(strDetails, bestExpertFitness, bestFitness, median, q25, q75, periods, fileName=None)
+                bestExpertFitness, bestFitness, median, q25, q75 = allParts_analysis.getOneData(maxSizeDictMyBehaviors)
+                #periods = [i for i in range(0,6001,100)]
+                allParts_analysis.plotAverageFitness(strDetails, bestExpertFitness, bestFitness, median, q25, q75, periods, fileName=None)
 
                 # analysis in function of the database size
-                file1 = "notExpertsMedian_10.txt"
-                file2 = "notExpertsMedian_50.txt"
-                file3 = "notExpertsMedian_100.txt"
-                #allParts_analyses.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Swarm performance in foraging in function of size behaviors", "Average reward", fileName=None)
+                file1 = "median_10.txt"
+                file2 = "median_50.txt"
+                file3 = "median_100.txt"
+                allParts_analysis.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Swarm performance in foraging in function of size behaviors", "Average reward", fileName=None)
 
                 # analysis to compare expert et best not experts action choices, in terms of distances
                 file1 = "distances_atStepNb1000.txt"
                 file2 = "distances_atStepNb2500.txt"
                 file3 = "distances_atStepNb6000.txt"
-                allParts_analyses.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Euclidean distance between expert / notExpert action choices in expert path", "Actions euclidean distance", fileName=None)
+                allParts_analysis.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Euclidean distance between expert / notExpert action choices in expert path", "Actions euclidean distance", fileName=None)
 
 
 

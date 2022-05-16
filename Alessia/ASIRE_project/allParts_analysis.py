@@ -163,29 +163,29 @@ def getAllData():
 #--------------------------------------------------------------------------------------------------------------
 
 
-def getOneData():
+def getOneData(maxSizeDictMyBehaviors):
 
-    file1 = "bestExpertFitness_100.txt"
+    file1 = f"bestExpertFitness_{maxSizeDictMyBehaviors}.txt"
     with open(file1, 'r', encoding='utf-8') as f:
         tmp = f.readlines()
         bestExpertFitness = [float(i) for i in tmp]
 
-    file1 = "bestFitness_100.txt"
+    file1 = f"bestFitness_{maxSizeDictMyBehaviors}.txt"
     with open(file1, 'r', encoding='utf-8') as f:
         tmp = f.readlines()
         bestFitness = [float(i) for i in tmp]
 
-    file1 = "median_100.txt"
+    file1 = f"median_{maxSizeDictMyBehaviors}.txt"
     with open(file1, 'r', encoding='utf-8') as f:
         tmp = f.readlines()
         median = [float(i) for i in tmp]
 
-    file1 = "q25_100.txt"
+    file1 = f"q25_{maxSizeDictMyBehaviors}.txt"
     with open(file1, 'r', encoding='utf-8') as f:
         tmp = f.readlines()
         q25 = [float(i) for i in tmp]
 
-    file1 = "q75_100.txt"
+    file1 = f"q75_{maxSizeDictMyBehaviors}.txt"
     with open(file1, 'r', encoding='utf-8') as f:
         tmp = f.readlines()
         q75 = [float(i) for i in tmp]
@@ -290,15 +290,15 @@ def plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, suptit
 
     if len(data1) != periods:
         periods = [i for i in range(len(data1))]
-    plt.plot(periods, data1, label = file1)
+    plt.scatter(periods, data1, label = file1)
 
     if len(data2) != periods:
         periods = [i for i in range(len(data2))]
-    plt.plot(periods, data2, label = file2)
+    plt.scatter(periods, data2, label = file2)
 
     if len(data3) != periods:
-        periods = [i for i in range(len(data3))]
-    plt.plot(periods, data3, label = file3)
+        periods = [i for i in range(len(data2))]
+    plt.scatter(periods, data3[:len(data2)], label = file3)
 
     plt.legend()
     
