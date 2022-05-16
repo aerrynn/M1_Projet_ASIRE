@@ -61,7 +61,7 @@ swarmLearningMode = "kNearestNeighbors"
 # PARAMETERS
 ################################################################################################################
 
-nbSteps = 5000
+nbSteps = 6000
 cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
 tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
 isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once
@@ -119,7 +119,7 @@ debug_knn_accuracy = False
 plot = True
 evaluationTime = 100                        # number of steps (period) inwhich evaluate performances. None=unlimited time
 slidingWindowTime = 100                     # slidingWindowTime : when the curent robot trains the behaviors dataset
-resetEvaluation = False
+resetEvaluation = True
 resetEvaluationTime = 2000                  # behaviors DB will be reinitialized (conteining only the default behavior) at each resetBehaviorsDBTime
 
 
@@ -390,9 +390,9 @@ class RobotsController(Controller):
                 #allParts_analyses.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Swarm performance in foraging in function of size behaviors", "Average reward", fileName=None)
 
                 # analysis to compare expert et best not experts action choices, in terms of distances
-                file1 = "distances_atStepNb500.txt"
-                file2 = "distances_atStepNb1000.txt"
-                file3 = "distances_atStepNb2000.txt"
+                file1 = "distances_atStepNb1000.txt"
+                file2 = "distances_atStepNb2500.txt"
+                file3 = "distances_atStepNb6000.txt"
                 allParts_analyses.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Euclidean distance between expert / notExpert action choices in expert path", "Actions euclidean distance", fileName=None)
 
 

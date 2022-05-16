@@ -352,8 +352,6 @@ def writeExpertVsNotExpertDistances(self,
         elif swarmLearningMode == "kNearestNeighbors":
             action = self.myKnnClassifier.predict(inputLayer, self.dictMyBehaviors, k)
 
-        elif swarmLearningMode == "evolutionnaryAlgorithm":
-            pass
         else:
             print("No valid learning mode found : use one of neuralNetworkBackpropagation / kNearestNeighbors / evolutionnaryAlgorithm")
             exit()
