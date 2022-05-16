@@ -165,27 +165,27 @@ def getAllData():
 
 def getOneData():
 
-    file1 = "bestExpertFitness_100a.txt"
+    file1 = "bestExpertFitness_100.txt"
     with open(file1, 'r', encoding='utf-8') as f:
         tmp = f.readlines()
         bestExpertFitness = [float(i) for i in tmp]
 
-    file1 = "bestFitness_100a.txt"
+    file1 = "bestFitness_100.txt"
     with open(file1, 'r', encoding='utf-8') as f:
         tmp = f.readlines()
         bestFitness = [float(i) for i in tmp]
 
-    file1 = "median_100a.txt"
+    file1 = "median_100.txt"
     with open(file1, 'r', encoding='utf-8') as f:
         tmp = f.readlines()
         median = [float(i) for i in tmp]
 
-    file1 = "q25_100a.txt"
+    file1 = "q25_100.txt"
     with open(file1, 'r', encoding='utf-8') as f:
         tmp = f.readlines()
         q25 = [float(i) for i in tmp]
 
-    file1 = "q75_100a.txt"
+    file1 = "q75_100.txt"
     with open(file1, 'r', encoding='utf-8') as f:
         tmp = f.readlines()
         q75 = [float(i) for i in tmp]

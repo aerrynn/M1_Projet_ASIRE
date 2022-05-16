@@ -30,7 +30,6 @@ import part2_learningModes
 # CONFIGURATION FILE PARAMETERS : 
 # enable 'buildFileConfig' if you change one or more parameters in this section 
 # from the last execution!
-# If you don't want to set a parameter, set its value to 'None'
 ################################################################################################################
 
 nbExpertsRobots = 10
@@ -52,8 +51,8 @@ fileConfig = "config/config.properties"
 #   - "kNearestNeighbors"
 ################################################################################################################
 
-swarmLearningMode = "neuralNetworkBackpropagation"
-#swarmLearningMode = "kNearestNeighbors"
+#swarmLearningMode = "neuralNetworkBackpropagation"
+swarmLearningMode = "kNearestNeighbors"
 
 
 
@@ -62,20 +61,20 @@ swarmLearningMode = "neuralNetworkBackpropagation"
 # PARAMETERS
 ################################################################################################################
 
-nbSteps = 20000
+nbSteps = 2000
 cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
 tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
 isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once
 
 
 # HIT-EE algorithm parameters
-transferRate = 0.4                          # percentage of behaviors the expert sends in the broadcast phase
+transferRate = 0.1                          # percentage of behaviors the expert sends in the broadcast phase
 maturationDelay = 0                         # number of steps each robot waits before starting teaching or learning
 learningOnlyFromExperts=True                # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
 
 
 # Storage behaviors mode parameters (used in HIT-EE algorithm)
-maxSizeDictMyBehaviors = 100 #None          # maximal size allowed for storing behaviors. None=unlimited
+maxSizeDictMyBehaviors = 100                # maximal size allowed for storing behaviors. None=unlimited
 
 
 # Neural Network parameters
@@ -105,7 +104,7 @@ k = 7
 ################################################################################################################
 
 # set 'True' if you want to see execution details on terminal
-selectedRobots = [2,3]                          
+selectedRobots = [i for i in range(nbExpertsRobots, nbRobots)]                          
 
 debug_part2_diffusion = False
 debug_objects = False
@@ -119,7 +118,7 @@ debug_knn_accuracy = False
 # set 'True' if you want to plot results           
 plot = True
 evaluationTime = 100                        # number of steps (period) inwhich evaluate performances. None=unlimited time
-slidingWindowTime = 100                     # slidingWindowTime==0 means inactive
+slidingWindowTime = 100                     # slidingWindowTime : when the curent robot trains the behaviors dataset
 resetEvaluation = True
 resetEvaluationTime = 2000                  # behaviors DB will be reinitialized (conteining only the default behavior) at each resetBehaviorsDBTime
 
@@ -129,7 +128,7 @@ periods = []
 expertSensorsPath = []
 expertActions = []
 strDetails = None
-selectedComparisonMoments = [1000, 10000, nbSteps]   # to write the distance between expert et best not expert behaviors
+selectedComparisonMoments = [500, 2000, nbSteps]   # to write the distance between expert et best not expert behaviors
 
 
 
@@ -262,6 +261,7 @@ class RobotsController(Controller):
             print("\n---------------------------------------------------------------")
 
 
+        print("len dictMyBehaviors", len(self.dictMyBehaviors))
 
         # Robots' behaviors initialisation
         global isFirstIteration
@@ -381,12 +381,13 @@ class RobotsController(Controller):
 
                 allParts_analyses.writeAllData(strDetails, performances, maxSizeDictMyBehaviors)
                 #bestExpertFitness, bestFitness, median, q25, q75 = allParts_analyses.getAllData()
-                #allParts_analyses.plotAverageFitness(strDetails, bestExpertFitness, bestFitness, median, q25, q75, periods, fileName=None)
+                bestExpertFitness, bestFitness, median, q25, q75 = allParts_analyses.getOneData()
+                allParts_analyses.plotAverageFitness(strDetails, bestExpertFitness, bestFitness, median, q25, q75, periods, fileName=None)
 
                 # analysis in function of the database size
                 file1 = "notExpertsMedian_10.txt"
-                file2 = "notExpertsMedian_20.txt"
-                file3 = "notExpertsMedian_50.txt"
+                file2 = "notExpertsMedian_50.txt"
+                file3 = "notExpertsMedian_100.txt"
                 #allParts_analyses.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Swarm performance in foraging in function of size behaviors", "Average reward", fileName=None)
 
                 # analysis to compare expert et best not experts action choices, in terms of distances
