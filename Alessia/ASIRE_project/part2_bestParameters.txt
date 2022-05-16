@@ -41,7 +41,7 @@ isFirstIteration = [True] * nbRobots        # booleen used to initialize paramet
 
 
 # HIT-EE algorithm parameters
-transferRate = 0.4                          # percentage of behaviors the expert sends in the broadcast phase
+transferRate = 0.1                          # percentage of behaviors the expert sends in the broadcast phase
 maturationDelay = 0                         # number of steps each robot waits before starting teaching or learning
 learningOnlyFromExperts=True                # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
 

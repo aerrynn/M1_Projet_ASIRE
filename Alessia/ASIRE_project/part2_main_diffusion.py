@@ -61,7 +61,7 @@ swarmLearningMode = "neuralNetworkBackpropagation"
 # PARAMETERS
 ################################################################################################################
 
-nbSteps = 10
+nbSteps = 20000
 cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
 tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
 isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once
@@ -74,7 +74,7 @@ learningOnlyFromExperts=True                # 'True'= only experts robots can br
 
 
 # Storage behaviors mode parameters (used in HIT-EE algorithm)
-maxSizeDictMyBehaviors = 50                # maximal size allowed for storing behaviors. None=unlimited
+maxSizeDictMyBehaviors = 100                # maximal size allowed for storing behaviors. None=unlimited
 
 
 # Neural Network parameters
@@ -334,12 +334,12 @@ class RobotsController(Controller):
                 bestNotExpertRobotId = swarmFitnesses.index(max(swarmFitnesses)) + nbExpertsRobots
                 bestNotExpertRobot = self.rob.controllers[bestNotExpertRobotId]
 
-                # allParts_analysis.writeExpertVsNotExpertDistances(bestNotExpertRobot,
-                #                                                 swarmLearningMode,
-                #                                                 cptStepsG,
-                #                                                 k,
-                #                                                 expertSensorsPath,
-                #                                                 expertActions)
+                allParts_analysis.writeExpertVsNotExpertDistances(bestNotExpertRobot,
+                                                                swarmLearningMode,
+                                                                cptStepsG,
+                                                                k,
+                                                                expertSensorsPath,
+                                                                expertActions)
 
 
             if cptStepsG == 1 or cptStepsG % evaluationTime == 0 :
@@ -378,7 +378,7 @@ class RobotsController(Controller):
 
             if cptStepsG == nbSteps:
 
-                #allParts_analysis.writeAllData(strDetails, performances, maxSizeDictMyBehaviors)
+                allParts_analysis.writeAllData(strDetails, performances, maxSizeDictMyBehaviors)
                 #bestExpertFitness, bestFitness, median, q25, q75 = allParts_analysis.getAllData()
                 #bestExpertFitness, bestFitness, median, q25, q75 = allParts_analysis.getOneData(maxSizeDictMyBehaviors)
                 #periods = [i for i in range(0,6001,100)]
@@ -388,7 +388,7 @@ class RobotsController(Controller):
                 #file1 = "median_10.txt"
                 file2 = "median_50.txt"
                 file3 = "median_100.txt"
-                allParts_analysis.plotAverageFitnessFromFiles(strDetails, file2, file3, periods, "Swarm performance in foraging in function of size behaviors", "Average reward", fileName=None)
+                #allParts_analysis.plotAverageFitnessFromFiles(strDetails, file2, file3, periods, "Swarm performance in foraging in function of size behaviors", "Average reward", fileName=None)
 
                 # analysis to compare expert et best not experts action choices, in terms of distances
                 file1 = "distances_atStepNb1000.txt"
