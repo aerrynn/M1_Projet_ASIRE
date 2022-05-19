@@ -389,64 +389,6 @@ def getOwnAction(self, sensoryInputs, distanceEpsilon=1.0):
     action = self.dictMyBehaviors[nearestSensors]
     return nearestSensors, action, distanceBehaviors
 
-     
-#---------------------------------------------------------------------------------------------------------------
-
-def getStrDetails(nbRobots,
-                nbExpertsRobots,
-                nbNotExpertsRobots,
-                nbFoodObjects,
-                maxSizeDictMyBehaviors,
-                transferRate,
-                maturationDelay,
-                learningOnlyFromExperts,
-                swarmLearningMode,
-                nb_hiddenLayers,
-                nb_neuronsPerHidden,
-                nb_neuronsPerOutputs,
-                defaultBehavior,
-                learningRate,
-                distanceEpsilon,
-                nbEpoch,
-                k,
-                evaluationTime,
-                resetEvaluation,
-                resetEvaluationTime):
-
-    strDetails = {}
-    strDetails["nbRobots"] = nbRobots
-    strDetails["nbExpertsRobots"] = nbExpertsRobots
-    strDetails["nbNotExpertsRobots"] = nbNotExpertsRobots
-
-    strDetails["nbFoodObjects"] = nbFoodObjects
-    strDetails["maxSizeDictMyBehaviors"] = maxSizeDictMyBehaviors
-
-    strDetails["hit_ee transferRate"] = transferRate
-    strDetails["hit_ee maturationDelay"] = maturationDelay
-    strDetails["hit_ee learningOnlyFromExperts"] = learningOnlyFromExperts
-
-    strDetails["swarmLearningMode"] = swarmLearningMode
-
-    if swarmLearningMode == "neuralNetworkBackpropagation":
-        strDetails["nb_hiddenLayers"] = nb_hiddenLayers
-        strDetails["nb_neuronsPerHidden"] = nb_neuronsPerHidden
-        strDetails["nb_neuronsPerOutputs"] = nb_neuronsPerOutputs
-
-        strDetails["defaultBehavior"] = defaultBehavior
-        strDetails["learningRate"] = learningRate
-        strDetails["distanceEpsilon"] = distanceEpsilon
-        strDetails["nbEpoch"] = nbEpoch
-
-    if swarmLearningMode == "kNearestNeighbors":
-        strDetails["k"] = k
-
-    strDetails["evaluationTime"] = evaluationTime
-    strDetails["resetEvaluation"] = resetEvaluation
-    if resetEvaluation:
-        strDetails["resetEvaluationTime"] = resetEvaluationTime
-
-    return strDetails
-
 
 #---------------------------------------------------------------------------------------------------------------
 

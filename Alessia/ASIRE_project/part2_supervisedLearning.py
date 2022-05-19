@@ -9,6 +9,7 @@
 
 import math
 import random
+import copy
 
 
 
@@ -88,9 +89,44 @@ class neuralNetwork():
 
     #-------------------------------------------------------------
 
-    def printWeights(self):
-        #self.weights
-        pass
+    def getWeightsList(self):
+
+        weightsList = []
+        for layer in self.weights.keys():
+            for neuron in self.weights[layer]:
+                for w in neuron:
+                    weightsList.append(w)
+
+        return weightsList
+                    
+
+    #-------------------------------------------------------------
+
+    def setWeightsFromList(self, tabWeights):
+        weightsDict = {}
+        tabW = copy.deepcopy(tabWeights)
+
+        cptLayers = 0
+        for layer in range(self.n_hiddenLayers):
+            cptLayers += 1
+            s = "Layer" + str(cptLayers)
+            weightsDict[s] = []
+            for neuron in range(self.n_neuronsPerHidden):
+                weightsDict[s].append([tabW.pop(0) for i in range(self.n_neuronsPreviousLayer + 1)])
+                self.n_neuronsPreviousLayer = self.n_neuronsPerHidden
+
+        # Output layers' weights : for every neuron on the output layer, we stock the weight 
+        # linking that neuron with all the neurons and the bias of the previous layer
+        cptLayers += 1
+        s = "Layer" + str(cptLayers)
+        weightsDict[s] = []
+        for neuron in range(self.n_neuronsPerOutputs):
+            if self.n_hiddenLayers > 0 :   
+                weightsDict[s].append([tabW.pop(0) for i in range(self.n_neuronsPerHidden + 1)])
+            else:
+                weightsDict[s].append([tabW.pop(0) for i in range(self.n_neuronsPerInputs + 1)])
+
+        self.weights = weightsDict
 
 
     #-------------------------------------------------------------
@@ -114,7 +150,6 @@ class neuralNetwork():
         print(f"\t{self.n_neuronsPerInputs} input neurons + bias (bias value = 1),")
         print(f"\t{self.n_neuronsPerHidden} hidden neurons + bias (bias value = 1) for each hidden layer,")
         print(f"\t{self.n_neuronsPerOutputs} outputs neurons.")
-        print("\nweights (dict) :", self.printWeights())
         print("\n***************************************************************")
 
 
@@ -345,15 +380,9 @@ class neuralNetwork():
     def predict(self, inputLayer):
         outputs = self.forwardPropagation(inputLayer)
         return outputs
-        #return self.interpretRobotAction(outputs)
 
 
-   #------------------------------------------------------------- 
+    #------------------------------------------------------------- 
 
-    # def interpretRobotAction(self, networkOutputs):
-    #     if len(networkOutputs) == 2 :
-    #         return networkOutputs[0], networkOutputs[1]
-    # ici il faut faire en sorte que l action puisse avoir une valeur 1 et -1
-    # verifier le range des valeurs output
 
 

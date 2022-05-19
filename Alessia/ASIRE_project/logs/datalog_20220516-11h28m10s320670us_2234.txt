@@ -10,3 +10,6 @@
 # Loaded time stamp           : 20220516-11h28m10s320670us
 # process ID                  : 2234
 #
+# Started: 20220516-11h28m10s320670us
+# Stopped: 20220516-23h15m18s804783us
+# Elapsed: 11 hour(s), 47 minutes(s), 8 seconds.

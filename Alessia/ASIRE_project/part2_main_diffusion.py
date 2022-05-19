@@ -61,7 +61,7 @@ swarmLearningMode = "neuralNetworkBackpropagation"
 # PARAMETERS
 ################################################################################################################
 
-nbSteps = 20000
+nbSteps = 200
 cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
 tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
 isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once
@@ -70,7 +70,7 @@ isFirstIteration = [True] * nbRobots        # booleen used to initialize paramet
 # HIT-EE algorithm parameters
 transferRate = 0.1                          # percentage of behaviors the expert sends in the broadcast phase
 maturationDelay = 0                         # number of steps each robot waits before starting teaching or learning
-learningOnlyFromExperts=True                # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
+learningOnlyFromExperts=False                # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
 
 
 # Storage behaviors mode parameters (used in HIT-EE algorithm)
@@ -82,7 +82,7 @@ nb_hiddenLayers = 1
 nb_neuronsPerHidden = 16
 nb_neuronsPerOutputs = 2
 
-defaultBehavior = [1, 0.5]                  # translation and rotation
+defaultBehavior = [1,0.5]                   # translation and rotation. NB: don't leave spaces between t and r
 
 learningRate = 0.4                          # pourcentage that controls how much to modify the NN weights to correct the error.
                                             # learningRate = 0.1 ---> 10% of correction is applied
@@ -117,6 +117,8 @@ debug_knn_accuracy = False
 
 # set 'True' if you want to plot results           
 plot = True
+folderAnalysis = "allParts_results"
+
 evaluationTime = 100                        # number of steps (period) inwhich evaluate performances. None=unlimited time
 slidingWindowTime = 100                     # slidingWindowTime : when the curent robot trains the behaviors dataset
 resetEvaluation = True
@@ -245,6 +247,9 @@ class RobotsController(Controller):
 
     def step(self):
         
+
+
+        # GETTING 24 SENSORS FROM THE ENVIRONNEMENT #####################################
         # Set sensors vectors
         self.sensors = get24ExtendedSensors(self)
         self.tabExtSensorsFloat = extractExtSensors_float(self.sensors)
@@ -262,6 +267,8 @@ class RobotsController(Controller):
 
 
 
+
+        # INITIALISATION ROBOT'S PARAMETERS #############################################
         # Robots' behaviors initialisation
         global isFirstIteration
         if isFirstIteration[self.id] :   # parameters initialization
@@ -278,6 +285,8 @@ class RobotsController(Controller):
             if self.id < nbExpertsRobots: # if this robot is an expert
                 self.posInit = (int(self.arenaHeight/2) + (self.id*25), int(self.arenaWidth/2) + (self.id*25))
                 #self.dictMyBehaviors = buildExpertListBehaviors(0, 1, 4, self.nbExtendedSensors, [0], 3, robotsBehaviors.avoidRobotsWalls_getObjects, maxSizeDictMyBehaviors=maxSizeDictMyBehaviors)
+                
+                # ad-hoc expert behavior (selection of 100 significant 24sensors rows)
                 self.dictMyBehaviors = allParts_tools.getExpertFixedBehavior(allParts_robotsBehaviors.avoidRobotsWalls_getObjects)
             else:
                 self.posInit = self.absolute_position
@@ -308,15 +317,18 @@ class RobotsController(Controller):
 
 
 
-        # reset of the evaluation settings for each robot
+
+        # INITIAL CONDITIONS RESET #######################################################
+        # Reset of the evaluation settings for each robot
         if resetEvaluation and (cptStepsG == 1 or cptStepsG % resetEvaluationTime == 0):
             rob.controllers[self.id].set_position(self.posInit[0], self.posInit[1])
             tabSumFood[self.id] = 0
+            self.age = 0
+            
 
             if self.id >= nbExpertsRobots: # if this robot isn't an expert
                 self.dictMyBehaviors = allParts_tools.buildDefaultListBehaviors(self.nbExtendedSensors, defaultBehavior)
             
-
 
         if debug_part2_diffusion and cptStepsG % nbRobots == 0 and self.id == 0:
             print("\n***************************************************************")
@@ -326,6 +338,8 @@ class RobotsController(Controller):
 
 
 
+        # PLOT SECTION ##################################################################
+        # Writing statistical data about the current evaluation
         if plot and self.id == 0: # we observe parameters when robot n.0 is passing by
 
             if cptStepsG in selectedComparisonMoments:
@@ -342,13 +356,13 @@ class RobotsController(Controller):
                                                                 expertActions)
 
 
-            if cptStepsG == 1 or cptStepsG % evaluationTime == 0 :
-                
+            if cptStepsG == 1 or cptStepsG % evaluationTime == 0 :               
                 global strDetails, performances, periods
+                
                 if cptStepsG == 1: # first Step
                     periods.append(0)
 
-                    strDetails = allParts_tools.getStrDetails(nbRobots,
+                    strDetails = allParts_analysis.writeStrDetails(nbRobots,
                             nbExpertsRobots,
                             nbNotExpertsRobots,
                             nbFoodObjects,
@@ -365,6 +379,7 @@ class RobotsController(Controller):
                             distanceEpsilon,
                             nbEpoch,
                             k,
+                            nbSteps,
                             evaluationTime,
                             resetEvaluation,
                             resetEvaluationTime)
@@ -375,33 +390,20 @@ class RobotsController(Controller):
                 print("cptStepsG :", cptStepsG)  # monitoring passed time at terminal
 
 
-
             if cptStepsG == nbSteps:
-
-                allParts_analysis.writeAllData(strDetails, performances, maxSizeDictMyBehaviors)
-                #bestExpertFitness, bestFitness, median, q25, q75 = allParts_analysis.getAllData()
-                #bestExpertFitness, bestFitness, median, q25, q75 = allParts_analysis.getOneData(maxSizeDictMyBehaviors)
-                #periods = [i for i in range(0,6001,100)]
-                #allParts_analysis.plotAverageFitness(strDetails, bestExpertFitness, bestFitness, median, q25, q75, periods, fileName=None)
-
-                # analysis in function of the database size
-                #file1 = "median_10.txt"
-                file2 = "median_50.txt"
-                file3 = "median_100.txt"
-                #allParts_analysis.plotAverageFitnessFromFiles(strDetails, file2, file3, periods, "Swarm performance in foraging in function of size behaviors", "Average reward", fileName=None)
-
-                # analysis to compare expert et best not experts action choices, in terms of distances
-                file1 = "distances_atStepNb1000.txt"
-                file2 = "distances_atStepNb2500.txt"
-                file3 = "distances_atStepNb6000.txt"
-                #allParts_analysis.plotAverageFitnessFromFiles(strDetails, file1, file2, file3, periods, "Euclidean distance between expert / notExpert action choices in expert path", "Actions euclidean distance", fileName=None)
+                allParts_analysis.writePerformanceData(performances)
 
 
 
-        # Robots' behaviors exchange (communication)
+
+        # ROBOTS' COMMUNICATION #########################################################
+        # Robots' behaviors exchange information management
         self.myHitee.hit_ee()
 
 
+
+
+        # NEXT ACTION CHOICE ############################################################
         # Expert behavior
         if self.id < nbExpertsRobots:
             t, r = self.expertBehavior(distanceEpsilon)
