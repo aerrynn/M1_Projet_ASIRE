@@ -23,15 +23,14 @@ import allParts_analysis
 
 
 
-
 ################################################################################################################
 # CONFIGURATION FILE PARAMETERS : 
 # enable 'buildFileConfig' if you change one or more parameters in this section 
 # from the last execution!
 ################################################################################################################
 
-nbExpertsRobots = 2
-nbNotExpertsRobots = 18
+nbExpertsRobots = 10
+nbNotExpertsRobots = 90
 nbFoodObjects = 100
 
 nbRobots = nbNotExpertsRobots + nbExpertsRobots
@@ -118,6 +117,7 @@ expertSensorsPath = []
 expertActions = []
 strDetails = None
 selectedComparisonMoments = [1000, 2500, nbSteps]   # to write the distance between expert et best not expert behaviors
+
 
 
 

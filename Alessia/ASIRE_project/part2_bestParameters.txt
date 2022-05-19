@@ -2,7 +2,6 @@
 # CONFIGURATION FILE PARAMETERS : 
 # enable 'buildFileConfig' if you change one or more parameters in this section 
 # from the last execution!
-# If you don't want to set a parameter, set its value to 'None'
 ################################################################################################################
 
 nbExpertsRobots = 10
@@ -34,7 +33,7 @@ swarmLearningMode = "neuralNetworkBackpropagation"
 # PARAMETERS
 ################################################################################################################
 
-nbSteps = 20000
+nbSteps = 200
 cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
 tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
 isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once
@@ -43,7 +42,7 @@ isFirstIteration = [True] * nbRobots        # booleen used to initialize paramet
 # HIT-EE algorithm parameters
 transferRate = 0.1                          # percentage of behaviors the expert sends in the broadcast phase
 maturationDelay = 0                         # number of steps each robot waits before starting teaching or learning
-learningOnlyFromExperts=True                # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
+learningOnlyFromExperts=False                # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
 
 
 # Storage behaviors mode parameters (used in HIT-EE algorithm)
@@ -55,7 +54,7 @@ nb_hiddenLayers = 1
 nb_neuronsPerHidden = 16
 nb_neuronsPerOutputs = 2
 
-defaultBehavior = [1, 0.5]                  # translation and rotation
+defaultBehavior = [1,0.5]                   # translation and rotation. NB: don't leave spaces between t and r
 
 learningRate = 0.4                          # pourcentage that controls how much to modify the NN weights to correct the error.
                                             # learningRate = 0.1 ---> 10% of correction is applied
@@ -77,7 +76,7 @@ k = 7
 ################################################################################################################
 
 # set 'True' if you want to see execution details on terminal
-selectedRobots = [2,3]                          
+selectedRobots = [i for i in range(nbExpertsRobots, nbRobots)]                          
 
 debug_part2_diffusion = False
 debug_objects = False
@@ -89,9 +88,11 @@ debug_knn_accuracy = False
 
 
 # set 'True' if you want to plot results           
-plot = True
+plot = False
+folderAnalysis = "allParts_results"
+
 evaluationTime = 100                        # number of steps (period) inwhich evaluate performances. None=unlimited time
-slidingWindowTime = 100                     # slidingWindowTime==0 means inactive
+slidingWindowTime = 100                     # slidingWindowTime : when the curent robot trains the behaviors dataset
 resetEvaluation = True
 resetEvaluationTime = 2000                  # behaviors DB will be reinitialized (conteining only the default behavior) at each resetBehaviorsDBTime
 
@@ -101,6 +102,4 @@ periods = []
 expertSensorsPath = []
 expertActions = []
 strDetails = None
-selectedComparisonMoments = [1000, 10000, nbSteps]   # to write the distance between expert et best not expert behaviors
-
-
+selectedComparisonMoments = [1000, 2500, nbSteps]   # to write the distance between expert et best not expert behaviors

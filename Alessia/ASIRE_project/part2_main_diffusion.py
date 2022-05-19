@@ -6,7 +6,7 @@
 # IMPORTS
 ################################################################################################################
 
-from cgitb import reset
+
 from pyroborobo import Pyroborobo
 from pyroborobo import Controller
 from pyroborobo import CircleObject
