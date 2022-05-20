@@ -474,7 +474,7 @@ folder = "allParts_results/data_6000steps/data_distExpVsNotExp_6000_100_bp"
 size1 = 50
 size2 = 100
 folder = "allParts_results/data_10000steps/data_sizeDB_10000_knn"
-plot_data_sizeDB(folder, size1, size2)
+#plot_data_sizeDB(folder, size1, size2)
 
 #---------------------------------------------
 
@@ -483,16 +483,13 @@ plot_data_sizeDB(folder, size1, size2)
 
 #---------------------------------------------
 
-# labelList = ["backpr_100", "backpr_50", "backpr_20", "knn_100", "knn_50", "knn_20"]
-# innovation = 14       # 14 min
-# backpr_100 = 1481     # 24h 41min
-# backpr_50 = 203       # 3h 23min
-# backpr_20 =
-# knn_100 = 10          # 10 min
-# knn_50 = 96           # 1h 36 min
-# knn_20 = 
-# timeList = [0,1,2,3,4,5,6]
-# #timeList = [innovation, backpr_100, backpr_50, backpr_20, knn_100, knn_50, knn_20]
-# plot_data_timing(labelList, timeList)
+labelList = ["innovation", "backpr_100", "backpr_50", "knn_100", "knn_50"]
+innovation = 14       # 14 min
+backpr_100 = 1481     # 24h 41min
+backpr_50 = 203       # 3h 23min
+knn_100 = 10          # 10 min
+knn_50 = 96           # 1h 36 min
+timeList = [innovation, backpr_100, backpr_50, knn_100, knn_50]
+plot_data_timing(labelList, timeList)
 
 #---------------------------------------------
