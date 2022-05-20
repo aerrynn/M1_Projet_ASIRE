@@ -489,7 +489,7 @@ backpr_100 = 1481     # 24h 41min
 backpr_50 = 203       # 3h 23min
 knn_100 = 10          # 10 min
 knn_50 = 96           # 1h 36 min
-timeList = [innovation, backpr_100, backpr_50, knn_100, knn_50]
-plot_data_timing(labelList, timeList)
+# timeList = [innovation, backpr_100, backpr_50, knn_100, knn_50]
+# plot_data_timing(labelList, timeList)
 
 #---------------------------------------------

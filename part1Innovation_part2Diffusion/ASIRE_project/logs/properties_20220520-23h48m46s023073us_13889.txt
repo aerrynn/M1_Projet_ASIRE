@@ -5,9 +5,9 @@
 # =-= Roborobo^3 
 # =-= Official version tag    : 20210321
 # =-= Current build name      : Shangri-La build (roborobo^4 w/ python interface)
-# =-= Compilation version tag : Apr  6 2021 - 17:27:23
+# =-= Compilation version tag : Mar 25 2022 - 03:04:29
 #
-# Loaded time stamp           : 20220520-22h04m35s188663us
+# Loaded time stamp           : 20220520-23h48m46s023073us
 #
 # Original Properties file    : 
 #
@@ -43,7 +43,7 @@ gLandmarkRadius=10.0
 gLocationFinderMaxNbOfTrials=1000
 gLocomotionMode=0
 gLogDirectoryname=logs/
-gLogFilename=datalog_20220520-22h04m35s188663us_6325.txt
+gLogFilename=datalog_20220520-23h48m46s023073us_13889.txt
 gMaxIt=80400
 gMaxRotationalSpeed=30
 gMaxTranslationalDeltaValue=2
@@ -72,7 +72,7 @@ gPhysicalObjectDefaultType=1
 gPhysicalObjectIndexStartOffset=1
 gPhysicalObjectsRedraw=false
 gPhysicalObjectsVisible=true
-gRandomSeed=-1930345
+gRandomSeed=1955878983
 gRobotDisplayFocus=false
 gRobotIndexFocus=0
 gRobotIndexStartOffset=1048576
