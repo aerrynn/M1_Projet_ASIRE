@@ -6,14 +6,8 @@ maxSizeDictMyBehaviors 20
 hit_ee_transferRate 0.1
 hit_ee_maturationDelay 0
 hit_ee_learningOnlyFromExperts True
-swarmLearningMode neuralNetworkBackpropagation
-nb_hiddenLayers 1
-nb_neuronsPerHidden 16
-nb_neuronsPerOutputs 2
-defaultBehavior [1, 0.5]
-learningRate 0.4
-distanceEpsilon 0.25
-nbEpoch 200
+swarmLearningMode kNearestNeighbors
+k 7
 nbSteps 10000
 evaluationTime 100
 resetEvaluation True

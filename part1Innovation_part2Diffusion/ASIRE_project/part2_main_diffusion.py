@@ -51,8 +51,8 @@ fileConfig = "config/config.properties"
 #   - "kNearestNeighbors"
 ################################################################################################################
 
-swarmLearningMode = "neuralNetworkBackpropagation"
-#swarmLearningMode = "kNearestNeighbors"
+#swarmLearningMode = "neuralNetworkBackpropagation"
+swarmLearningMode = "kNearestNeighbors"
 
 
 

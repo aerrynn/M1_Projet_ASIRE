@@ -217,7 +217,7 @@ def plot_data_distExpVsNotExp(folder, time1, time2, time3):
 
 #--------------------------------------------------------------------------------------------------------------
 
-def plot_data_sizeDB(folder, size1, size2, size3):
+def plot_data_sizeDB(folder, size1, size2):
 
     parse = folder.split('/')
     parse = parse[-1].split('_')
@@ -239,8 +239,8 @@ def plot_data_sizeDB(folder, size1, size2, size3):
     plt.ylabel("Average reward")
 
 
-    for size in [size1, size2, size3]:
-        fileName = f"median_{size}"
+    for size in [size1, size2]:
+        fileName = f"median_{strDetails['nbSteps']}_{size}"
         file = f"{folder}/{fileName}.txt"
         with open(file, 'r', encoding='utf-8') as f:
             data = f.readlines()
@@ -453,8 +453,8 @@ def getStrDetails(folder=''):
 # PARAMETERS - PLOT FROM FOLDER
 ####################################################################
 
-folder = "allParts_results/data_20000steps/data_performance_20000_100_knn"
-plot_data_performance(folder)
+folder = "allParts_results/data_6000steps/data_performance_6000_100_bp"
+#plot_data_performance(folder)
 
 #---------------------------------------------
 
@@ -465,18 +465,16 @@ plot_data_performance(folder)
 
 time1 = 1000
 time2 = 2500
-time3 = 20000   # set this value
-#folder = "allParts_results/data_20000steps/data_distExpVsNotExp_20000_innovation"
+time3 = 6000   # set this value
+folder = "allParts_results/data_6000steps/data_distExpVsNotExp_6000_100_bp"
 #plot_data_distExpVsNotExp(folder, time1, time2, time3)
 
 #---------------------------------------------
 
-size1 = 20
-size2 = 50
-size3 = 100
-#folder = "allParts_results/data_10000steps/data_sizeDB_10000_bp"
-#folder = "allParts_results/data_10000steps/data_sizeDB_10000_knn"
-#plot_data_sizeDB(folder, size1, size2, size3)
+size1 = 50
+size2 = 100
+folder = "allParts_results/data_10000steps/data_sizeDB_10000_knn"
+plot_data_sizeDB(folder, size1, size2)
 
 #---------------------------------------------
 
