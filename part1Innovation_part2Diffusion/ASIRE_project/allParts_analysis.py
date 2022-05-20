@@ -453,7 +453,7 @@ def getStrDetails(folder=''):
 # PARAMETERS - PLOT FROM FOLDER
 ####################################################################
 
-folder = "allParts_results/data_20000steps/data_performance_20000_100_bp"
+folder = "allParts_results/data_20000steps/data_performance_20000_100_knn"
 plot_data_performance(folder)
 
 #---------------------------------------------
