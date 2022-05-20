@@ -51,8 +51,8 @@ fileConfig = "config/config.properties"
 #   - "kNearestNeighbors"
 ################################################################################################################
 
-#swarmLearningMode = "neuralNetworkBackpropagation"
-swarmLearningMode = "kNearestNeighbors"
+swarmLearningMode = "neuralNetworkBackpropagation"
+#swarmLearningMode = "kNearestNeighbors"
 
 
 
@@ -74,7 +74,7 @@ learningOnlyFromExperts=True                # 'True'= only experts robots can br
 
 
 # Storage behaviors mode parameters (used in HIT-EE algorithm)
-maxSizeDictMyBehaviors = 20                 # maximal size allowed for storing behaviors. None=unlimited
+maxSizeDictMyBehaviors = 100                 # maximal size allowed for storing behaviors. None=unlimited
 
 
 # Neural Network parameters
