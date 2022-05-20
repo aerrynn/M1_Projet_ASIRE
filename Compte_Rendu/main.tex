@@ -69,9 +69,9 @@
     \romantableofcontents
 
     \chapter{Introduction}
-	L'objectif de ce projet est de trouver des outils permettant à des robots avec une mémoire très limitée d'apprendre à réaliser une tâche par l'observation des mouvements d'autres robots ayant les mêmes spécifications.
+	L'objectif de ce projet est de trouver des outils permettant à des robots avec une mémoire très limitée d'apprendre à réaliser une tâche par l'observation des mouvements d'autres robots aux mêmes spécifications.
 Dans cette optique, on considèrera que les robots ont des moyens de communication limités voire inexistants si possible.
-En utilisant des agents au comportement prédéfini, nommés ici les experts, capables de réaliser au mieux la tâche envisagée et des robots apprenants, on pourra toujours observer une convergeance vers le comportement de l'expert dans les cas où l'apprentissage se fait uniquement dans le sens expert-apprenant.
+En utilisant des agents au comportement prédéfini, nommés ici les experts, capables de réaliser au mieux la tâche envisagée et des robots // , on pourra toujours observer une convergeance vers le comportement de l'expert dans les cas où l'apprentissage se fait uniquement dans le sens expert-apprenant.
     Dans certains cas particuliers, des méthodes explorées permettent à l'apprentissage apprenant-apprenant d'accélerer cette convergeance. 
     
     Ce projet a été encadré par messieurs Nicolas Bredeche et Stéphane Doncieux.  
@@ -79,9 +79,9 @@ En utilisant des agents au comportement prédéfini, nommés ici les experts, ca
     L'ensemble des codes utilisés afin d'obtenir les résultats décrits dans le document suivant sont disponibles sur notre dépôt \href{https://github.com/aerrynn/M1_Projet_ASIRE}{github}. 
 
     \chapter{État de l'art}
-    Aujourd'hui, la plupart des algorithmes d'apprentissage utilisés en robotique en essaim sont soit déterministes, soit axés sur l'apprentissage par transfert de poids de neurones, à l'instar de l'algorithme HIT-EE\footnote{Nicolas Bredeche and Nicolas Fontbonne. 2022. Social learning in swarm robotics. Philos. Trans. R. Soc. B Biol. Sci. 377, 1843 (January 2022), 20200309. DOI:https://doi.org/10.1098/rstb.2020.0309} qui nous a servi de base pour le projet.
+    Aujourd'hui, la plupart des algorithmes d'apprentissages utilisés en robotique en essaim sont soit déterministes, soit axés sur l'apprentissage par transfert de poids de neurones, à l'instar de l'algorithme HIT-EE\footnote{Nicolas Bredeche and Nicolas Fontbonne. 2022. Social learning in swarm robotics. Philos. Trans. R. Soc. B Biol. Sci. 377, 1843 (January 2022), 20200309. DOI:https://doi.org/10.1098/rstb.2020.0309} qui nous a servi de base pour le projet.
     
-    HIT-EE est un algorithme d'apprentissage en ligne qui suit un principe simple : Chaque agent subit une phase d'évaluation durant laquelle il ne peut transmettre son patrimoine mais reçoit les messages d'autres agents. A l'issue de cette phase, pour chaque message reçu, Si sa fitness est inférieure à celle de l'émetteur, il copie une partie des poids de l'émetteur. Une fois tous les messages lus, son patrimoine peut muter avec une probabilité donnée. Enfin si son patrimoine a changé durant au moins l'une des deux phases précedentes, il recommence sa phase d'évaluation.
+    HIT-EE est un algorithme d'apprentissage en ligne qui suit un principe simple : Chaque agent subit une phase d'évaluation durant laquelle il ne peut transmettre son patrimoine mais reçoit les messages d'autres agents. A l'issu de cette phase, pour chaque message reçu, Si sa fitness est inferieure à celle de l'émetteur, il copie une partie des poids de l'émetteur. Une fois tous les messages lus, son patrimoine mute avec une probabilité donnée. Enfin si son patrimoine a changé, il recommence sa phase d'évaluation.
     
     \chapter{Contribution}
    
@@ -98,20 +98,24 @@ En utilisant des agents au comportement prédéfini, nommés ici les experts, ca
     \item Taille de l'arène : 1400x800 px
     \item Taille des robots : 5x5 px
     \item Nombre de senseurs : 16 ou 24
-    \item Distance des senseurs : 16 ou 24 (8 senseurs, capable de distinguer le type de l'objet et la distance à ce dernier)
+    \item Distance des senseurs : 16
     \item Durée d'une expérience : 20,000 steps
     \item Nombre de répétions de l'expérience : 5
     \end{itemize}
+    
+// Mentionner qu'on utilise les senseurs étendus (dim. 24) donnant de l'info sur dist robots, dist objets, dist murs.
 
 Les différents experts suivent un comportement donné.
-L'un sous forme de génome, c'est-à-dire 100 couple observations-actions.
-Et le second dont l'objectif est d'éviter les obstacles (qu'ils soient des murs ou d'autres robots) tout en se focalisant sur le ramassage des objets dès que possible, obtenu par simple succession de conditions.
+// Algo comportement 1 : sous forme de génome
+
+// Algo comportement 2
+L'objectif de ce comportement est d'éviter les obstacles (qu'ils soient des murs ou d'autres robots) tout en se focalisant sur le ramassage des objets dès que possible.
 
 
 	\section{Méthode par transmission de comportements}
 	On considère que chaque individu possède une base de données de traces comportamentales, utile à stocker les comportements qu'un individu expert lui a envoyé lorsque les deux robots se sont croisés.
 	
-	La base de données de chaque individu expert est initialisée au début de l'expérience : elle contient 100 traces pré-définies et n'évolue pas au cours du temps. Parmi toutes les traces possibles, les 100 traces que nous avons sélectionnées permettent aux individus experts d'être efficaces dans le contournement d'obstacles que ce soit des murs ou des robots pour prévenir les blocages et la collecte d'objets lorsqu'un objet se trouve dans le périmètre perceptible des senseurs.
+	La base de données de chaque individu expert est initialisée au début de l'expérience : elle contient 100 traces pré-définies et n'évolue pas au cours du temps. Parmi toutes les traces possibles, les 100 traces que nous avons sélectionnées permettent aux individus experts d'être efficaces dans le contournement d'obstacles que ce soit des murs ou des robots pour prevenir les blocages et la collecte d'objets lorsqu'un objet se trouve dans le périmètre perceptible des senseurs.
 	
 	Une trace comportementale est un couple $( s_t, a_t )^T$, avec :
 	\begin{itemize}
@@ -132,18 +136,17 @@ Et le second dont l'objectif est d'éviter les obstacles (qu'ils soient des murs
     
     A chaque début d'évaluation, les conditions initiales sont réinitialisées, notamment:
     \begin{itemize}
-	\item la position de tous les individus
-    \item la base de données de comportements
-    \item la performance de chaque individu (exprimée en nombre d'objets collectés)
+	\item la position de tous les individus;
+    \item la base de données de comportements;
+    \item la performance de chaque individu, exprimée en nombre d'objets collectés.
 	\end{itemize}
-    
     
     Remarque : Pour l'algorithme de rétropropagation du gradient, les poids du réseau de neurones ne seront pas réinitialisés d'une évaluation à l'autre, dans le but de raffiner les poids précédemment obtenus en les testant dans un nouveau contexte.
     
     Les graphiques de distance sont obtenus ainsi:
     \begin{itemize}
         \item A chaque step, nous capturons l'univers aperçu par un individu expert, en enregistrant l'état qu'il détecte (liste de 24 senseurs) et l'action correspondante effectuée.
-        \item A $t = 1000$ steps, nous comparons les individus focaux en faisant la somme de la distance euclidienne entre leur choix d'action pour chaque observation de l'expert, et l'action effectuée par l'expert pour l'ensemble des données enregistrées.
+        \item A $t = 1000$ steps, nous comparons les individu focaux en faisant la somme de la distance euclidienne entre leur choix d'actions pour les observations de l'expert, et les actions effectuée par l'expert.
         \item Nous répétons la même technique à $t = 2500$ steps et à $t = 6000$ steps, ensuite nous comparons les résutats sur la tranche de $t = 0$ steps à $t = 2500$ steps.
     \end{itemize}
 
@@ -151,50 +154,87 @@ Et le second dont l'objectif est d'éviter les obstacles (qu'ils soient des murs
 	
 	
     \subsection{Apprentissage par rétropropagation du gradient}
-    L'apprentissage par rétropropagation du gradient permet d'observer une évolution fluide du comportement des individus focaux : les trajectoires dessinent des ellipses qui deviennent progressivement plus larges et ouvertes au cours du temps. En présence d'obstacles, les individus répondent rapidement pour le contournement des murs et nous observons qu'il ne se crée pas d'interblocage avec les autres robots. De manière moins importante par rapport aux experts, nous remarquons aussi la reconnaissance d'objets.
-    //REVOIR
+    
+    L'apprentissage par rétropropagation du gradient permet d'observer une évolution fluide du comportement des individus focaux : les trajectoires dessinent des ellipses qui deviennent progressivement plus larges et ouvertes au cours du temps. En presence d'obstacles, les individus répondent rapidement pour le contournement des murs et nous observons qu'il ne se crée pas d'interblocage avec les autres robots. De manière moins importante par rapport aux experts, nous remarquons aussi la reconnaissance d'objets.
+    
+    \includegraphics[scale=0.5]{images/data_performance_20000_100_bp.png}
+    
+    \includegraphics[scale=0.5]{images/data_learnFromAll_20000_100_bp.png}
+    
+    Les deux graphiques ci-dessus montrent respectivement l'apprentissage de l'essaim que à partir des experts et l'apprentissage de l'essaim à partir de tous les individus avec une valeur de fitness meilleure.
+    Nous ne remarquons pas des differences importantes sur les performances de l'essaim.
+
     
     \includegraphics[scale=0.5]{bp6000_100.png}
     
-    L'apprentissage par rétropropagation du gradient se révèle efficace et confère à chaque individu un mouvement continu qui n'imite pas parfaitement le comportement de l'expert mais assure la poursuite des mêmes objectifs. Cette proprièté permet parfois d'avoir des résultats meilleurs en termes de performances par rapport à ceux des experts. 
-    Dans le graphique, on observe qu'à la troisième évaluation le meilleur individu non-expert de l'essaim obtient une meilleure performance par rapport à celle de l'expert observé. On remarque aussi la progressive amélioration de la performance des individus apprenants, ce qui entraîne une diminution des scores de l'expert de part la raréfaction des ressources.
+    L'apprentissage par rétropropagation du gradient se révèle efficace et confère à chaque individu un mouvement continu qui n'imite pas parfaitement le comportement de l'expert mais assure la poursuite des mêmes objectifs. Cette proprièté permet parfois d'avoir des résultats meilleurs en termes de performance par rapport à ceux des experts. 
+    Dans le graphique, on observe qu'à la troisième évaluation le meilleur individu non-expert de l'essaim obtient une meilleure performance par rapport à celle de l'expert observé. On remarque aussi la progressive amélioration de la performance des individus non experts ce qui entraîne une diminution des scores de l'expert de part la raréfaction des ressources.
 
 
     \includegraphics[scale=0.5]{bp6000_50.png}
 
     \includegraphics[scale=0.5]{sizeDB_50vs100_bp.png}
+    
+    \includegraphics[scale=0.5]{images/data_sizeDB_10000_bp.png}
 
-    La limitation de la base de données des individus focaux à 50 éléments (sur 100 traces totales possiblement pouvant être apprises des experts) réduit légèrement la capacité de l'essaim à apprendre de l'expert. 
+    La limitation de la base de données des individus focaux à 50 éléments (sur 100 traces totales possiblement acquérable depuis les experts) réduit légèrement la capacité de l'essaim à apprendre de l'expert. 
+    Sur une plage de 10000 steps, il semblerait que les différences s'atténuent.
 
 
     \includegraphics[scale=0.5]{distances_bp.png}
 
+
     Les choix effectués par le meilleur individu focal en termes d'actions s'améliorent au cours du temps. La bande verte réprésente une distance minimale entre l'action de l'individu focal et l'action de l'expert au moment $t = 6000$ step.
-    Nous remarquons que le meilleur individu focal a déjà trouvé des poids efficaces pour le réseau de neurones au moment $t = 2500$ step.
+    Nous remarquons que le meilleur individu focal a déjà trouvé des poids efficaces pour le réseau de neurones au moment $t = 2500$ step. 
+
+
+
+
 
     \subsection{Apprentissage par k Plus Proches Voisins}
+    
     L'apprentissage par k Plus Proches Voisins permet d'observer une modification nette des comportements chez les individus focaux : les trajectoires changent rapidement suite à la phase d'entraînement, et ressemblent au comportement d'un individu expert. Cela est dû au fait que chaque action, sélectionnée par l'apprentissage de l'individu focal, correspond exactement à au moins une action de la base de données de l'expert, sans perte d'information.
+    
+    \includegraphics[scale=0.5]{images/data_performance_20000_100_knn.png}
+    
+    \includegraphics[scale=0.5]{images/data_learnFromAll_20000_100_knn.png}
+    
+    Les deux graphiques ci-dessus montrent respectivement l'apprentissage de l'essaim que à partir des experts et l'apprentissage de l'essaim à partir de tous les individus avec une valeur de fitness meilleure.
+    Nous remarquons une forte ressemblance entre la performance du meilleur individu focal et l'expert dans les deux cas, et une nette progression de l'essaim dans le cas de diffusion non limitée à l'expert mais réalisable par tout robot dans l'essaim.
+    
+
     
     
     \includegraphics[scale=0.5]{knn6000_100.png}
     
     L'apprentissage par k Plus Proches Voisins est efficace et tend à imiter parfaitement le comportement de l'expert.
-    Dans le graphique, nous pouvons voir que les performances du meilleur apprenant et de l'expert sont presque superposées. La connaissance générale du groupe évolue en fonction du temps mais progresse moins vite par rapport à l'apprentissage par rétropropagation du gradient.
+    Dans le graphique, nous pouvons voir que les performance du meilleur apprenant et de l'expert sont presque superposées. La connaissance générale du groupe évolue en fonction du temps mais progresse moins vite par rapport à l'apprentissage par rétropropagation du gradient.
     
     \includegraphics[scale=0.5]{knn6000_50.png}
     
-    La limitation de la base de données des individus focaux à 50 éléments (sur 100 traces totales qui peuvent être apprises des experts) réduit la capacité de l'essaim à apprendre de l'expert. 
+    \includegraphics[scale=0.5]{images/data_sizeDB_10000_knn.png}
+    
+    La limitation de la base de données des individus focaux à 50 éléments (sur 100 traces totales qui peuvent être apprise des experts) réduit la capacité de l'essaim à apprendre de l'expert dans un premier temps, mais elle semblerait offrir à chaque individu une diversité capable d'accroître le niveau de performance de l'essaim au fur et au mesure que le nombre de steps augmente. 
     
     
-    \includegraphics[scale=0.5]{knn6000_100_noReset.png}
-        
+
+    
     \includegraphics[scale=0.5]{distances_knn.png}
     
-    Ce graphique des distances entre actions est obtenu à partir de l'expérimentation de 6000 steps sans réinitialisation des conditions initiales. Nous remarquons qu'en fin d'évaluation, l'essaim a un comportement beaucoup plus proche de celui de l'expert - en termes d'actions choisies - par rapport au début de l'évaluation.
+    Ce graphique des distances entre actions est obtenu à partir de l'expérimentation de 6000 steps sans réinitialisation des conditions initiales représentée ci-dessus. Nous remarquons qu'en fin d'évaluation, l'essaim a un comportement beaucoup plus proche de celui de l'expert - en termes d'actions choisies - par rapport au début de l'évaluation.
+    
+    
+    
+    \includegraphics[scale=0.5]{images/executionTime.png}
+    
+    Le temps d'exécution requis par les algorithmes d'apprentissage employés varie en fonction de la taille du database des robots pour chacune des deux méthodes. kNearestNeighbors avec taille database 100 est le seul aussi rapide que l'algorithme d'apprentissage par genome auquel on s'inspire dans l'état de l'art. La méthode de retropropagation de gradient est très lente suite à l'entrainement du réseau de neurones pour chaque robot : la limitation du database dans ce cas réduit considerablement les temps de calcul.
+    
+    
+    Nous tenons à remercier nos encadrants car il a été très enrichissant de travailler avec des experts qui ont su nous guider en valorisant nos attitudes et nos points de force. Nous avons pu compter sur leur disponibilité à tout moment du projet, et progresser vers un resultat que nous a poussé à nous améliorer constamment, en nous donnant encore plus envie de poursuivre sur cette voie.  
     
     
 	\section{Méthode par mimétisme}
-	On décide ensuite de généraliser l'apprentissage en ajoutant de nouvelles contraintes : pour qu'un individu apprenne un comportement, ce dernier doit être observé. On change ainsi les informations transmises lors de la rencontre entre deux individus en un couple (observation, action) envoyé par l'expert.
+	On décide ensuite de généraliser l'apprentissage en ajoutant de nouvelle contraintes : pour qu'un individu apprenne un comportement, ce dernier doit être observé. On change ainsi les informations transmises lors de la rencontre entre deux individus en un couple (observation, action) envoyé par l'expert.
 	Pour simplifier, on ne considère pas la perte d'information due au changement de point de vue.
 	\subsection{Apprentissage ad-hoc}
 	Dans un premier temps, on se propose d'évaluer l'apprentissage par mimétisme en donnant aux apprenants une mémoire extensible et en déterminant le comportement des agents non-experts de la manière suivante :
@@ -208,11 +248,11 @@ Et le second dont l'objectif est d'éviter les obstacles (qu'ils soient des murs
   		return $a$\;
 	\end{algorithm}}
 	
-	La première remarque que l'on puisse faire sur cette méthode d'apprentissage est qu'en plus d'être coûteuse en mémoire, la simulation dure très longtemps. Ceci s'explique par le fait que les observations appartiennent à des segments continus compris entre 0 et 1 ce qui fait que la quasi totalité des comportements observés sont stockés et ensuite mesuré lors du calcul du plus proche voisin.
+	La première remarque que l'on peut faire sur cette méthode d'apprentissage est qu'en plus d'être coûteuse en mémoire, la simulation dure très longtemps du fait que les observations appartiennent à des segments continus compris entre 0 et 1.
 	
-	De plus, lorsqu'un apprenant intègre un comportement, celui-ci est toujours dans le rayon de perception de l'expert, ce qui entraîne une perte de généralisation. Par exemple, les situations où un agent se retrouve en face d'un objet sans qu'aucun autre agent ne soit détecté par ses senseurs, ne peuvent être apprises.
-	Pour palier à ce problème pour cette algorithme, on a fait le choix de ne transmettre que les informations des capteurs frontaux.
-	Lorsque l'on ajoute l'apprentissage inter-apprenants, on observe rapidement un problème : un agent non-expert peut apprendre un mauvais comportement. Pour l'instant, l'on n'a aucun moyen de filtrer ou d'éliminer ces comportements sub-optimaux.
+	De plus, lorsqu'un apprenant apprend un comportement, celui-ci est toujours dans le rayon de perception de l'expert, ce qui entraîne une perte de généralisation. Par exemple, les situation où un agent se retrouve en face d'un objet sans qu'aucun autre agent ne soit détecté par ses senseurs, ne peuvent être apprises.
+	Pour palier à ce problème, dans un premier temps, on a fait le choix de ne transmettre que les informations des capteurs frontaux.
+	Lorsque l'on ajoute l'apprentissage inter-apprenants, on observe rapidement un problème : un agent non-expert peut apprendre un mauvais comportement et pour l'instant, l'on n'a aucun moyen de filtrer ou d'éliminer ces comportements sub-optimaux.
 	
 	\subsection{Apprentissage ad-hoc avec discrétisation des entrées}
 	Afin d'adapter la méthode ad-hoc au domaine de la robotique en essaim, et donc de limiter la mémoire nécessaire, on a essayé de discrétiser les entrées. Une telle méthode a plusieurs avantages : elle réduit le domaine des observations $$nombre d'intervalles^{nombre de senseurs}*2^{nombre de senseurs de typage} $$ et permet de hasher ces dernières pour accéder plus efficacement aux comportements.
@@ -253,7 +293,7 @@ Et le second dont l'objectif est d'éviter les obstacles (qu'ils soient des murs
 \end{algorithm}}
 	
 	
-	\textbf{N.B.} Pour les tests, on a fait le choix de définir le mouvement par défaut comme (0.5, 0.05), c'est-à-dire de continuer tout droit, mais avec un léger déplacement vers la droite pour éviter aux agents de se coincer.
+	\textbf{N.B.} Pour les tests, on a fait le choix de définir le mouvement par défaut comme (0.5, 0.05), c'est-à-dire de continuer tout droit, mais avec un léger déplacement vers la droite pour éviter au agents de se coincer.
 
 \begin{center}
 	\includegraphics{D2Propag}
@@ -319,9 +359,9 @@ De plus, certaines de nos expériences n'ont pu avoir de résultats représentat
 
     \appendix
     \chapter{Bibliographie}
-\begin{itemize}
-	\item{Nicolas Bredeche and Nicolas Fontbonne. 2022. Social learning in swarm robotics. Philos. Trans. R. Soc. B Biol. Sci. 377, 1843 (January 2022), 20200309. DOI:https://doi.org/10.1098/rstb.2020.0309}
- \end{itemize}
+    \begin{enumerate}
+	\item {Nicolas Bredeche and Nicolas Fontbonne. 2022. Social learning in swarm robotics. Philos. Trans. R. Soc. B Biol. Sci. 377, 1843 (January 2022), 20200309. DOI:https://doi.org/10.1098/rstb.2020.0309}
+    \end{enumerate}
     %\printbibliography
 
 
@@ -330,25 +370,32 @@ De plus, certaines de nos expériences n'ont pu avoir de résultats représentat
 		\includepdf[scale = 0.9,nup=2x2, pages=1-4]{CDC.pdf}
     \end{figure}
     \chapter{Manuel utilisateur}
-     
-    \subsection{Méthode par transmission de comportements}
+    
+    
+    \subsection{Méthode par transmission de genome \\ et méthode par transmission de comportements}
     
     \begin{itemize}
-        \item Se positionner sur le répertoire \textit{ASIRE\_project}
+        \item Se positionner sur le répertoire \textit{part1Innovation\_part2Diffusion\textbackslash ASIRE\_project}
         
-        \item Dans le fichier \textit{part2\_main\_diffusion.py}, en début de page, fixer les paramètres à utiliser :
+        \item Se positionner dans le fichier :
+        
+        \begin{itemize}
+        \item \textit{part1\_main\_innovation.py} pour exécuter l'apprentissage par genome;
+        \item \textit{part2\_main\_diffusion.py} pour exécuter l'apprentissage par comportements.
+        \end{itemize}
+        
+        \item Dans le fichier \textit{main} choisi, en début de page, fixer les paramètres à utiliser :
         
         \begin{itemize}
         \item section \textbf{\textit{configuration file parameters}}. Fixer le nombre de individus experts \textit{nbExpertsRobots}, le nombre d'individus focaux \textit{nbNotExpertsRobots} et le nombre d'objets \textit{nbFoodObjects} pour l'expérience. Remarque : il ne faut pas modifier le fichier de configuration qui se trouve dans le répertoie \textit{config}.
         \item section \textbf{\textit{learning mode configuration}}. Choisir la mèthode d'apprentissage pour l'expérience courante : commenter la ligne de la mèthode à ne pas utiliser.
-      \item section \textbf{\textit{parameters}}. Fixer le nombre total de steps \textit{nbSteps} de l'expérience et la taille de la base de données des individus \textit{maxSizeDictMyBehaviors}. Affecter \textit{True} à la variable \textit{learningOnlyFromExperts} pour limiter la possibilité de diffuser ses traces comportamentales aux seuls individus experts; affecter \textit{False} pour permettre à tous les individu de diffuser ses propres traces comportamentales.
-            \item section \textbf{\textit{debug and plot parameters}}. Il est possible de visualiser les détails d'execution des algorithmes en affectant la valeur \textit{True} aux différentes variables \textit{debug\_*}.
-            
+        \item section \textbf{\textit{parameters}}. Fixer le nombre total de steps \textit{nbSteps} de l'expérience et la taille de la base de données des individus \textit{maxSizeDictMyBehaviors}. Affecter \textit{True} à la variable \textit{learningOnlyFromExperts} pour limiter la possibilité de diffuser ses propres caractéristiques (genome ou traces comportamentales) aux seuls individus experts; affecter \textit{False} pour permettre à tous les individu de diffuser.
+        \item section \textbf{\textit{debug and plot parameters}}. Il est possible de visualiser les détails d'execution des algorithmes en affectant la valeur \textit{True} aux différentes variables \textit{debug\_*}.
         \end{itemize}
         
-        Remarque : le fichier \textit{part2\_bestParameters.txt} conserve une copie des meilleurs paramètres testés lors des expériences.
+        Remarque : les fichiers \textit{part1\_bestParameters.txt} et \textit{part2\_bestParameters.txt} conservent une copie des meilleurs paramètres testés lors des expériences.
         
-        \item Exécuter le fichier \textit{part2\_main\_diffusion.py}.
+        \item Exécuter le fichier \textit{main} choisi, \textit{part1\_main\_innovation.py} ou \textit{part2\_main\_diffusion.py}.
     
     \end{itemize}
     
