@@ -1,0 +1,15 @@
+# =-=-=-=-=-=-=-=-=-=-=
+# LOG DATA 
+# =-=-=-=-=-=-=-=-=-=-=
+#
+# =-= Roborobo^3 
+# =-= Official version tag    : 20210321
+# =-= Current build name      : Shangri-La build (roborobo^4 w/ python interface)
+# =-= Compilation version tag : Mar 25 2022 - 03:04:29
+#
+# Loaded time stamp           : 20220501-13h18m58s299135us
+# process ID                  : 11934
+#
+# Started: 20220501-13h18m58s299135us
+# Stopped: 20220501-13h19m48s399145us
+# Elapsed: 50 seconds.

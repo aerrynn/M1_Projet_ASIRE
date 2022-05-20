@@ -1,0 +1,105 @@
+################################################################################################################
+# CONFIGURATION FILE PARAMETERS : 
+# enable 'buildFileConfig' if you change one or more parameters in this section 
+# from the last execution!
+################################################################################################################
+
+nbExpertsRobots = 10
+nbNotExpertsRobots = 90
+nbFoodObjects = 100
+
+nbRobots = nbNotExpertsRobots + nbExpertsRobots
+
+allParts_tools.buildFileConfig(nbRobots, nbFoodObjects) # modify the configuration file
+fileConfig = "config/config.properties"
+
+
+
+
+
+################################################################################################################
+# LEARNING MODE CONFIGURATION : choose ONE of the following learning methods 
+#   - "neuralNetworkBackpropagation"
+#   - "kNearestNeighbors"
+################################################################################################################
+
+swarmLearningMode = "neuralNetworkBackpropagation"
+#swarmLearningMode = "kNearestNeighbors"
+
+
+
+
+################################################################################################################
+# PARAMETERS
+################################################################################################################
+
+nbSteps = 2000
+cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
+tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
+isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once
+
+
+# HIT-EE algorithm parameters
+transferRate = 0.1                          # percentage of behaviors the expert sends in the broadcast phase
+maturationDelay = 0                         # number of steps each robot waits before starting teaching or learning
+learningOnlyFromExperts=True                # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
+
+
+# Storage behaviors mode parameters (used in HIT-EE algorithm)
+maxSizeDictMyBehaviors = 100                # maximal size allowed for storing behaviors. None=unlimited
+
+
+# Neural Network parameters
+nb_hiddenLayers = 1
+nb_neuronsPerHidden = 16
+nb_neuronsPerOutputs = 2
+
+defaultBehavior = [1,0.5]                   # translation and rotation. NB: don't leave spaces between t and r
+
+learningRate = 0.4                          # pourcentage that controls how much to modify the NN weights to correct the error.
+                                            # learningRate = 0.1 ---> 10% of correction is applied
+
+distanceEpsilon = 0.25                      # required maximal distance between behaviors to be considered similars
+                                            # small epsilon = more accuracy required to match
+
+nbEpoch = 200                               # number of iterations for backpropagation training
+
+
+# k nearest neighborgs
+k = 7
+
+
+
+
+################################################################################################################
+# DEBUG and PLOT PARAMETERS
+################################################################################################################
+
+# set 'True' if you want to see execution details on terminal
+selectedRobots = [i for i in range(nbExpertsRobots, nbRobots)]                          
+
+debug_part2_diffusion = False
+debug_objects = False
+debug_extendedSensors = False
+debug_hitDiffusion = False
+debug_supervisedLearning = False            # only 'selectedRobots' details are shown
+debug_knn = False
+debug_knn_accuracy = False
+
+
+# set 'True' if you want to plot results           
+plot = False
+folderAnalysis = "allParts_results"
+
+evaluationTime = 100                        # number of steps (period) inwhich evaluate performances. None=unlimited time
+slidingWindowTime = 100                     # slidingWindowTime : when the curent robot trains the behaviors dataset
+resetEvaluation = True
+resetEvaluationTime = 2000                  # behaviors DB will be reinitialized (conteining only the default behavior) at each resetBehaviorsDBTime
+
+
+performances = []
+periods = []
+expertSensorsPath = []
+expertActions = []
+strDetails = None
+selectedComparisonMoments = [1000, 2500, nbSteps]   # to write the distance between expert et best not expert behaviors
