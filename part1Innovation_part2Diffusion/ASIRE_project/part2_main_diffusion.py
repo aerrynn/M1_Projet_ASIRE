@@ -74,7 +74,7 @@ learningOnlyFromExperts=True                # 'True'= only experts robots can br
 
 
 # Storage behaviors mode parameters (used in HIT-EE algorithm)
-maxSizeDictMyBehaviors = 50                 # maximal size allowed for storing behaviors. None=unlimited
+maxSizeDictMyBehaviors = 20                 # maximal size allowed for storing behaviors. None=unlimited
 
 
 # Neural Network parameters

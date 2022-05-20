@@ -12,41 +12,6 @@ from allParts_tools import behaviorsEuclideanDistance
 
 
 
-####################################################################
-# PARAMETERS - PLOT FROM FOLDER
-####################################################################
-
-#folder = "allParts_results/data_performance_6000_50_knn"
-#plot_data_performance(folder)
-
-#---------------------------------------------
-
-#folder = "allParts_results/data_learnFromAll_20000_100_knn"
-#plot_data_performance(folder)
-
-#---------------------------------------------
-
-time1 = 1000
-tile2 = 2500
-time3 = 6000
-#folder = "allParts_results/data_distExpVsNotExp_6000_100_bp"
-#plot_data_distExpVsNotExp(folder, time1, time2, time3)
-
-#---------------------------------------------
-
-size1 = 20
-size2 = 50
-size3 = 100
-#folder = "allParts_results/data_sizeDB_6000_bp"
-#plot_data_sizeDB(folder, size1, size2, size3)
-
-#---------------------------------------------
-
-#folder = "allParts_results/data_5performances_6000_100_knn"
-#plot_data_5performances(folder)
-
-
-
 
 
 ################################################################################################################
@@ -65,7 +30,7 @@ def plot_data_performance(folder):
     data = {}
 
     for fileName in labels:
-        file = f"{folder}/{fileName}_{strDetails['maxSizeDictMyBehaviors']}.txt"
+        file = f"{folder}/{fileName}_{strDetails['nbSteps']}_{strDetails['maxSizeDictMyBehaviors']}_{strDetails['swarmLearningMode']}.txt"
         with open(file, 'r', encoding='utf-8') as f:
             tmp = f.readlines()
             data[fileName] = [float(i) for i in tmp]
@@ -201,28 +166,28 @@ def plot_data_distExpVsNotExp(folder, time1, time2, time3):
     plt.ylabel("Actions euclidean distance")
 
 
-    fileName = f"distances_atStepNb{time1}"
+    fileName = f"distances_atStepNb{time1}_{strDetails['swarmLearningMode']}"
     file = f"{folder}/{fileName}.txt"
     with open(file, 'r', encoding='utf-8') as f:
         data = f.readlines()
-        periods = [i for i in range(time1-1)]
-        plt.scatter(periods, data, label = fileName)
+    periods = [i for i in range(1, time1)]
+    plt.scatter(periods, data, label = f"distances_atStepNb{time1}")
 
 
-    fileName = f"distances_atStepNb{time2}"
+    fileName = f"distances_atStepNb{time2}_{strDetails['swarmLearningMode']}"
     file = f"{folder}/{fileName}.txt"
     with open(file, 'r', encoding='utf-8') as f:
         data = f.readlines()
-        periods = [i for i in range(time2-1)]
-        plt.scatter(periods, data, label = fileName)
+    periods = [i for i in range(1, time2)]
+    plt.scatter(periods, data, label = f"distances_atStepNb{time2}")
 
 
-    fileName = f"distances_atStepNb{time3}"
+    fileName = f"distances_atStepNb{time3}_{strDetails['swarmLearningMode']}"
     file = f"{folder}/{fileName}.txt"
     with open(file, 'r', encoding='utf-8') as f:
         data = f.readlines()
-        data = data[:time2-1]
-        plt.scatter(periods, data, label = fileName)
+    data = data[:time2-1]
+    plt.scatter(periods, data, label = f"distances_atStepNb{time3}")
 
 
     plt.legend()
@@ -245,7 +210,7 @@ def plot_data_distExpVsNotExp(folder, time1, time2, time3):
     #-----------------------------------------------------------
     
     plt.subplot_tool()
-    plt.show() 
+    plt.show()
 
 
 
@@ -303,6 +268,22 @@ def plot_data_sizeDB(folder, size1, size2, size3):
     plt.subplot_tool()
     plt.show() 
 
+
+
+
+#--------------------------------------------------------------------------------------------------------------
+
+def plot_data_timing(labelList, timeList):
+
+    plt.figure()
+    plt.suptitle("Execution time", fontsize=14)
+
+    plt.xlabel("Methods")
+    plt.ylabel("Time (min)")
+
+    plt.bar(labelList, timeList)
+    
+    plt.show() 
 
 
 
@@ -464,3 +445,55 @@ def getStrDetails(folder=''):
     return strDetails
 
 
+
+
+
+
+####################################################################
+# PARAMETERS - PLOT FROM FOLDER
+####################################################################
+
+#folder = "allParts_results/data_10000steps/data_performance_10000_100_knn"
+#plot_data_performance(folder)
+
+#---------------------------------------------
+
+#folder = "allParts_results/data_learnFromAll_20000_100_knn"
+#plot_data_performance(folder)
+
+#---------------------------------------------
+
+time1 = 1000
+time2 = 2500
+time3 = 20000   # set this value
+#folder = "allParts_results/data_20000steps/data_distExpVsNotExp_20000_innovation"
+#plot_data_distExpVsNotExp(folder, time1, time2, time3)
+
+#---------------------------------------------
+
+size1 = 20
+size2 = 50
+size3 = 100
+#folder = "allParts_results/data_10000steps/data_sizeDB_10000_bp"
+#folder = "allParts_results/data_10000steps/data_sizeDB_10000_knn"
+#plot_data_sizeDB(folder, size1, size2, size3)
+
+#---------------------------------------------
+
+#folder = "allParts_results/data_5performances_6000_100_knn"
+#plot_data_5performances(folder)
+
+#---------------------------------------------
+
+labelList = ["backpr_100", "backpr_50", "backpr_20", "knn_100", "knn_50", "knn_20"]
+backpr_100 =
+backpr_50 =
+backpr_20 =
+knn_100 =
+knn_50 =
+knn_20 =
+timeList = [1,2,3,4,5,6]
+#timeList = [backpr_100, backpr_50, backpr_20, knn_100, knn_50, knn_20]
+plot_data_timing(labelList, timeList)
+
+#---------------------------------------------
