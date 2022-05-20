@@ -23,7 +23,7 @@ fileConfig = "config/config.properties"
 # PARAMETERS
 ################################################################################################################
 
-nbSteps = 500
+nbSteps = 2000
 cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
 tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
 isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once

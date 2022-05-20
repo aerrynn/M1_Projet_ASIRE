@@ -17,7 +17,7 @@
 
 
 ################################################################################################################
-# getExtendedSensors retourne la distance aux robots, objets et murs pour chaque bras du robot
+# getExtendedSensors retours the distance at robots, objects and walls murs for each robot's arm
 
 # arm 0 : sensor_left
 # arm 1 : sensor_front_left
@@ -32,17 +32,17 @@
 
 
 def get24ExtendedSensors(self):
-    """ Méthode pour obtenir 24 nouveaux senseurs deduits à partir des 8 senseurs de base.
-    Retourne :
-        - sensors (dictionnaire) : ( distance, isRobot (bool), isObject (bool), isWall (bool), distance_to_robot, distance_to_object, distance_to_wall ) pour chaque senseur de base
-        - tabExtSensors (liste) : ( distance_to_robot, distance_to_object, distance_to_wall ) pour chaque senseur de base
+    """ 
+    Methode to get 24 new sensors from the 8 default sensors provided in roborobo.
+    Returns :
+        - sensors (dict) : ( distance, isRobot (bool), isObject (bool), isWall (bool), distance_to_robot, distance_to_object, distance_to_wall ) for each default sensor
+        - tabExtSensors (liste) : ( distance_to_robot, distance_to_object, distance_to_wall ) for each default sensor
 
-    Paramètres:
-    :param self.nb_sensors : nombre de senseurs de base d'un robot (assert : self.nb_sensors = 8)
-    :param self.get_distance_at() : valeur de la distance à un obstacle (robot ou objet ou wall)
-    :param self.get_robot_id_at() : valeur de la distance à un robot
-    :param self.get_object_at() : valeur de la distance à un objet
-    :param self.get_wall_at() : valeur de la distance à un wall
+    :param self.nb_sensors : number of default sensors (assert : self.nb_sensors = 8)
+    :param self.get_distance_at() : distance value at any obstacle (robot or object or wall)
+    :param self.get_robot_id_at() : distance value at a robot
+    :param self.get_object_at() : distance value at an object
+    :param self.get_wall_at() : distance value at a wall
     """
     
     assert self.nb_sensors == 8, "get24ExtendedSensors only works with 8 base sensors"
@@ -77,10 +77,12 @@ def get24ExtendedSensors(self):
 #--------------------------------------------------------------------------------------------------------------
 
 def extractExtSensors_float(sensors):
-    """Méthode pour extraire les 24 extended sensors sous forme de tableau, de manière à les utiliser comme input dans le perceptron.
-    Retourne un tabExtSensors (liste) : ( distance_to_robot, distance_to_object, distance_to_wall ) pour chaque senseur de base
+    """
+    Method to convert 24 extended sensors to list, useful for perceptron input.
     
-    :param sensors : dictionnaire representant les 24 extended sensors
+    Returns a tabExtSensors (liste) : ( distance_to_robot, distance_to_object, distance_to_wall ) for each default sensor
+    
+    :param sensors : dictionnary containing 24 extended sensors
     """
 
     tabExtSensors = []
@@ -95,10 +97,12 @@ def extractExtSensors_float(sensors):
 #--------------------------------------------------------------------------------------------------------------
 
 def extractExtSensors_bool(sensors):
-    """Méthode pour extraire les 24 extended sensors sous forme de tableau, de manière à les utiliser comme input dans le perceptron.
-    Retourne un tabExtSensors (liste) : ( distance, isRobot (bool), isObject(bool), isWall(bool) ) pour chaque senseur de base
+    """
+    Method to convert 24 extended sensors to list of bools, useful for perceptron input.
     
-    :param sensors : dictionnaire representant les 24 extended sensors
+    Returns a tabExtSensors (liste) : ( distance, isRobot (bool), isObject(bool), isWall(bool) ) pour chaque senseur de base
+
+    :param sensors : dictionnary containing 24 extended sensors
     """
 
     tabExtSensors = []

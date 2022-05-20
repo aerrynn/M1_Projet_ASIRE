@@ -415,7 +415,7 @@ def writeExpertVsNotExpertDistances(self,
 
     for inputLayer in expertSensorsPath:
 
-        if swarmLearningMode == "neuralNetworkBackpropagation" or "innovation":
+        if swarmLearningMode == "neuralNetworkBackpropagation" or swarmLearningMode == "innovation":
             action = self.myNetwork.predict(inputLayer)
 
         elif swarmLearningMode == "kNearestNeighbors":

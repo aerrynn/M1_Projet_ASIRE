@@ -24,7 +24,16 @@
 
 
 def learningMode_nNBackpropagation(self, inputLayer, cptStepsG, slidingWindowTime, nbEpoch, learningRate, debug_part2_diffusion):
-    
+    """
+    Returns the best action [t,r] in function of the inputLayer
+
+    :param inputLayer : list of sensors representing the robot's environment
+    :param cptStepsG : current step
+    :param slidingWindowTime : when the curent robot trains the behaviors dataset
+    :param nbEpoch : number of iterations for backpropagation training
+    :param learningRate : pourcentage that controls how much to modify the NN weights to correct the error
+    :param debug_part2_diffusion : set 'True' if you want to see execution details on terminal
+    """
     # 'slidingWindowTime==None' means that this robot trains the behaviors dataset each time it meets an expert
     # 'cptStepsG%slidingWindowTime==0' means that this robot trains the behaviors dataset at each 'slidingWindowTime' time
     if (slidingWindowTime == None and self.myHitee.newMessageReceived())     \
@@ -54,6 +63,13 @@ def learningMode_nNBackpropagation(self, inputLayer, cptStepsG, slidingWindowTim
 #---------------------------------------------------------------------------------------------------------------
 
 def learningMode_kNearestNeighbors(self, inputLayer, k, debug_part2_diffusion):
+    """
+    Returns the best action [t,r] in function of the inputLayer
+
+    :param inputLayer : list of sensors representing the robot's environment
+    :param k : number of nearest neighbors to consider
+    :param debug_part2_diffusion : set 'True' if you want to see execution details on terminal
+    """
     action = self.myKnnClassifier.predict(inputLayer, self.dictMyBehaviors, k)
 
     if debug_part2_diffusion :

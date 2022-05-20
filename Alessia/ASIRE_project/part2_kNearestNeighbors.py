@@ -16,10 +16,6 @@ from tracemalloc import start
 # PARAMETERS
 ################################################################################################################
 
-# firstForwardPropagation = False     # tests if a first ForwardPropagation has been done
-# firstBackPropagation = False        # tests if a first BackPropagation has been done
-
-# strRobotId = None
 debug = None
 debugAccuracy = None
 
@@ -47,7 +43,8 @@ class knn():
     #-------------------------------------------------------------
 
     def behaviorsEuclideanDistance(self, behavior1, behavior2):
-        """Returns the euclidean distance between les éléménts in behavior1 (expert) and behavior2
+        """
+        Returns the euclidean distance between les elements in behavior1 (expert) and behavior2
         """
         d = 0
         for i in range(len(behavior1)):
@@ -58,7 +55,12 @@ class knn():
 #---------------------------------------------------------------------------------------------------------------
 
     def getKNearestNeighbors(self, behavior1, dataset, k):
-        """behavior1 = input from environment
+        """
+        Returns the list of nearest neighbors
+
+        :param behavior1 : input from environment
+        :param dataset : list of behaviors converted in lists from the robot's database
+        :param k : number of Nearest Neighbors to consider
         """
 
         tabNearestNeighbors = []
@@ -78,6 +80,14 @@ class knn():
     #-------------------------------------------------------------
 
     def predict(self, behavior1, dictMyBehaviors, k, notAccuracyRunning=True):
+        """
+        Returns the prediction (action [t,r])
+
+        :param behavior1 : input from environment
+        :param dictMyBehaviors : list of behaviors from the robot's database
+        :param k : number of Nearest Neighbors to consider
+        """
+
         dataset = list(dictMyBehaviors.keys())
         outputs = []
         strOutputs = []
@@ -111,7 +121,12 @@ class knn():
     #-------------------------------------------------------------
 
     def getAccuracy(self, dictMyBehaviors, k, nbTests=10):
-        """ default 1/10 test, 9/10 train
+        """ 
+        Returns the estimation of the prediction quality.
+        Default is 1/10 behaviors for test, 9/10 behaviors for train, for each 1/10 group of data
+        
+        :param dictMyBehaviors : list of behaviors from the robot's database
+        :param k : number of Nearest Neighbors to consider
         """
         accuracyAverage = 0
         

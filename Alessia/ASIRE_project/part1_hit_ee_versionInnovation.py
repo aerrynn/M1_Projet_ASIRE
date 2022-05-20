@@ -53,6 +53,9 @@ class hit_ee_versionInnovation():
     #----------------------------------------------
 
     def hit_ee(self):
+        """ 
+        HIT-EE : Horizontal Information Transfer for Embodied Evolution, VERSION INNOVATION
+        """
         self.newMessage = False
 
         for i in range (self.selfC.nb_sensors):
@@ -82,6 +85,9 @@ class hit_ee_versionInnovation():
     #----------------------------------------------
 
     def broadcast(self, robotDestId):
+        """
+        Method to send the parameters of the current robot to robots in the neighborhood
+        """
 
         nbElemToSend = int(len(self.selfC.myGenomeList) * transferRate)
         toSendChoice = np.random.choice([i for i in range(len(self.selfC.myGenomeList))], nbElemToSend, False)
@@ -101,6 +107,11 @@ class hit_ee_versionInnovation():
     #----------------------------------------------
 
     def transferGenome(self, message):   # RS : Robot Source du message
+        """
+        Method to manage the reception of messages sent by robots in the neighborhood
+
+        : param message: 4-uplet (robotSourceId, positionsRS, weightsRS, fitnessRS)
+        """
         robotSourceId, positionsRS, weightsRS, fitnessRS = message
 
 
@@ -140,6 +151,9 @@ class hit_ee_versionInnovation():
     #----------------------------------------------
 
     def newMessageReceived(self):
+        """
+        Returns 'true' if this robot has received a new message at the last hit_ee algorithm call
+        """
         return self.newMessage
 
 

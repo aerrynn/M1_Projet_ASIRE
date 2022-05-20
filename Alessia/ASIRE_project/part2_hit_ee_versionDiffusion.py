@@ -57,6 +57,9 @@ class hit_ee_versionDiffusion():
     #----------------------------------------------
 
     def hit_ee(self):
+        """ 
+        HIT-EE : Horizontal Information Transfer for Embodied Evolution, VERSION DIFFUSION
+        """
         self.newMessage = False
 
         for i in range (self.selfC.nb_sensors):
@@ -86,6 +89,9 @@ class hit_ee_versionDiffusion():
     #----------------------------------------------
 
     def broadcast(self, robotDestId):
+        """
+        Method to send the parameters of the current robot to robots in the neighborhood
+        """
 
         nbElemToSend = int(len(self.selfC.dictMyBehaviors) * transferRate)
 
@@ -113,6 +119,13 @@ class hit_ee_versionDiffusion():
     #----------------------------------------------
 
     def transferGenome(self, message, distanceEpsilon):   # RS : Robot Source du message
+        """
+        Method to manage the reception of messages sent by robots in the neighborhood
+
+        : param message: 4-uplet (robotSourceId, inputsRS, outputsRS, fitnessRS)
+        : param distanceEpsilon : required maximal distance between behaviors to be considered similars
+        """
+        
         robotSourceId, inputsRS, outputsRS, fitnessRS = message
 
         if debug :
@@ -143,6 +156,9 @@ class hit_ee_versionDiffusion():
     #----------------------------------------------
 
     def newMessageReceived(self):
+        """
+        Returns 'true' if this robot has received a new message at the last hit_ee algorithm call
+        """
         return self.newMessage
 
 

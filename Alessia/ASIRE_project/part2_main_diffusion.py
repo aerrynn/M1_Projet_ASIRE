@@ -61,7 +61,7 @@ swarmLearningMode = "neuralNetworkBackpropagation"
 # PARAMETERS
 ################################################################################################################
 
-nbSteps = 200
+nbSteps = 10000
 cptStepsG = 0                               # counter used to know the passed number of steps, starting at 0
 tabSumFood = [0] * nbRobots                 # list used to store the robots' fitness function
 isFirstIteration = [True] * nbRobots        # booleen used to initialize parameters once
@@ -70,11 +70,11 @@ isFirstIteration = [True] * nbRobots        # booleen used to initialize paramet
 # HIT-EE algorithm parameters
 transferRate = 0.1                          # percentage of behaviors the expert sends in the broadcast phase
 maturationDelay = 0                         # number of steps each robot waits before starting teaching or learning
-learningOnlyFromExperts=False                # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
+learningOnlyFromExperts=True                # 'True'= only experts robots can broadcast. 'False'= all robots can broadcast 
 
 
 # Storage behaviors mode parameters (used in HIT-EE algorithm)
-maxSizeDictMyBehaviors = 100                # maximal size allowed for storing behaviors. None=unlimited
+maxSizeDictMyBehaviors = 50                 # maximal size allowed for storing behaviors. None=unlimited
 
 
 # Neural Network parameters

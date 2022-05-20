@@ -82,7 +82,8 @@ class neuralNetwork():
     #-------------------------------------------------------------
     
     def getWeights(self):
-        """Returns the network's weights (dictionnary), organised in layers (key)
+        """
+        Returns the network's weights (dict), organised in layers (key)
         """
         return self.weights
 
@@ -90,7 +91,9 @@ class neuralNetwork():
     #-------------------------------------------------------------
 
     def getWeightsList(self):
-
+        """
+        Returns the network's weights (dict) converted in list
+        """
         weightsList = []
         for layer in self.weights.keys():
             for neuron in self.weights[layer]:
@@ -132,8 +135,8 @@ class neuralNetwork():
     #-------------------------------------------------------------
 
     def getNetworkInformation(self):
-        """Returns :
-            - general structure
+        """
+        Returns :
             - neurons values (dict)
             - weights (dict)
             - error estimation (dict)
@@ -156,7 +159,8 @@ class neuralNetwork():
     #-------------------------------------------------------------
     
     def neuronActivation(self, weightsToPreviousLayer, inputsPreviousLayer):
-        """Returns the weighted sum of the inputs from the previous layer
+        """
+        Returns the weighted sum of the inputs from the previous layer
         
         :param weightsToPreviousLayer : list of weights connecting this neuron with the previous layer
         :param inputsPreviousLayer : list of neuron values of the previous layer
@@ -176,7 +180,8 @@ class neuralNetwork():
     #-------------------------------------------------------------
 
     def stableSigmoid(self, x):
-        """Returns the résult of the function sigmoid(x) avoiding overflow numeric issue
+        """
+        Returns the résult of the function sigmoid(x) avoiding overflow numeric issue
         """
         if x >= 0:
             z = math.exp(-x)
@@ -191,7 +196,8 @@ class neuralNetwork():
     #------------------------------------------------------------- 
 
     def transferNeuronActivation(self, activation):
-        """Returns the résult of the function sigmoid(activation)
+        """
+        Returns the result of the function sigmoid(activation)
         """
         return self.stableSigmoid(activation)
 
@@ -199,7 +205,8 @@ class neuralNetwork():
     #------------------------------------------------------------- 
 
     def forwardPropagation(self, inputsNeuronsValues):
-        """Returns the output layer, given the input layer
+        """
+        Returns the output layer, given the input layer
 
         :param inputsNeuronsValues : values of the first neuron's layer (inputs)
         """
@@ -230,7 +237,8 @@ class neuralNetwork():
     #------------------------------------------------------------- 
 
     def derivative(self, x):
-        """Returns the résult of the derivative(x)
+        """
+        Returns the résult of the derivative(x)
         """
         return x * (1.0 - x)
 
@@ -238,7 +246,8 @@ class neuralNetwork():
     #------------------------------------------------------------- 
 
     def computeErrorOutputLayer(self, outputNeuron, label):
-        """Returns the error for each neuron in the outputLayer
+        """
+        Returns the error for each neuron in the outputLayer
         """
         return (outputNeuron - label) * self.derivative(outputNeuron)
 
@@ -246,7 +255,8 @@ class neuralNetwork():
     #------------------------------------------------------------- 
 
     def computeErrorHiddenLayer(self, hiddenNeuronsCurrentLayer, weightsToTheNextLayer, errorsNextLayer):
-        """Returns the error for each neuron in the hiddenLayer
+        """
+        Returns the error for each neuron in the hiddenLayer
         """
         errorsHiddenLayer = []
 
@@ -263,7 +273,8 @@ class neuralNetwork():
     #------------------------------------------------------------- 
     
     def backPropagation(self, labels):
-        """Returns the error estimation (dictionnary) for each neuron in the network,
+        """
+        Returns the error estimation (dictionnary) for each neuron in the network,
         obteined by backpropaging the output's error e = (output - expected label) * derivative function (output)
         from the outputLayer back to the inputLayer.
 
@@ -298,7 +309,8 @@ class neuralNetwork():
     #------------------------------------------------------------- 
 
     def updateWeights(self, inputLayer, learningRate = 1.0):
-        """Returns the updated weights of the network
+        """
+        Returns the updated weights of the network
 
         :param inputLayer : dataset of values as entry of the network
         :param learningRate : pourcentage that controls how much modify the weight to correct for the error. learningRate = 0.1 ---> 10% of correction is applied
@@ -325,7 +337,8 @@ class neuralNetwork():
     #------------------------------------------------------------- 
 
     def train(self, trainingDataset, labelsDataset, nb_epoch, learningRate = 1.0):
-        """Returns the trained network (updated optimised weights). Procedure:
+        """
+        Returns the trained network (updated optimised weights). Procedure:
         For each input row from the training set 'inputLayer':
             - to propagate inputs from the inputLayer to the outputLayer and get the output
             - to backpropagate errors from the outputLayer to the inputLayer and get the errors dictionnary
@@ -378,6 +391,11 @@ class neuralNetwork():
     #------------------------------------------------------------- 
 
     def predict(self, inputLayer):
+        """
+        Return the prediction (action [t,r])
+
+        : param inputLayer : list of sensors representing the environment around the robot capted by sensors
+        """
         outputs = self.forwardPropagation(inputLayer)
         return outputs
 

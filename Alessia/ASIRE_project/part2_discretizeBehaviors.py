@@ -26,7 +26,10 @@ debug = False
 
 
 def discretizeBehavior(units, tailleSensors, significatifsArms, valuesPerArm, definedExpertBehavior, maxSizeDictMyBehaviors=None):
-
+    """
+    Returns a dictionnary of all possible (tuple of sensors, action)
+    """
+    
     dictBehaviors = {}
     fictitiousSensors = []
 
@@ -55,6 +58,10 @@ def discretizeBehavior(units, tailleSensors, significatifsArms, valuesPerArm, de
 #---------------------------------------------------------------------------------------------------------------
 
 def inputLayerTo24Sensors(inputLayer, arms=None):
+    """
+    Converts a list containing sensors in a sensors dictionnary
+    """
+
     sensors = {}
     armsLabels = ["sensor_left", "sensor_front_left", "sensor_front", "sensor_front_right", "sensor_right", "sensor_back_right", "sensor_back", "sensor_back_left"]
     distLabels = ["distance_to_robot", "distance_to_object", "distance_to_wall"]

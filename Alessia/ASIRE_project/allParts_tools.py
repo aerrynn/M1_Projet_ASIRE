@@ -27,12 +27,15 @@ isFirstIteration = True
 ################################################################################################################
 
 
-def buildDefaultListBehaviors(tailleSensors, defaultBehavior):
-    """Returns the default behavior for the apprentices: 
-    if you don't feel anything around you (sesnor = 1), then go straight (t = 1) and don't turn (r = 0)
+def buildDefaultListBehaviors(sensorsSize, defaultBehavior):
+    """
+    Returns the default behavior for the apprentices.
+    
+    :param sensorsSize : size of sensors
+    :param defaultBehavior : default action defined in main
     """
     dictBehaviors = {}
-    dictBehaviors[tuple([1] * tailleSensors)] = defaultBehavior
+    dictBehaviors[tuple([1] * sensorsSize)] = defaultBehavior
 
     return dictBehaviors
 
@@ -40,6 +43,9 @@ def buildDefaultListBehaviors(tailleSensors, defaultBehavior):
 #---------------------------------------------------------------------------------------------------------------
 
 def buildExpertListBehaviors(minSensorValue, maxSensorValue, nbSignificativesValues, tailleSensors, significatifsArms, valuesPerArm, definedExpertBehavior, maxSizeDictMyBehaviors=None):
+    """
+    Returns the list of behavtiors (dict) for the expert robot, obtained by discretization
+    """
 
     assert maxSensorValue > minSensorValue
     if nbSignificativesValues == 1:
@@ -56,6 +62,12 @@ def buildExpertListBehaviors(minSensorValue, maxSensorValue, nbSignificativesVal
 #---------------------------------------------------------------------------------------------------------------
 
 def getExpertFixedBehavior(definedExpertBehavior):
+    """
+    Returns the list of behavtiors (dict) for the expert robot.
+    Sensors are collected by experience, actions [t,r] are calculated using a specific behavior from 'allParts_robotsBehaviors.py'
+    
+    :param definedExpertBehavior : method in 'allParts_robotsBehaviors.py' calculating actions
+    """
 
     dictBehaviors = {}
 
@@ -216,6 +228,15 @@ def getExpertFixedBehavior(definedExpertBehavior):
 
 
 def addBehavior(self, newSensoryInputs, newAction, maxSizeDictMyBehaviors, distanceEpsilon):
+    """
+    Method to add a behavior to the current robot's database.
+
+    :param newSensoryInputs : sensors list to add
+    :param newAction : action to add
+    :param maxSizeDictMyBehaviors : maximal size of the robot's database
+    :param distanceEpsilon : required maximal distance between behaviors to be considered similars
+    """
+    
     if tuple(newSensoryInputs) not in self.dictMyBehaviors:
         if len(self.dictMyBehaviors) < maxSizeDictMyBehaviors:
             self.dictMyBehaviors[tuple(newSensoryInputs)] = newAction
@@ -233,6 +254,7 @@ def addBehavior(self, newSensoryInputs, newAction, maxSizeDictMyBehaviors, dista
 #---------------------------------------------------------------------------------------------------------------
 
 def chooseUsefulBehavior(dictMyBehaviors, newSensoryInputs, nearestSensors, debug=False):
+
     clusters = buildClusters(dictMyBehaviors)
 
     for c in range(len(clusters)):
@@ -248,7 +270,6 @@ def chooseUsefulBehavior(dictMyBehaviors, newSensoryInputs, nearestSensors, debu
                 print(l)
             else:
                 print("\n", l)
-
 
 
     frontierHead = None
@@ -327,7 +348,11 @@ def buildClusters(dictMyBehaviors, debug=False):
 #---------------------------------------------------------------------------------------------------------------
 
 def behaviorsDistance(behavior1, behavior2):
-    """Returns the list of distances between les éléménts in behavior1 (expert) and behavior2
+    """
+    Returns the list of distances between les éléménts in behavior1 (expert) and behavior2
+    
+    :param behavior1 : list of sensors
+    :param behavior2 : list of sensors
     """
     d = []
     for i in range(len(behavior1)):
@@ -341,7 +366,11 @@ def behaviorsDistance(behavior1, behavior2):
 #---------------------------------------------------------------------------------------------------------------
 
 def behaviorsEuclideanDistance(behavior1, behavior2):
-    """Returns the euclidean distance between les éléménts in behavior1 (expert) and behavior2
+    """
+    Returns the euclidean distance between les éléménts in behavior1 (expert) and behavior2
+    
+    :param behavior1 : list of sensors
+    :param behavior2 : list of sensors
     """
     d = 0
     for i in range(len(behavior1)):
@@ -351,6 +380,13 @@ def behaviorsEuclideanDistance(behavior1, behavior2):
 #---------------------------------------------------------------------------------------------------------------
 
 def findNearestBehavior(self, sensoryInputs, distanceEpsilon):
+    """
+    Returns the nearest behavior from the database in function of the robot's environment
+    
+    :param sensoryInputs : list of sensors describing the robot environment
+    :param distanceEpsilon : required maximal distance between behaviors to be considered similars
+    """
+
     minDistance = np.inf
     nearestSensors = []
     listBehaviors = list(self.dictMyBehaviors.keys())
@@ -385,6 +421,12 @@ def findNearestBehavior(self, sensoryInputs, distanceEpsilon):
 #---------------------------------------------------------------------------------------------------------------
 
 def getOwnAction(self, sensoryInputs, distanceEpsilon=1.0):
+    """
+    Returns the action from the database that is more pertinent in function of the robot's environment
+    
+    :param sensoryInputs : list of sensors describing the robot environment
+    :param distanceEpsilon : required maximal distance between behaviors to be considered similars
+    """
     nearestSensors, distanceBehaviors = findNearestBehavior(self, sensoryInputs, distanceEpsilon)
     action = self.dictMyBehaviors[nearestSensors]
     return nearestSensors, action, distanceBehaviors
