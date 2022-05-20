@@ -79,7 +79,9 @@ En utilisant des agents au comportement prédéfini, nommés ici les experts, ca
     L'ensemble des codes utilisés afin d'obtenir les résultats décrits dans le document suivant sont disponibles sur notre dépôt \href{https://github.com/aerrynn/M1_Projet_ASIRE}{github}. 
 
     \chapter{État de l'art}
-    Un chapitre dédié à l'état de l'art doit décrire les concepts et méthodes déjà existant(e)s, en lien avec le travail que vous avez réalisé.
+    Aujourd'hui, la plupart des algorithmes d'apprentissages utilisés en robotique en essaim sont soit déterministes, soit axés sur l'apprentissage par transfert de poids de neurones, à l'instar de l'algorithme HIT-EE qui nous a servi de base pour le projet.
+    
+    HIT-EE est un algorithme d'apprentissage en ligne qui suit un principe simple : Chaque agent subit une phase d'évaluation durant laquelle il ne peut transmettre son patrimoine mais reçoit les messages d'autres agents. A l'issu de cette phase, pour chaque message reçu, Si sa fitness est inferieure à celle de l'émetteur, il copie une partie des poids de l'émetteur. Une fois tous les messages lus, son patrimoine mute avec une probabilité donnée. Enfin si son patrimoine a changé, il recommence sa phase d'évaluation.
     
     \chapter{Contribution}
    
