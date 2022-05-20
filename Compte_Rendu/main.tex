@@ -162,20 +162,20 @@ L'objectif de ce comportement est d'éviter les obstacles (qu'ils soient des mur
     \subsection{Apprentissage par rétropropagation du gradient}
     L'apprentissage par rétropropagation du gradient permet d'observer une évolution fluide du comportement des individus focaux : les trajectoires dessinent des ellipses qui deviennent progressivement plus larges et ouvertes au cours du temps. En presence d'obstacles, les individus répondent rapidement pour l'évitement des murs et nous observons qu'il ne se vérifie pas d'interblocage avec les autres robots. De manière moins importante par rapport aux experts, nous remarquons aussi la réconnaissance d'objets.
     
-    \includegraphics[scale=0.5]{Compte_Rendu/images/bp6000_100.png}
+    \includegraphics[scale=0.5]{bp6000_100.png}
     
     L'apprentissage par rétropropagation du gradient se révèle efficace et confère à chaque individu un mouvement continu qui n'imite pas parfaitement le comportement de l'expert mais assure la poursuite des mêmes objectifs. Cette proprièté permet parfois d'avoir des résultats meilleurs en termes de performance par rapport à ceux des experts. 
     Dans le graphique on observe que à la troisième évaluation le meilleur individu non expert de l'essaim obtient une meilleure performance par rapport à celle de l'expert observé. On remarque aussi la progressive amélioration de la performance des individus non experts.
 
 
-    \includegraphics[scale=0.5]{Compte_Rendu/images/bp6000_50.png}
+    \includegraphics[scale=0.5]{bp6000_50.png}
 
-    \includegraphics[scale=0.5]{Compte_Rendu/images/sizeDB_50vs100_bp.png}
+    \includegraphics[scale=0.5]{sizeDB_50vs100_bp.png}
 
     La limitation de la base de données des individus focaux à 50 éléments (sur 100 traces totales possiblement acquérable depuis les experts) réduit légèrement la capacité de l'essaim d'apprendre de l'expert. 
 
 
-    \includegraphics[scale=0.5]{Compte_Rendu/images/distances_bp.png}
+    \includegraphics[scale=0.5]{distances_bp.png}
 
     Les choix effectuées par le meilleur individu focal en termes d'actions s'améliorent au cours du temps. La bande verte répresente une distance minimale entre l'action de l'indivudu focal et l'action de l'expert au moment $t = 6000$ step.
     Nous remarquons que le meilleur individu focal avait déjà trouvé des poids efficaces pour le réseau de neurones au moment $t = 2500$ step. 
@@ -188,19 +188,19 @@ L'objectif de ce comportement est d'éviter les obstacles (qu'ils soient des mur
     L'apprentissage par k Plus Proches Voisins permet d'observer une modification nette des comportements chez les individus focaux : les trajectoires changent rapidement suite à la phase d'entrainement, et ressemblent au comportement d'un individu expert. Cela est dû au fait que chaque action sélectionnée par l'apprentissage de l'individu focal correspond exactement à au moins une action de la base de données de l'expert, sans perte d'information.
     
     
-    \includegraphics[scale=0.5]{Compte_Rendu/images/knn6000_100.png}
+    \includegraphics[scale=0.5]{knn6000_100.png}
     
     L'apprentissage par k Plus Proches Voisins est efficace et tend à imiter parfaitement le comportement de l'expert.
     Dans le graphique, nous pouvons voir que la performance du meilleur individu focal et de l'expert sont presque superposées. La connaissance génerale du groupe évolue en fonction du temps mais progresse moins vite par rapport à l'apprentissage par rétropropagation du gradient.
     
-    \includegraphics[scale=0.5]{Compte_Rendu/images/knn6000_50.png}
+    \includegraphics[scale=0.5]{knn6000_50.png}
     
     La limitation de la base de donnée des individus focaux à 50 éléments (sur 100 traces totales possiblement acquérable depuis les experts) réduit la capacité de l'essaim d'apprendre de l'expert. 
     
     
-    \includegraphics[scale=0.5]{Compte_Rendu/images/knn6000_100_noReset.png}
+    \includegraphics[scale=0.5]{knn6000_100_noReset.png}
         
-    \includegraphics[scale=0.5]{Compte_Rendu/images/distances_knn.png}
+    \includegraphics[scale=0.5]{distances_knn.png}
     
     Ce graphique des distances entre actions est obtenu à partir de l'expèrimentation de 6000 steps sans réinitialisation des conditions initiales representée juste en dessus. Nous remarquons qu'en fin d'évaluation l'essaim a un comportement beaucoup plus proche à celui de l'expert - en termes de actions choisies - par rapport au debut d'évaluation.
     
@@ -209,22 +209,21 @@ L'objectif de ce comportement est d'éviter les obstacles (qu'ils soient des mur
     
     
 	\section{Méthode par mimétisme}
-	blash
+	On décide ensuite de généraliser l'apprentissage en ajoutant de nouvelle contraintes : pour qu'un individu apprenne un comportement, ce dernier doit être observé. On change ainsi les informations transmises lors de la rencontre entre deux individus en un couple (observation, action) envoyé par l'expert.
+	Pour simplifier on ne considère pas la perte d'information due au changement de point de vue.
 	\subsection{Apprentissage ad-hoc}
-	Dans un premier temps, on décide d'évaluer l'apprentissage par mimétisme en donnant aux apprenants une mémoire extensible et en déterminant le comportement des agents non-experts de la manière suivante :
-	
+	Dans un premier temps, on se propose d'évaluer l'apprentissage par mimétisme en donnant aux apprenants une mémoire extensible et en déterminant le comportement des agents non-experts de la manière suivante :
 
+\fbox{
 	\begin{algorithm}[H]
 		\KwInput{une observation $o$}\;
 		\KwResult{l'action à effectuer $a$ }
   		On cherche l'observation $o'$ présente dans la mémoire telle que la distance $o$-$o'$ soit minimale\;
 		L'observation $o'$ étant stockée avec une action $a'$ associée : $a$ $\leftarrow$ $a'$ \;
   		return $a$\;
-	\end{algorithm}
+	\end{algorithm}}
 	
-\includegraphics{learner_boxplot}
-	
-	La première remarque que l'on peut faire sur cette méthode d'apprentissage est qu'au délà d'être coûteuse en mémoire (// nbre de comportements appris à un temps t), la simulation dure très longtemps du fait que les observations appartiennent à des segments continus compris entre 0 et 1.
+	La première remarque que l'on peut faire sur cette méthode d'apprentissage est qu'au délà d'être coûteuse en mémoire, la simulation dure très longtemps du fait que les observations appartiennent à des segments continus compris entre 0 et 1.
 	
 	De plus, lorsqu'un apprenant apprend un comportement, celui-ci est toujours dans le rayon de perception de l'expert, ce qui entraine une perte de généralisation. Par exemple les situation où un agent se retrouve en face d'un objet sans qu'aucun autre agent ne soit détecté par ses senseurs ne peuvent être apprises.
 	Pour palier à ce problème, dans un premier temps, on a fait le choix de ne transmettre que les informations des capteurs frontaux.
@@ -234,7 +233,7 @@ L'objectif de ce comportement est d'éviter les obstacles (qu'ils soient des mur
 	Afin d'adapter la méthode ad-hoc au domaine de la robotique en essaim, et donc de limiter la mémoire nécessaire, on a essayé de discrétiser les entrer. Une telle méthode a plusieur avantage : elle réduit le domaine des observations $$nombre d'intervalles^{nombre de senseurs}*2^{nombre de senseurs de typage} $$ et permet de hasher ces dernière pour accéder plus efficacement aux comportements.
 	Pour cette version, le comportement des apprenants suit les règles suivante :
 	
-
+\fbox{
 \begin{algorithm}[H]
 	\KwInput{une observation $o$}\;
 	\KwResult{l'action à effectuer $a$ }
@@ -242,7 +241,7 @@ L'objectif de ce comportement est d'éviter les obstacles (qu'ils soient des mur
 	\If{o' est une clé du dictionnaire $mémoire$}								
 	{\Return mémoire[$o'$]}
 	\Return mouvement par défaut\;
-\end{algorithm}
+\end{algorithm}}
 	
 	
 \includegraphics{averageComparisons}
@@ -252,28 +251,36 @@ L'objectif de ce comportement est d'éviter les obstacles (qu'ils soient des mur
 	 Cette supposition est confirmé par la quantité de mouvements appris en fonction du nombre d'intervalles de discrétisations.
 	 
 	 
-\includegraphics{averageLearntBehaviourD2}
-\includegraphics{averageLearntBehaviourD16}
+\includegraphics[scale = 0.5]{averageLearntBehaviourD2}
+\includegraphics[scale = 0.5]{averageLearntBehaviourD16}
 	
 	En revanche si le nombre d'intervalles est insuffisant, une partie du comportement de l'expert peut être perdue. Par exemple si un expert adopte trois comportements différents en fonction de la valeur du senseur 1, une discrétisatione en deux intervalles (respectivement [0,0.5], ]0.5,1]) ne permettrait pas l'apprentissage exact de ce comportement.
 	
 	Pour implémenter la propagation, il suffit de modifier la règle d'apprentissage de la manière suivante :
 	
 	%// Pseudocode
+\fbox{
 \begin{algorithm}[H]
 	Lors de la réception d'un message $m$\;
 	$o$,$a$ $\leftarrow$ $m$
 	\If {$a\neq$ action par défaut}{$o'\leftarrow$discrétiser($o$)
 	\If {$o'$ n'est pas une clé de du dictionnaire $mémoire$}{$mémoire$[$o'$] $\leftarrow a$}}
-\end{algorithm}
+\end{algorithm}}
 	
 	
 	\textbf{N.B.}Pour les tests, on a fait le choix de définir le mouvement par défaut comme (0.5, 0.05), c'est à dire de continuer tout droit, mais avec un léger déplacement vers la droite pour éviter de se coincer.
+
+\begin{center}
+	\includegraphics{D2Propag}
+\end{center}	
+A première vue, cette experience semble donner des résultats moins bons que sans propagation, mais elle n'est pas représentative, car nous avons dû limiter le nombre de répétitions de l'expérience par manque de temps. Il faudrait donc refaire cette expérience en la comparant à sa version sans propagation, et ce sur un nombre représentatif d'expériences.
+	
 	
 	\subsection{Apprentissage ad-hoc avec PPV}
 	Une autre option envisagée pour réduire la demande en mémoire de notre algorithme est de toujours exécuter l'action de la mémoire dont l'observation est la plus proche de l'observation actuelle.
 	De plus afin de limiter le nombre de points insérés dans la mémoire, on a implémenté l'algorithme suivant :
-	
+
+\fbox{
 \begin{algorithm}[H]
 	\SetAlgoLined
 	Lors de la réception d'un message $m$\;
@@ -281,33 +288,52 @@ L'objectif de ce comportement est d'éviter les obstacles (qu'ils soient des mur
 	On cherche le couple ($o'$, $a'$) tel que la distance $o-o'$ soit minimale\;
 	\If{$a\neq a'$}{On ajoute le tuple ($o$, $a$, 1) à la mémoire}{On modifie $o$ de la manière suivante\;
 	$o'\leftarrow$ ( $ \frac{o'* w + o}{w+1}$}
-\end{algorithm}
+\end{algorithm}}
 	
- // Graph + Eval
+Les principales différences observées lors de ces tests étaient dues au choix de l'heuristique de calcul de distance. En effet une heuristique de simple calcul de distance euclidienne avait comme défaut de ne pas prendre en compte le type des objets rencontrés (ceux ci étant encodés sous forme de booléens 0,1). Une solution a été d'utiliser une heuristique maximin, mais les resultats restaient insuffisants.
+Au final, nous avons fait le choix de projeter les distances aux obstacles sur différents hyperespaces correspondants aux différentes permutations du type d'objet rencontré, puis fait le calcul sur la distance euclidienne.
+
+L'inconvénient majeur de cette méthode est la difficulté à l'adapter à la propagation entre apprenants. Simplement permettre cette dernière provoquerait l'apprentissage de "mauvais" comportements qui limiteraient à long terme la convergence de l'efficacité de la population.
+
+Une solution envisagée à été de calculer pour chaque observation faite la vraisemblance du mouvement associé à cette observation. Mais cette méthode, très calculatoire, demandait une grande mémoire pour avoir une base de comparaison.
 	
 	\subsection{Apprentissage sur un réseau de Neurone par Backpropagation}
 	Pour remédier aux différents problèmes remarqués dans les méthodes ad-hoc, on a essayé d'appliquer l'apprentissage par mimétisme sur un réseau neuronal. Ainsi, la présence d'un agent sur un senseur donné devrait disparaitre lors de la généralisation.
-	Un problème s'est néanmoins présenter : certaines observations sont beaucoups plus représentées que d'autres
+	Un problème s'est néanmoins présenté : certaines observations sont beaucoups plus représentées que d'autres
 	
-	//Figure représentative :
-	
+\begin{center}
+\includegraphics[scale = 0.5]{Proportions}
+\end{center}	
+
 	Pour palier à cela, on a donc renforcé l'apprentissage en pondérant la rétropropagation lors de l'apprentissage en fonction de la distance à l'objectif.
-	
+
+\begin{center}
 	\includegraphics{averageComparisons}
+\end{center}	
 	
 Cette méthode est, comme attendu, plus lente que la version ad-hoc. En revanche elle semble suivre une croissance continue. Il serait envisageable de poursuivre l'experience jusqu'à la stabilisation de la population.
 	
-	
-\includegraphics{learner_boxplot}
-	
-	//Evaluation 
+\begin{center}
+	\includegraphics{learner_boxplot}
+\end{center}	
+
+	En permettant en plus l'apprentissage d'avoir lieu entre apprenants, on observe que la moyenne ne semble pas s'améliorer plus vite que dans l'expérience précédente. Néanmoins, l'ensemble de la population évolue de manière plus homogène.
 
     \section{Bibliographie}
 //TODO
 Nous recommandons l'usage de \href{https://fr.wikipedia.org/wiki/BibTeX}{BibTeX} pour la gestion de la bibliographie. Ajoutez les entrées correspondant à vos références dans le fichier \verb+resources/bib/references.bib+. Vous pouvez obtenir les entrées BibTeX sur \href{https://scholar.google.com}{Google Scholar} ou \href{https://dblp.uni-trier.de}{DBLP}. La commande \verb+\cite+ vous permet de citer une (ou plusieurs) référence(s) dans le document, par exemple \cite{pakin2020comprehensive,RusselNorvig}.
 
 \chapter{Conclusion}
-Pour la poursuite de notre projet, nous devrions optimiser les différents codes pour permettre des expériences plus représentatives, mais surtout pouvoir comparer nos résultats avec les algorithmes "state of the art"
+
+A première vue, l'apprentissage par comportement au sein d'un essaim de robots semble être une méthode prometteuse pour l'apprentissage à moindre coût.
+
+Néanmoins, avant de pouvoir vraiment la comparer à d'autres méthodes existantes et la tester dans le monde réel, il faudrait déjà la tester avec la perte de connaissances qu'induit un changement de perspective.
+\begin{center}
+	\includegraphics[scale = 0.5]{scheme.png}
+\end{center}
+\textit{Dans l'exemple ci-dessus, l'apprenant(en noir), ne voit pas l'objet(en vert) vers lequel se dirige l'expert(en bleu), pour lui l'expert ne détecte aucun objet à part l'apprenant.}
+
+De plus, certaines de nos experiences n'ont pu avoir de résultats représentatifs par manque de temps. Ainsi, pour la poursuite de notre projet, nous devrions optimiser les différents codes pour permettre des expériences plus représentatives, pour ensuite pouvoir comparer nos résultats avec les algorithmes "state of the art"
 
     %\printbibliography
 
