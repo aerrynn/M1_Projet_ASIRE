@@ -5,10 +5,10 @@ nbFoodObjects 100
 maxSizeDictMyBehaviors 100
 hit_ee_transferRate 0.1
 hit_ee_maturationDelay 0
-hit_ee_learningOnlyFromExperts True
+hit_ee_learningOnlyFromExperts False
 swarmLearningMode kNearestNeighbors
 k 7
 nbSteps 20000
 evaluationTime 100
-resetEvaluation True
+resetEvaluation False
 resetEvaluationTime 2000

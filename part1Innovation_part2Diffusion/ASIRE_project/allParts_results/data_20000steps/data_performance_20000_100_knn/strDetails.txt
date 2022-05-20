@@ -10,5 +10,5 @@ swarmLearningMode kNearestNeighbors
 k 7
 nbSteps 20000
 evaluationTime 100
-resetEvaluation True
+resetEvaluation False
 resetEvaluationTime 2000

@@ -5,7 +5,7 @@ nbFoodObjects 100
 maxSizeDictMyBehaviors 100
 hit_ee_transferRate 0.1
 hit_ee_maturationDelay 0
-hit_ee_learningOnlyFromExperts True
+hit_ee_learningOnlyFromExperts False
 swarmLearningMode neuralNetworkBackpropagation
 nb_hiddenLayers 1
 nb_neuronsPerHidden 16
