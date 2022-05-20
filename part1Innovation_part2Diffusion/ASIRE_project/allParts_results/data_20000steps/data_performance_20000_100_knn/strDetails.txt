@@ -1,0 +1,14 @@
+nbRobots 100
+nbExpertsRobots 10
+nbNotExpertsRobots 90
+nbFoodObjects 100
+maxSizeDictMyBehaviors 100
+hit_ee_transferRate 0.1
+hit_ee_maturationDelay 0
+hit_ee_learningOnlyFromExperts True
+swarmLearningMode kNearestNeighbors
+k 7
+nbSteps 20000
+evaluationTime 100
+resetEvaluation False
+resetEvaluationTime 2000
