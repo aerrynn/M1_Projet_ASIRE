@@ -71,7 +71,7 @@
     \chapter{Introduction}
 	L'objectif de ce projet est de trouver des outils permettant à des robots avec une mémoire très limitée d'apprendre à réaliser une tâche par l'observation des mouvements d'autres robots ayant les mêmes spécifications.
 Dans cette optique, on considèrera que les robots ont des moyens de communication limités voire inexistants si possible.
-En utilisant des agents au comportement prédéfini, nommés ici les experts, capables de réaliser au mieux la tâche envisagée et des robots apprenants, on pourra toujours observer une convergeance vers le comportement de l'expert dans les cas où l'apprentissage se fait uniquement dans le sens expert-apprenant.
+En utilisant des agents au comportement prédéfini, nommés ici les experts, capables de réaliser au mieux la tâche envisagée et des robots apprenants , on pourra toujours observer une convergeance vers le comportement de l'expert dans les cas où l'apprentissage se fait uniquement dans le sens expert-apprenant.
     Dans certains cas particuliers, des méthodes explorées permettent à l'apprentissage apprenant-apprenant d'accélerer cette convergeance. 
     
     Ce projet a été encadré par messieurs Nicolas Bredeche et Stéphane Doncieux.  
@@ -81,7 +81,7 @@ En utilisant des agents au comportement prédéfini, nommés ici les experts, ca
     \chapter{État de l'art}
     Aujourd'hui, la plupart des algorithmes d'apprentissage utilisés en robotique en essaim sont soit déterministes, soit axés sur l'apprentissage par transfert de poids de neurones, à l'instar de l'algorithme HIT-EE\footnote{Nicolas Bredeche and Nicolas Fontbonne. 2022. Social learning in swarm robotics. Philos. Trans. R. Soc. B Biol. Sci. 377, 1843 (January 2022), 20200309. DOI:https://doi.org/10.1098/rstb.2020.0309} qui nous a servi de base pour le projet.
     
-    HIT-EE est un algorithme d'apprentissage en ligne qui suit un principe simple : Chaque agent subit une phase d'évaluation durant laquelle il ne peut transmettre son patrimoine mais reçoit les messages d'autres agents. A l'issue de cette phase, pour chaque message reçu, Si sa fitness est inférieure à celle de l'émetteur, il copie une partie des poids de l'émetteur. Une fois tous les messages lus, son patrimoine peut muter avec une probabilité donnée. Enfin si son patrimoine a changé durant au moins l'une des deux phases précedentes, il recommence sa phase d'évaluation.
+    HIT-EE est un algorithme d'apprentissage en ligne qui suit un principe simple : Chaque agent subit une phase d'évaluation durant laquelle il ne peut transmettre son patrimoine mais reçoit les messages d'autres agents. A l'issue de cette phase, pour chaque message reçu, Si sa fitness est inférieure à celle de l'émetteur, il copie une partie des poids de l'émetteur. Une fois tous les messages lus, son patrimoine mute avec une probabilité donnée. Enfin si son patrimoine a changé lors d'au moins l'une des phases précédentes, il recommence sa phase d'évaluation.
     
     \chapter{Contribution}
    
@@ -97,14 +97,13 @@ En utilisant des agents au comportement prédéfini, nommés ici les experts, ca
     \item Nombre d'objets : 100
     \item Taille de l'arène : 1400x800 px
     \item Taille des robots : 5x5 px
+    \item Nombre de senseurs : 16 ou 24
     \item Distance des senseurs : 16 ou 24 (8 senseurs, capable de distinguer le type de l'objet et la distance à ce dernier)
-    \item Distance des senseurs : 16
     \item Durée d'une expérience : 20,000 steps
     \item Nombre de répétions de l'expérience : 5
     \end{itemize}
-    
 
-Les différents experts suivent un comportement donné.
+
 Les différents experts suivent un comportement donné.
 L'un sous forme de génome, c'est-à-dire 100 couple observations-actions.
 Et le second dont l'objectif est d'éviter les obstacles (qu'ils soient des murs ou d'autres robots) tout en se focalisant sur le ramassage des objets dès que possible, obtenu par simple succession de conditions.
@@ -136,7 +135,7 @@ Et le second dont l'objectif est d'éviter les obstacles (qu'ils soient des murs
     \begin{itemize}
 	\item la position de tous les individus
     \item la base de données de comportements
-    \item la performance de chaque individu (exprimée en nombre d'objets collectés)
+    \item la performance de chaque individu(exprimée en nombre d'objets collectés)
 	\end{itemize}
     
     Remarque : Pour l'algorithme de rétropropagation du gradient, les poids du réseau de neurones ne seront pas réinitialisés d'une évaluation à l'autre, dans le but de raffiner les poids précédemment obtenus en les testant dans un nouveau contexte.
@@ -165,8 +164,8 @@ Et le second dont l'objectif est d'éviter les obstacles (qu'ils soient des murs
     
     \includegraphics[scale=0.5]{bp6000_100.png}
     
-    L'apprentissage par rétropropagation du gradient se révèle efficace et confère à chaque individu un mouvement continu qui n'imite pas parfaitement le comportement de l'expert mais assure la poursuite des mêmes objectifs. Cette proprièté permet parfois d'avoir des résultats meilleurs en termes de performance par rapport à ceux des experts. 
-    Dans le graphique, on observe qu'à la troisième évaluation le meilleur individu non-expert de l'essaim obtient une meilleure performance par rapport à celle de l'expert observé. On remarque aussi la progressive amélioration de la performance des individus non experts ce qui entraîne une diminution des scores de l'expert de part la raréfaction des ressources.
+    L'apprentissage par rétropropagation du gradient se révèle efficace et confère à chaque individu un mouvement continu qui n'imite pas parfaitement le comportement de l'expert mais assure la poursuite des mêmes objectifs. Cette proprièté permet parfois d'avoir des résultats meilleurs en termes de performances par rapport à ceux des experts. 
+    Dans le graphique, on observe qu'à la troisième évaluation le meilleur individu non-expert de l'essaim obtient une meilleure performance par rapport à celle de l'expert observé. On remarque aussi la progressive amélioration de la performance des individus apprenants ce qui entraîne une diminution des scores de l'expert de part la raréfaction des ressources.
 
 
     \includegraphics[scale=0.5]{bp6000_50.png}
@@ -175,7 +174,7 @@ Et le second dont l'objectif est d'éviter les obstacles (qu'ils soient des murs
     
     \includegraphics[scale=0.5]{images/data_sizeDB_10000_bp.png}
 
-    La limitation de la base de données des individus focaux à 50 éléments (sur 100 traces totales possiblement acquérable depuis les experts) réduit légèrement la capacité de l'essaim à apprendre de l'expert. 
+    La limitation de la base de données des individus focaux à 50 éléments (sur 100 traces totales possiblement pouvant être apprises des experts) réduit légèrement la capacité de l'essaim à apprendre de l'expert. 
     Sur une plage de 10000 steps, il semblerait que les différences s'atténuent.
 
 
@@ -228,7 +227,6 @@ Et le second dont l'objectif est d'éviter les obstacles (qu'ils soient des murs
     Le temps d'exécution requis par les algorithmes d'apprentissage employés varie en fonction de la taille du database des robots pour chacune des deux méthodes. kNearestNeighbors avec taille database 100 est le seul aussi rapide que l'algorithme d'apprentissage par genome auquel on s'inspire dans l'état de l'art. La méthode de retropropagation de gradient est très lente suite à l'entrainement du réseau de neurones pour chaque robot : la limitation du database dans ce cas réduit considerablement les temps de calcul.
     
     
-    Nous tenons à remercier nos encadrants car il a été très enrichissant de travailler avec des experts qui ont su nous guider en valorisant nos attitudes et nos points de force. Nous avons pu compter sur leur disponibilité à tout moment du projet, et progresser vers un resultat que nous a poussé à nous améliorer constamment, en nous donnant encore plus envie de poursuivre sur cette voie.  
     
     
 	\section{Méthode par mimétisme}
@@ -246,7 +244,7 @@ Et le second dont l'objectif est d'éviter les obstacles (qu'ils soient des murs
   		return $a$\;
 	\end{algorithm}}
 	
-	La première remarque que l'on puisse faire sur cette méthode d'apprentissage est qu'en plus d'être coûteuse en mémoire, la simulation dure très longtemps. Ceci s'explique par le fait que les observations appartiennent à des segments continus compris entre 0 et 1 ce qui fait que la quasi totalité des comportements observés sont stockés et ensuite mesuré lors du calcul du plus proche voisin.
+	LLa première remarque que l'on puisse faire sur cette méthode d'apprentissage est qu'en plus d'être coûteuse en mémoire, la simulation dure très longtemps. Ceci s'explique par le fait que les observations appartiennent à des segments continus compris entre 0 et 1 ce qui fait que la quasi totalité des comportements observés sont stockés et ensuite mesuré lors du calcul du plus proche voisin.
 	
 	De plus, lorsqu'un apprenant intègre un comportement, celui-ci est toujours dans le rayon de perception de l'expert, ce qui entraîne une perte de généralisation. Par exemple, les situations où un agent se retrouve en face d'un objet sans qu'aucun autre agent ne soit détecté par ses senseurs, ne peuvent être apprises.
 	Pour palier à ce problème pour cette algorithme, on a fait le choix de ne transmettre que les informations des capteurs frontaux.
@@ -359,7 +357,9 @@ De plus, certaines de nos expériences n'ont pu avoir de résultats représentat
     \chapter{Bibliographie}
     \begin{enumerate}
 	\item {Nicolas Bredeche and Nicolas Fontbonne. 2022. Social learning in swarm robotics. Philos. Trans. R. Soc. B Biol. Sci. 377, 1843 (January 2022), 20200309. DOI:https://doi.org/10.1098/rstb.2020.0309}
-    \item{Justin K. Pugh, Lisa B. Soros, and Kenneth O. Stanley. 2016. Quality Diversity: A New Frontier for Evolutionary Computation. Front. Robot. AI 3, (2016). Retrieved February 26, 2022 from https://www.frontiersin.org/article/10.3389/frobt.2016.00040}
+	\item{Nicolas Bredeche and Nicolas Fontbonne. 2022. Social learning in swarm robotics. Philos. Trans. R. Soc. B Biol. Sci. 377, 1843 (January 2022), 20200309. DOI:https://doi.org/10.1098/rstb.2020.0309
+}
+\item{Justin K. Pugh, Lisa B. Soros, and Kenneth O. Stanley. 2016. Quality Diversity: A New Frontier for Evolutionary Computation. Front. Robot. AI 3, (2016). Retrieved February 26, 2022 from https://www.frontiersin.org/article/10.3389/frobt.2016.00040}
 \item{Jean-Baptiste Mouret and Stéphane Doncieux. 2012. Encouraging Behavioral Diversity in Evolutionary Robotics: an Empirical Study. Evol. Comput. 20, 1 (2012), 91–133. DOI:https://doi.org/10.1162/EVCO\_a\_00048}
     \end{enumerate}
     %\printbibliography
@@ -453,4 +453,9 @@ Choisir les paramètres dans le fichier Cons.py :
 \end{itemize}
 Exécuter le runner:
 python $Foraging\_Task$
+
+\newpage
+\Large{\textbf{Remerciements}}
+
+    Nous tenons à remercier nos encadrants car il a été très enrichissant de travailler avec des experts qui ont su nous guider en valorisant nos attitudes et nos points de force. Nous avons pu compter sur leur disponibilité à tout moment du projet, progresser vers un résultat et nous ont poussés à nous améliorer constamment, en nous donnant encore plus envie de poursuivre sur cette voie.
 \end{document}
